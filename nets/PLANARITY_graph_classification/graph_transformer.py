@@ -15,6 +15,7 @@ class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
         hidden_dim = net_params['hidden_dim']
+        n_classes = net_params['n_classes']
         num_heads = net_params['n_heads']
         out_dim = net_params['out_dim']
         in_feat_dropout = net_params['in_feat_dropout']
@@ -50,7 +51,8 @@ class GraphTransformerNet(nn.Module):
         self.layers = nn.ModuleList([ GraphTransformerLayer(hidden_dim, hidden_dim, num_heads, dropout,
                                                     self.layer_norm, self.batch_norm, self.residual) for _ in range(n_layers-1) ]) 
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
-        self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
+        # self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
+        self.MLP_layer = MLPReadout(out_dim, n_classes)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
 
@@ -86,7 +88,7 @@ class GraphTransformerNet(nn.Module):
             
         return self.MLP_layer(hg)
         
-    def loss(self, scores, targets):
-        # loss = nn.MSELoss()(scores,targets)
-        loss = nn.L1Loss()(scores, targets)
+    def loss(self, pred, label):
+        criterion = nn.CrossEntropyLoss()
+        loss = criterion(pred, label)
         return loss
