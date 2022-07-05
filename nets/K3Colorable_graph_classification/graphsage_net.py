@@ -35,7 +35,7 @@ class GraphSageNet(nn.Module):
             self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
         else:
             in_dim = 1
-            self.embedding_h = nn.Embedding(in_dim, hidden_dim)
+            self.embedding_h = nn.Linear(in_dim, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
