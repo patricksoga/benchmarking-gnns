@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N gtn-k3c-500k
+#$ -N gtn-k3c-500k-learned-pe
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
