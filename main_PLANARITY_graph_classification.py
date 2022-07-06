@@ -6,20 +6,15 @@
 """
     IMPORTING LIBS
 """
-import dgl
 
 import numpy as np
 import os
-import socket
 import time
 import random
 import glob
 import argparse, json
-import pickle
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -95,7 +90,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         
     DATASET_NAME = dataset.name
     
-    if net_params['pos_enc']:
+    if net_params['learned_pos_enc']:
+        print('Using learned positional encoding')
+    elif net_params['pos_enc']:
         print("[!] Adding graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
@@ -280,6 +277,7 @@ def main():
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--num_train_data', help="Please give a value for num_train_data")
+    parser.add_argument('--pos_enc_dim', help="Please give a value for positional encoding dimention size")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -376,6 +374,8 @@ def main():
         net_params['self_loop'] = True if args.self_loop=='True' else False
     if args.num_train_data is not None:
         net_params['num_train_data'] = int(args.num_train_data)
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = int(args.pos_enc_dim)
         
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
