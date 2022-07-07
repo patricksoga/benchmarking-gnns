@@ -90,7 +90,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         
     DATASET_NAME = dataset.name
     
-    if net_params['learned_pos_enc']:
+    if net_params.get('learned_pos_enc', False):
         print('Using learned positional encoding')
     elif net_params['pos_enc']:
         print("[!] Adding graph positional encoding.")
@@ -397,7 +397,7 @@ def main():
     out_dir = out_dir + '_samples_' + str(net_params['num_train_data']) + '/'
     # except KeyError:
     #     out_dir = out_dir + '_samples_' + DATASET_NAME + '/'
-    if MODEL_NAME == 'GraphTransformer':
+    if MODEL_NAME == 'GraphTransformer' and args.pos_enc_dim is not None:
         dir_str = args.pos_enc_dim + "_"
     else:
         dir_str = ""
