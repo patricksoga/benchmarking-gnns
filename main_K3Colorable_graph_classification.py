@@ -92,6 +92,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     if net_params.get('learned_pos_enc', False):
         print('Using learned positional encoding')
+    elif net_params.get('rand_pos_enc', False):
+        print('Using random positional encoding')
     elif net_params['pos_enc']:
         print("[!] Adding graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
@@ -202,10 +204,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     break
                     
                 # Stop training after params['max_time'] hours
-                if time.time()-t0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+                # if time.time()-t0 > params['max_time']*3600:
+                #     print('-' * 89)
+                #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                #     break
     
     except KeyboardInterrupt:
         print('-' * 89)

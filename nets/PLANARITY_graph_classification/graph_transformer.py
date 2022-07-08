@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 import dgl
 
@@ -30,12 +29,19 @@ class GraphTransformerNet(nn.Module):
         self.pos_enc = net_params['pos_enc']
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.learned_pos_enc = net_params.get('learned_pos_enc', False)
+        self.rand_pos_enc = net_params.get('rand_pos_enc', False)
 
         max_wl_role_index = 37 # this is maximum graph size in the dataset
         pos_enc_dim = net_params['pos_enc_dim']
         self.pos_enc_dim = pos_enc_dim
         if self.pos_enc:
             # pos_enc_dim = net_params['pos_enc_dim']
+            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+        elif self.rand_pos_enc:
+            self.pos_initial = nn.Parameter(torch.Tensor(pos_enc_dim, 1), requires_grad=False)
+            self.pos_transition = nn.Parameter(torch.Tensor(pos_enc_dim, pos_enc_dim), requires_grad=False)
+            nn.init.normal_(self.pos_initial)
+            nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc:
             self.pos_initial = nn.Parameter(torch.Tensor(pos_enc_dim, 1))
@@ -74,7 +80,7 @@ class GraphTransformerNet(nn.Module):
             # pos_enc = self.embedding_pos_enc(pos_enc) 
             # h = h + pos_enc
             h = self.embedding_pos_enc(pos_enc)
-        elif self.learned_pos_enc:
+        elif self.learned_pos_enc or self.rand_pos_enc:
             A = g.adjacency_matrix().to_dense().to(self.device)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
