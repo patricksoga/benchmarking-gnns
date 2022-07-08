@@ -394,7 +394,7 @@ def main():
     out_dir = out_dir + '_samples_' + str(net_params['num_train_data']) + '/'
     # except KeyError:
     #     out_dir = out_dir + '_samples_' + DATASET_NAME + '/'
-    if MODEL_NAME == 'GraphTransformer' and args.pos_enc_dim is not None:
+    if args.pos_enc_dim is not None:
         dir_str = args.pos_enc_dim + "_"
     else:
         dir_str = ""
