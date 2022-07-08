@@ -5,6 +5,8 @@ import torch.nn.functional as F
 import dgl
 from dgl.nn.pytorch.glob import SumPooling, AvgPooling, MaxPooling
 
+from layers.pe_layer import PELayer
+
 """
     GIN: Graph Isomorphism Networks
     HOW POWERFUL ARE GRAPH NEURAL NETWORKS? (Keyulu Xu, Weihua Hu, Jure Leskovec and Stefanie Jegelka, ICLR 2019)
@@ -27,13 +29,7 @@ class GINNet(nn.Module):
         readout = net_params['readout']                      # this is graph_pooling_type
         batch_norm = net_params['batch_norm']
         residual = net_params['residual']
-        self.pos_enc = net_params['pos_enc']
-        if self.pos_enc:
-            pos_enc_dim = net_params['pos_enc_dim']
-            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
-        else:
-            in_dim = 1
-            self.embedding_h = nn.Linear(in_dim, hidden_dim)
+        self.pe_layer = PELayer(net_params)
         
         # List of MLPs
         self.ginlayers = torch.nn.ModuleList()
@@ -62,11 +58,7 @@ class GINNet(nn.Module):
 
         
     def forward(self, g, h, e, pos_enc=None):
-        
-        if self.pos_enc:
-            h = self.embedding_pos_enc(pos_enc) 
-        else:
-            h = self.embedding_h(h)
+        h = self.pe_layer(g, h, pos_enc)
         
         # list of hidden representation at each layer (including input)
         hidden_rep = [h]

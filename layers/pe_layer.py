@@ -1,0 +1,63 @@
+import torch
+import torch.nn as nn
+
+class PELayer(nn.Module):
+    def __init__(self, net_params):
+        super().__init__()
+        self.device = net_params['device']
+        self.pos_enc = net_params['pos_enc']
+        self.learned_pos_enc = net_params.get('learned_pos_enc', False)
+        self.rand_pos_enc = net_params.get('rand_pos_enc', False)
+        self.pos_enc_dim = net_params['pos_enc_dim']
+        self.wl_pos_enc = net_params.get('wl_pos_enc', False)
+
+        pos_enc_dim = net_params['pos_enc_dim']
+        hidden_dim = net_params['hidden_dim']
+        max_wl_role_index = 37 # this is maximum graph size in the dataset
+
+        if self.pos_enc:
+            print("Using Laplacian position encoding")
+            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+        elif self.rand_pos_enc:
+            print("Using random automata position encoding")
+            self.pos_initial = nn.Parameter(torch.Tensor(pos_enc_dim, 1), requires_grad=False)
+            self.pos_transition = nn.Parameter(torch.Tensor(pos_enc_dim, pos_enc_dim), requires_grad=False)
+            nn.init.normal_(self.pos_initial)
+            nn.init.orthogonal_(self.pos_transition)
+            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+        elif self.learned_pos_enc:
+            print("Using learned automata position encoding")
+            self.pos_initial = nn.Parameter(torch.Tensor(pos_enc_dim, 1))
+            self.pos_transition = nn.Parameter(torch.Tensor(pos_enc_dim, pos_enc_dim))
+            nn.init.normal_(self.pos_initial)
+            nn.init.orthogonal_(self.pos_transition)
+            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+        
+        self.embedding_h = nn.Linear(1, hidden_dim)
+
+        if self.wl_pos_enc:
+            self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
+
+    def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
+        if self.wl_pos_enc:
+            h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
+            h = h + h_wl_pos_enc
+            return h
+
+        if self.pos_enc:
+            h = self.embedding_pos_enc(pos_enc)
+            return h
+        elif self.learned_pos_enc or self.rand_pos_enc:
+            A = g.adjacency_matrix().to_dense().to(self.device)
+            z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
+            vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
+            vec_init = vec_init.transpose(1, 0).flatten()
+            kron_prod = torch.kron(A.t().contiguous(), self.pos_transition).to(self.device)
+            B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+            encs = torch.linalg.solve(B, vec_init)
+            stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1).transpose(1, 0)
+            h = self.embedding_pos_enc(stacked_encs)
+            return h
+        else:
+            h = self.embedding_h(h)
+            return h
