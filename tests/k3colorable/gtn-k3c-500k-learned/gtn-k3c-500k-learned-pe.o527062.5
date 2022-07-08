@@ -1,0 +1,41 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_K3Colorable_graph_classification.py:386: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_K3Colorable_graph_classification.py:386: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+cuda available with GPU: NVIDIA GeForce GTX 1080 Ti
+[I] Loading dataset K3Colorable...
+train, test, val sizes : 7000 1500 1500
+[I] Finished loading.
+[I] Data load time: 6.7974s
+MODEL DETAILS:
+
+MODEL/Total parameters: GraphTransformer 573902
+Using learned positional encoding
+Training Graphs:  7000
+Validation Graphs:  1500
+Test Graphs:  1500
+Number of Classes:  2
+  0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/1000 [00:02<?, ?it/s]
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_K3Colorable_graph_classification.py", line 27, in train_epoch_sparse
+    batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/view.py", line 67, in __getitem__
+    return self._graph._get_n_repr(self._ntid, self._nodes)[key]
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/frame.py", line 523, in __getitem__
+    return self._columns[name].data
+KeyError: 'pos_enc'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_K3Colorable_graph_classification.py", line 423, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_K3Colorable_graph_classification.py", line 418, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_K3Colorable_graph_classification.py", line 160, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_K3Colorable_graph_classification.py", line 33, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/K3Colorable_graph_classification/graph_transformer.py", line 83, in forward
+    B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+RuntimeError: CUDA out of memory. Tried to allocate 3.49 GiB (GPU 0; 10.92 GiB total capacity; 6.98 GiB already allocated; 3.45 GiB free; 6.98 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
