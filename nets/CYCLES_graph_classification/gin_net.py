@@ -60,7 +60,6 @@ class GINNet(nn.Module):
         
     def forward(self, g, h, e, pos_enc=None):
         h = self.pe_layer(g, h, pos_enc)
-
         # list of hidden representation at each layer (including input)
         hidden_rep = [h]
 

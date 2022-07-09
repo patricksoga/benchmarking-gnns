@@ -4,6 +4,8 @@ import torch.nn.functional as F
 
 import dgl
 
+from layers.pe_layer import PELayer
+
 """
     ResGatedGCN: Residual Gated Graph ConvNets
     An Experimental Study of Neural Networks for Variable Graphs (Xavier Bresson and Thomas Laurent, ICLR 2018)
@@ -28,11 +30,12 @@ class GatedGCNNet(nn.Module):
         self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
         self.pos_enc = net_params['pos_enc']
-        if self.pos_enc:
-            pos_enc_dim = net_params['pos_enc_dim']
-            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
+        # if self.pos_enc:
+        #     pos_enc_dim = net_params['pos_enc_dim']
+        #     self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
         
         self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
+        self.pe_layer = PELayer(net_params)
 
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
@@ -46,14 +49,15 @@ class GatedGCNNet(nn.Module):
         self.layers.append(GatedGCNLayer(hidden_dim, out_dim, dropout, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
         
-    def forward(self, g, h, e, h_pos_enc=None):
+    def forward(self, g, h, e, pos_enc=None):
 
         # input embedding
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
-        if self.pos_enc:
-            h_pos_enc = self.embedding_pos_enc(h_pos_enc.float()) 
-            h = h + h_pos_enc
+        # if self.pos_enc:
+        #     pos_enc = self.embedding_pos_enc(pos_enc.float()) 
+        #     h = h + pos_enc
+        h = self.pe_layer(g, h, pos_enc)
         if not self.edge_feat: # edge feature set to 1
             e = torch.ones(e.size(0),1).to(self.device)
         e = self.embedding_e(e)   

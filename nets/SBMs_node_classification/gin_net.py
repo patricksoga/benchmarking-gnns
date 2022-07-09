@@ -4,6 +4,7 @@ import torch.nn.functional as F
 
 import dgl
 from dgl.nn.pytorch.glob import SumPooling, AvgPooling, MaxPooling
+from layers.pe_layer import PELayer
 
 """
     GIN: Graph Isomorphism Networks
@@ -30,6 +31,7 @@ class GINNet(nn.Module):
         residual = net_params['residual']
         self.n_classes = n_classes
         self.device = net_params['device']
+        self.pe_layer = PELayer(net_params)
         
         # List of MLPs
         self.ginlayers = torch.nn.ModuleList()
@@ -50,9 +52,10 @@ class GINNet(nn.Module):
             self.linears_prediction.append(nn.Linear(hidden_dim, n_classes))
         
         
-    def forward(self, g, h, e):
+    def forward(self, g, h, e, pos_enc=None):
         
         h = self.embedding_h(h)
+        h = self.pe_layer(g, h, pos_enc)
         
         # list of hidden representation at each layer (including input)
         hidden_rep = [h]

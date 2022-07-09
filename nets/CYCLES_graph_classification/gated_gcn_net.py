@@ -4,6 +4,8 @@ import torch.nn.functional as F
 
 import dgl
 
+from layers.pe_layer import PELayer
+
 """
     ResGatedGCN: Residual Gated Graph ConvNets
     An Experimental Study of Neural Networks for Variable Graphs (Xavier Bresson and Thomas Laurent, ICLR 2018)
@@ -25,13 +27,7 @@ class GatedGCNNet(nn.Module):
         self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
         self.device = net_params['device']
-        self.pos_enc = net_params['pos_enc']
-        if self.pos_enc:
-            pos_enc_dim = net_params['pos_enc_dim']
-            self.embedding_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
-        else:
-            in_dim = 1
-            self.embedding_h = nn.Linear(in_dim, hidden_dim)
+        self.pe_layer = PELayer(net_params)
 
         self.embedding_e = nn.Linear(1, hidden_dim)
         
@@ -46,10 +42,7 @@ class GatedGCNNet(nn.Module):
     def forward(self, g, h, e, pos_enc=None):
 
         # input embedding
-        if self.pos_enc:
-            h = self.embedding_pos_enc(pos_enc) 
-        else:
-            h = self.embedding_h(h)
+        h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
         
         # edge feature set to 1

@@ -163,66 +163,71 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        with tqdm(range(params['epochs'])) as t:
-            for epoch in t:
+        # with tqdm(range(params['epochs'])) as t:
+        for epoch in range(params['epochs']):
 
-                t.set_description('Epoch %d' % epoch)
+            print(f'Epoch {epoch + 1}/{params["epochs"]}')
+            start = time.time()
 
-                start = time.time()
+            if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
+                epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+            else:   # for all other models common train function
+                epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                
+            epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
+            _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
+            
+            epoch_train_losses.append(epoch_train_loss)
+            epoch_val_losses.append(epoch_val_loss)
+            epoch_train_MAEs.append(epoch_train_mae)
+            epoch_val_MAEs.append(epoch_val_mae)
 
-                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
-                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-                else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+            writer.add_scalar('train/_mae', epoch_train_mae, epoch)
+            writer.add_scalar('val/_mae', epoch_val_mae, epoch)
+            writer.add_scalar('test/_mae', epoch_test_mae, epoch)
+            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+
                     
-                epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
-                _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
-                
-                epoch_train_losses.append(epoch_train_loss)
-                epoch_val_losses.append(epoch_val_loss)
-                epoch_train_MAEs.append(epoch_train_mae)
-                epoch_val_MAEs.append(epoch_val_mae)
+            t = time.time() - start
+            lr = optimizer.param_groups[0]['lr']
+            train_loss = epoch_train_loss
+            val_loss = epoch_val_loss
+            train_MAE = epoch_train_mae
+            val_MAE = epoch_val_mae
+            test_MAE = epoch_test_mae
 
-                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                writer.add_scalar('train/_mae', epoch_train_mae, epoch)
-                writer.add_scalar('val/_mae', epoch_val_mae, epoch)
-                writer.add_scalar('test/_mae', epoch_test_mae, epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-
-                        
-                t.set_postfix(time=time.time()-start, lr=optimizer.param_groups[0]['lr'],
-                              train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_MAE=epoch_train_mae, val_MAE=epoch_val_mae,
-                              test_MAE=epoch_test_mae)
+            print(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train MAE: {train_MAE:.4f},
+                        Val Loss: {val_loss:.4f}, Val Acc: {val_MAE:.4f}, Test MAE: {test_MAE:.4f}""")
 
 
-                per_epoch_time.append(time.time()-start)
+            per_epoch_time.append(time.time()-start)
 
-                # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+            # Saving checkpoint
+            ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
 
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
+            files = glob.glob(ckpt_dir + '/*.pkl')
+            for file in files:
+                epoch_nb = file.split('_')[-1]
+                epoch_nb = int(epoch_nb.split('.')[0])
+                if epoch_nb < epoch-1:
+                    os.remove(file)
 
-                scheduler.step(epoch_val_loss)
+            scheduler.step(epoch_val_loss)
 
-                if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                    print("\n!! LR EQUAL TO MIN LR SET.")
-                    break
-                
-                # Stop training after params['max_time'] hours
-                if time.time()-t0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+            if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                print("\n!! LR EQUAL TO MIN LR SET.")
+                break
+            
+            # Stop training after params['max_time'] hours
+            if time.time()-t0 > params['max_time']*3600:
+                print('-' * 89)
+                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                break
                 
     except KeyboardInterrupt:
         print('-' * 89)
@@ -298,6 +303,7 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--job_num', help="Please give a value for job number")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -396,7 +402,7 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
-        
+    net_params['dataset'] = DATASET_NAME
     
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type
@@ -414,10 +420,17 @@ def main():
         num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
         net_params['avg_node_num'] = int(np.ceil(np.mean(num_nodes)))
     
-    root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_file_name = out_dir + 'results/result_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_config_file = out_dir + 'configs/config_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    dir_str = ""
+    if args.job_num:
+        dir_str = args.job_num + "_"
+
+    if args.pos_enc_dim is not None:
+        dir_str += args.pos_enc_dim + "_"
+
+    root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    write_file_name = out_dir + 'results/result_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    write_config_file = out_dir + 'configs/config_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     dirs = root_log_dir, root_ckpt_dir, write_file_name, write_config_file
 
     if not os.path.exists(out_dir + 'results'):

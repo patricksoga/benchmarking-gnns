@@ -153,7 +153,9 @@ class CyclesDataset(torch.utils.data.Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
-        labels = torch.tensor(np.array(labels))
+        # print(labels)
+        # labels = torch.tensor(np.array(labels))
+        labels = torch.tensor(labels)
         batched_graph = dgl.batch(graphs)
         return batched_graph, labels      
 
