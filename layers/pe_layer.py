@@ -50,9 +50,29 @@ class PELayer(nn.Module):
             h = h + h_wl_pos_enc
             return h
 
+        # if self.pos_enc:
+        #     h += self.embedding_pos_enc(pos_enc)
+        #     return h
+        # elif self.learned_pos_enc or self.rand_pos_enc:
+        #     A = g.adjacency_matrix().to_dense().to(self.device)
+        #     z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
+        #     vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
+        #     vec_init = vec_init.transpose(1, 0).flatten()
+        #     kron_prod = torch.kron(A.t().contiguous(), self.pos_transition).to(self.device)
+        #     B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+        #     encs = torch.linalg.solve(B, vec_init)
+        #     stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1).transpose(1, 0)
+        #     h += self.embedding_pos_enc(stacked_encs)
+        #     return h
+        # else:
+        #     if self.dataset == "ZINC":
+        #         return h
+        #     if self.dataset == "CYCLES":
+        #         h = self.embedding_h(h)
+        #     return h
+
         if self.pos_enc:
-            h = self.embedding_pos_enc(pos_enc)
-            return h
+            pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc or self.rand_pos_enc:
             A = g.adjacency_matrix().to_dense().to(self.device)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
@@ -62,10 +82,13 @@ class PELayer(nn.Module):
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
             encs = torch.linalg.solve(B, vec_init)
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1).transpose(1, 0)
-            h = self.embedding_pos_enc(stacked_encs)
-            return h
+            pe = self.embedding_pos_enc(stacked_encs)
         else:
             if self.dataset == "ZINC":
-                return h
-            h = self.embedding_h(h)
-            return h
+                pe = h
+            elif self.dataset == "CYCLES":
+                pe = self.embedding_h(h)
+        
+        if self.dataset in ("CYCLES", "ZINC"):
+            return pe
+        return h + pe
