@@ -70,9 +70,10 @@ class PELayer(nn.Module):
         #     if self.dataset == "CYCLES":
         #         h = self.embedding_h(h)
         #     return h
-
+        pe = None
         if self.pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
+            print(pe.shape)
         elif self.learned_pos_enc or self.rand_pos_enc:
             A = g.adjacency_matrix().to_dense().to(self.device)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
@@ -81,8 +82,11 @@ class PELayer(nn.Module):
             kron_prod = torch.kron(A.t().contiguous(), self.pos_transition).to(self.device)
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
             encs = torch.linalg.solve(B, vec_init)
-            stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1).transpose(1, 0)
+            stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
+            print(stacked_encs.shape)
+            stacked_encs = stacked_encs.transpose(1, 0)
             pe = self.embedding_pos_enc(stacked_encs)
+            print('h shape: ', h.shape)
         else:
             if self.dataset == "ZINC":
                 pe = h
@@ -91,4 +95,4 @@ class PELayer(nn.Module):
         
         if self.dataset in ("CYCLES", "ZINC"):
             return pe
-        return h + pe
+        return h + pe if pe is not None else h
