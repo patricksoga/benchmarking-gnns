@@ -5,4 +5,4 @@
 
 conda activate gnn
 cd ../../../../
-python3 main_molecules_graph_regression.py --config configs/molecules_graph_regression_GatedGCN_ZINC_100k.json
+python3 main_molecules_graph_regression.py --config configs/molecules_graph_regression_GatedGCN_ZINC_100k.json --edge_feat
