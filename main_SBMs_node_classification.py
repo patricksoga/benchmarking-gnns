@@ -102,7 +102,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             print("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
     
-    if MODEL_NAME in ['GatedGCN']:
+    if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
         if net_params['pos_enc']:
             print("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
