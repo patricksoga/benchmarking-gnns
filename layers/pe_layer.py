@@ -32,13 +32,17 @@ class PELayer(nn.Module):
             nn.init.normal_(self.pos_initial)
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
-        
-        self.embedding_h = nn.Linear(1, hidden_dim)
+        in_dim = 1
+        if self.dataset == "SBM_PATTERN":
+            in_dim = net_params['in_dim']
+        self.embedding_h = nn.Linear(in_dim, hidden_dim)
 
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.use_pos_enc = self.pos_enc and self.wl_pos_enc and self.learned_pos_enc and self.rand_pos_enc
+        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc
+        if self.use_pos_enc:
+            print(f"Using {self.pos_enc_dim} dimension positional encoding")
 
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:

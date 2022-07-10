@@ -96,7 +96,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     if MODEL_NAME in ['GatedGCN']:
         if net_params['pos_enc']:
-            print("[!] Adding graph positional encoding",net_params['pos_enc_dim'])
+            print("[!] Adding Laplacian graph positional encoding",net_params['pos_enc_dim'])
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             print('Time PE:',time.time()-t0)
         
@@ -217,11 +217,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     print("\n!! LR EQUAL TO MIN LR SET.")
                     break
                     
-                # Stop training after params['max_time'] hours
-                if time.time()-t0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+                # # Stop training after params['max_time'] hours
+                # if time.time()-t0 > params['max_time']*3600:
+                #     print('-' * 89)
+                #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                #     break
     
     except KeyboardInterrupt:
         print('-' * 89)
@@ -301,7 +301,9 @@ def main():
     parser.add_argument('--layer_type', help="Please give a value for layer_type (for GAT and GatedGCN only)")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--job_num', help="Please give a value for job number")
     args = parser.parse_args()
+
     with open(args.config) as f:
         config = json.load(f)
         
@@ -402,7 +404,7 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
- 
+    net_params['dataset'] = DATASET_NAME
 
       
     
@@ -411,10 +413,17 @@ def main():
     net_params['in_dim_edge'] = dataset.graph.edata['feat'].shape[-1]
     net_params['n_classes'] = 1  # binary prediction
     
-    root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_file_name = out_dir + 'results/result_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_config_file = out_dir + 'configs/config_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    dir_str = ""
+    if args.job_num:
+        dir_str = args.job_num + "_"
+
+    if args.pos_enc_dim is not None:
+        dir_str += args.pos_enc_dim + "_"
+
+    root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    write_file_name = out_dir + 'results/result_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
+    write_config_file = out_dir + 'configs/config_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     dirs = root_log_dir, root_ckpt_dir, write_file_name, write_config_file
 
     if not os.path.exists(out_dir + 'results'):

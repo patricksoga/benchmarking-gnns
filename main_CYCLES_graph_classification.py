@@ -96,7 +96,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     DATASET_NAME = dataset.name
     
     if net_params['pos_enc']:
-        print("[!] Adding graph positional encoding.")
+        print("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
@@ -205,11 +205,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 print("\n!! LR EQUAL TO MIN LR SET.")
                 break
                 
-            # Stop training after params['max_time'] hours
-            if time.time()-t0 > params['max_time']*3600:
-                print('-' * 89)
-                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                break
+            # # Stop training after params['max_time'] hours
+            # if time.time()-t0 > params['max_time']*3600:
+            #     print('-' * 89)
+            #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                # break
     
     except KeyboardInterrupt:
         print('-' * 89)
@@ -235,8 +235,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
           .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
                   np.mean(np.array(test_acc))*100, np.mean(np.array(train_acc))*100, epoch, (time.time()-t0)/3600, np.mean(per_epoch_time)))
                
-
-
 
 
 def main():    
@@ -287,6 +285,7 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--job_num', help="Please give a value for job number")
     args = parser.parse_args()
+
     with open(args.config) as f:
         config = json.load(f)
         
@@ -384,7 +383,7 @@ def main():
     if args.num_train_data is not None:
         net_params['num_train_data'] = int(args.num_train_data)
     net_params['dataset'] = DATASET_NAME
-        
+
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
@@ -397,7 +396,7 @@ def main():
         net_params['avg_d'] = dict(lin=torch.mean(D),
                                    exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                    log=torch.mean(torch.log(D + 1))) 
-        
+
     dir_str = ""
     if args.job_num:
         dir_str = args.job_num + "_"

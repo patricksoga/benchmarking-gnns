@@ -105,7 +105,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
             dataset._add_self_loops()
 
     if net_params['pos_enc']:
-        print("[!] Adding graph positional encoding.")
+        print("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
         
     trainset, valset, testset = dataset.train, dataset.val, dataset.test

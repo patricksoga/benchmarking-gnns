@@ -93,7 +93,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if net_params.get('learned_pos_enc', False):
         print('Using learned positional encoding')
     elif net_params['pos_enc']:
-        print("[!] Adding graph positional encoding.")
+        print("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
@@ -278,6 +278,8 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--num_train_data', help="Please give a value for num_train_data")
     parser.add_argument('--pos_enc_dim', help="Please give a value for positional encoding dimention size")
+    parser.add_argument('--job_num', help="Please give a value for job number")
+
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -376,7 +378,8 @@ def main():
         net_params['num_train_data'] = int(args.num_train_data)
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
-        
+    net_params['dataset'] = DATASET_NAME
+
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
@@ -394,10 +397,12 @@ def main():
     out_dir = out_dir + '_samples_' + str(net_params['num_train_data']) + '/'
     # except KeyError:
     #     out_dir = out_dir + '_samples_' + DATASET_NAME + '/'
+    dir_str = ""
+    if args.job_num:
+        dir_str = args.job_num + "_"
+
     if args.pos_enc_dim is not None:
-        dir_str = args.pos_enc_dim + "_"
-    else:
-        dir_str = ""
+        dir_str += args.pos_enc_dim + "_"
 
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + dir_str + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')

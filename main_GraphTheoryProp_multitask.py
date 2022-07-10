@@ -92,7 +92,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     DATASET_NAME = dataset.name
     
     if net_params['pos_enc']:
-        print("[!] Adding graph positional encoding.")
+        print("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
     trainset, valset, testset = dataset.train, dataset.val, dataset.test

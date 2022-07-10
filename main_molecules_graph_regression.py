@@ -100,9 +100,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             print("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
             
-    if MODEL_NAME in ['GatedGCN']:
+    if MODEL_NAME in ['GatedGCN', 'GraphTransformer']:
         if net_params['pos_enc']:
-            print("[!] Adding graph positional encoding.")
+            print("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             print('Time PE:',time.time()-t0)
         
@@ -224,10 +224,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 break
             
             # Stop training after params['max_time'] hours
-            if time.time()-t0 > params['max_time']*3600:
-                print('-' * 89)
-                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                break
+            # if time.time()-t0 > params['max_time']*3600:
+            #     print('-' * 89)
+            #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+            #     break
                 
     except KeyboardInterrupt:
         print('-' * 89)
@@ -282,7 +282,7 @@ def main():
     parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
     parser.add_argument('--out_dim', help="Please give a value for out_dim")
     parser.add_argument('--residual', help="Please give a value for residual")
-    parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
+    parser.add_argument('--edge_feat', help="Please give a value for edge_feat", action="store_true")
     parser.add_argument('--readout', help="Please give a value for readout")
     parser.add_argument('--kernel', help="Please give a value for kernel")
     parser.add_argument('--n_heads', help="Please give a value for n_heads")

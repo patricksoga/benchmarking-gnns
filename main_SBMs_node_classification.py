@@ -104,7 +104,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     if MODEL_NAME in ['GatedGCN']:
         if net_params['pos_enc']:
-            print("[!] Adding graph positional encoding.")
+            print("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             print('Time PE:',time.time()-start0)
         
@@ -215,11 +215,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     print("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
                     break
                     
-                # Stop training after params['max_time'] hours
-                if time.time()-start0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+                # # Stop training after params['max_time'] hours
+                # if time.time()-start0 > params['max_time']*3600:
+                #     print('-' * 89)
+                #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                #     break
     
     except KeyboardInterrupt:
         print('-' * 89)
@@ -299,6 +299,7 @@ def main():
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--job_num', help="Please give a value for job number")
     args = parser.parse_args()
+
     with open(args.config) as f:
         config = json.load(f)
         
@@ -396,7 +397,8 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
-        
+    net_params['dataset'] = DATASET_NAME
+
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
@@ -434,27 +436,6 @@ def main():
     
     
 main()    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
