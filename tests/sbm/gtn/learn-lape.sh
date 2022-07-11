@@ -2,9 +2,9 @@
 #$ -N gtn-pattern-500k-learned-lape-pe
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-2:1
 
-encdims=(0 10 20 30 40 50)
+encdims=(0 20 30)
 
 conda activate gnn
 cd ../../../../
