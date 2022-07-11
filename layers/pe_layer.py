@@ -1,6 +1,22 @@
 import torch
 import torch.nn as nn
 
+def type_of_enc(net_params):
+    learned_pos_enc = net_params.get('learned_pos_enc', False)
+    pos_enc = net_params.get('pos_enc', False)
+    rand_pos_enc = net_params.get('rand_pos_enc', False)
+    learned_lape_enc = net_params.get('learned_lape_enc', False)
+    if learned_pos_enc:
+        return 'learned_pos_enc'
+    elif pos_enc:
+        return 'pos_enc'
+    elif rand_pos_enc:
+        return 'rand_pos_enc'
+    elif learned_lape_enc:
+        return 'learned_lape_enc'
+    else:
+        return 'none'
+
 class PELayer(nn.Module):
     def __init__(self, net_params):
         super().__init__()
@@ -11,24 +27,18 @@ class PELayer(nn.Module):
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
         self.dataset = net_params['dataset']
-
+        self.learned_lape_enc = net_params.get('learned_lape_enc', False)
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
+        print(type_of_enc(net_params))
         if self.pos_enc:
-            print("Using Laplacian position encoding")
+            # print("Using Laplacian position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
-        elif self.rand_pos_enc:
-            print("Using random automata position encoding")
-            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=False)
-            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=False)
-            nn.init.normal_(self.pos_initial)
-            nn.init.orthogonal_(self.pos_transition)
-            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
-        elif self.learned_pos_enc:
-            print("Using learned automata position encoding")
-            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1))
-            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim))
+        elif self.learned_pos_enc or self.rand_pos_enc or self.learned_lape_enc:
+            # print("Using automata position encoding")
+            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=self.rand_pos_enc)
+            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=self.rand_pos_enc)
             nn.init.normal_(self.pos_initial)
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -74,7 +84,7 @@ class PELayer(nn.Module):
         if self.pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
             print(pe.shape)
-        elif self.learned_pos_enc or self.rand_pos_enc:
+        elif self.learned_pos_enc or self.rand_pos_enc or self.learned_lape_enc:
             A = g.adjacency_matrix().to_dense().to(self.device)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
@@ -83,10 +93,11 @@ class PELayer(nn.Module):
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
             encs = torch.linalg.solve(B, vec_init)
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
-            print(stacked_encs.shape)
             stacked_encs = stacked_encs.transpose(1, 0)
+
+            if self.learned_lape_enc:
+                stacked_encs += pos_enc
             pe = self.embedding_pos_enc(stacked_encs)
-            print('h shape: ', h.shape)
         else:
             if self.dataset == "ZINC":
                 pe = h

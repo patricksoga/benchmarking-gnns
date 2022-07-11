@@ -103,11 +103,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             dataset._add_self_loops()
     
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
-        if net_params['pos_enc']:
+        if net_params['pos_enc'] or net_params['learned_lape_enc']:
             print("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             print('Time PE:',time.time()-start0)
-        
+
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
         
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
@@ -215,11 +215,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     print("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
                     break
                     
-                # # Stop training after params['max_time'] hours
-                # if time.time()-start0 > params['max_time']*3600:
-                #     print('-' * 89)
-                #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                #     break
+                # Stop training after params['max_time'] hours
+                if time.time()-start0 > params['max_time']*3600:
+                    print('-' * 89)
+                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                    break
     
     except KeyboardInterrupt:
         print('-' * 89)
