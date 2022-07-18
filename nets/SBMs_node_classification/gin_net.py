@@ -32,6 +32,7 @@ class GINNet(nn.Module):
         self.n_classes = n_classes
         self.device = net_params['device']
         self.pe_layer = PELayer(net_params)
+        self.in_feat_dropout = nn.Dropout(net_params['in_feat_dropout'])
         
         # List of MLPs
         self.ginlayers = torch.nn.ModuleList()
@@ -55,6 +56,7 @@ class GINNet(nn.Module):
     def forward(self, g, h, e, pos_enc=None):
         
         h = self.embedding_h(h)
+        h = self.in_feat_dropout(h)
         h = self.pe_layer(g, h, pos_enc)
         
         # list of hidden representation at each layer (including input)
