@@ -103,7 +103,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             dataset._add_self_loops()
     
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
-        if net_params['pos_enc'] or net_params['learned_lape_enc']:
+        if net_params['pos_enc']:
             print("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             print('Time PE:',time.time()-start0)
@@ -298,6 +298,9 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--job_num', help="Please give a value for job number")
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
+    parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
+    parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -397,7 +400,12 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+    if args.learned_pos_enc is not None:
+        net_params['learned_pos_enc'] = args.learned_pos_enc
+    if args.rand_pos_enc is not None:
+        net_params['rand_pos_enc'] = args.rand_pos_enc
     net_params['dataset'] = DATASET_NAME
+    net_params['matrix_type'] = args.matrix_type
 
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)

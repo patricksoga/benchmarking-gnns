@@ -19,6 +19,11 @@ def plot_similarity(g, EigVecs, EigVals):
     # EigVals, EigVecs = np.linalg.eig(L.toarray())
     # idx = EigVals.argsort() # increasing order
     # EigVals, EigVecs = EigVals[idx], np.real(EigVecs[:,idx])
+    plt.figure("Dimension vs position")
+    ax = sb.heatmap(EigVecs, cmap='plasma')
+    ax.set_xlabel('Dimension')
+    ax.set_ylabel('Position')
+    ax.invert_yaxis()
 
     similarities = np.transpose(EigVecs) @ EigVecs
 
