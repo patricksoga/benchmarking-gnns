@@ -304,6 +304,9 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--job_num', help="Please give a value for job number")
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
+    parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
+    parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -402,7 +405,14 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+    if args.learned_pos_enc is not None:
+        net_params['learned_pos_enc'] = args.learned_pos_enc
+    if args.rand_pos_enc is not None:
+        net_params['rand_pos_enc'] = args.rand_pos_enc
+    if args.pos_enc is not None:
+        net_params['pos_enc'] = args.pos_enc
     net_params['dataset'] = DATASET_NAME
+    net_params['matrix_type'] = args.matrix_type
     
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type

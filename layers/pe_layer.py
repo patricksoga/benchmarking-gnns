@@ -1,19 +1,20 @@
 import torch
 import torch.nn as nn
+import scipy as sp
+import numpy as np
+import networkx as nx
+import dgl
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
     pos_enc = net_params.get('pos_enc', False)
     rand_pos_enc = net_params.get('rand_pos_enc', False)
-    learned_lape_enc = net_params.get('learned_lape_enc', False)
     if learned_pos_enc:
         return 'learned_pos_enc'
     elif pos_enc:
         return 'pos_enc'
     elif rand_pos_enc:
         return 'rand_pos_enc'
-    elif learned_lape_enc:
-        return 'learned_lape_enc'
     else:
         return 'none'
 
@@ -26,8 +27,9 @@ class PELayer(nn.Module):
         self.rand_pos_enc = net_params.get('rand_pos_enc', False)
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
-        self.dataset = net_params['dataset']
-        self.learned_lape_enc = net_params.get('learned_lape_enc', False)
+        self.dataset = net_params.get('dataset', 'CYCLES')
+
+        self.matrix_type = net_params['matrix_type']
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
@@ -35,10 +37,10 @@ class PELayer(nn.Module):
         if self.pos_enc:
             # print("Using Laplacian position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
-        elif self.learned_pos_enc or self.rand_pos_enc or self.learned_lape_enc:
+        elif self.learned_pos_enc or self.rand_pos_enc:
             # print("Using automata position encoding")
-            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=self.rand_pos_enc)
-            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=self.rand_pos_enc)
+            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
+            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
             nn.init.normal_(self.pos_initial)
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -52,7 +54,9 @@ class PELayer(nn.Module):
 
         self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc
         if self.use_pos_enc:
-            print(f"Using {self.pos_enc_dim} dimension positional encoding")
+            print(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
+        
+        print(f"Using matrix: {self.matrix_type}")
 
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
@@ -60,44 +64,40 @@ class PELayer(nn.Module):
             h = h + h_wl_pos_enc
             return h
 
-        # if self.pos_enc:
-        #     h += self.embedding_pos_enc(pos_enc)
-        #     return h
-        # elif self.learned_pos_enc or self.rand_pos_enc:
-        #     A = g.adjacency_matrix().to_dense().to(self.device)
-        #     z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
-        #     vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
-        #     vec_init = vec_init.transpose(1, 0).flatten()
-        #     kron_prod = torch.kron(A.t().contiguous(), self.pos_transition).to(self.device)
-        #     B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
-        #     encs = torch.linalg.solve(B, vec_init)
-        #     stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1).transpose(1, 0)
-        #     h += self.embedding_pos_enc(stacked_encs)
-        #     return h
-        # else:
-        #     if self.dataset == "ZINC":
-        #         return h
-        #     if self.dataset == "CYCLES":
-        #         h = self.embedding_h(h)
-        #     return h
         pe = None
         if self.pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
-            print(pe.shape)
-        elif self.learned_pos_enc or self.rand_pos_enc or self.learned_lape_enc:
-            A = g.adjacency_matrix().to_dense().to(self.device)
+        elif self.learned_pos_enc:
+            # mat = g.adjacency_matrix().to_dense().to(self.device)
+            mat = self.type_of_matrix(g, self.matrix_type)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
             vec_init = vec_init.transpose(1, 0).flatten()
-            kron_prod = torch.kron(A.t().contiguous(), self.pos_transition).to(self.device)
+            kron_prod = torch.kron(mat.t().contiguous(), self.pos_transition).to(self.device)
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+
             encs = torch.linalg.solve(B, vec_init)
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
             stacked_encs = stacked_encs.transpose(1, 0)
-
-            if self.learned_lape_enc:
-                stacked_encs += pos_enc
             pe = self.embedding_pos_enc(stacked_encs)
+        elif self.rand_pos_enc:
+            z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(torch.device('cpu'))
+            vec_init = torch.cat((self.pos_initial.to(torch.device('cpu')), z), dim=1).to(torch.device('cpu'))
+            # mat = g.adjacency_matrix().to_dense().to(torch.device('cpu'))
+            mat = self.type_of_matrix(g, self.matrix_type)
+            transition_inv = torch.inverse(self.pos_transition).to(torch.device('cpu'))
+
+            # AX + XB = Q
+            #  X = alpha
+            #  A = mu inverse
+            #  B = -A
+            #  Q = mu inverse + pi
+            transition_inv = transition_inv.numpy()
+            mat = mat.numpy()
+            vec_init = vec_init.numpy()
+            pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+            pe = torch.from_numpy(pe.T).to(self.device)
+            pe = self.embedding_pos_enc(pe)
         else:
             if self.dataset == "ZINC":
                 pe = h
@@ -107,3 +107,36 @@ class PELayer(nn.Module):
         if self.dataset in ("CYCLES", "ZINC"):
             return pe
         return h + pe if pe is not None else h
+
+    def get_normalized_laplacian(self, g):
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.sparse.eye(g.number_of_nodes()) - N * A * N
+        return L
+
+    def type_of_matrix(self, g, matrix_type):
+        """
+        Takes a DGL graph and returns the type of matrix to use for the layer.
+            'A': adjacency matrix (default),
+            'L': Laplacian matrix,
+            'NL': normalized Laplacian matrix,
+            'E': eigenvector matrix,
+        """
+        matrix = g.adjacency_matrix().to_dense().to(self.device)
+        if matrix_type == 'A':
+            matrix = g.adjacency_matrix().to_dense().to(self.device)
+        elif matrix_type == 'NL':
+            laplacian = self.get_normalized_laplacian(g)
+            matrix = torch.from_numpy(laplacian.A).float().to(self.device) 
+        elif matrix_type == "L":
+            graph = g.cpu().to_networkx().to_undirected()
+            matrix = torch.from_numpy(nx.laplacian_matrix(graph).A).to(self.device)
+        elif matrix_type == "E":
+            laplacian = self.get_normalized_laplacian(g)
+            EigVal, EigVec = np.linalg.eig(laplacian.toarray())
+            idx = EigVal.argsort() # increasing order
+            EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+            matrix = torch.from_numpy(EigVec).float().to(self.device)
+
+        return matrix
+
