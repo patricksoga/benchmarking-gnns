@@ -1,0 +1,53 @@
+cuda available with GPU: NVIDIA GeForce GTX 1080 Ti
+[I] Loading dataset SBM_PATTERN...
+train, test, val sizes : 10000 2000 2000
+[I] Finished loading.
+[I] Data load time: 31.1059s
+none
+Using matrix: E
+MODEL DETAILS:
+
+MODEL/Total parameters: GraphTransformer 550102
+Training Graphs:  10000
+Validation Graphs:  2000
+Test Graphs:  2000
+Number of Classes:  2
+none
+Using matrix: E
+Epoch 1/1000
+0it [00:00, ?it/s]0it [00:04, ?it/s]
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 30, in train_epoch_sparse
+    batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/view.py", line 67, in __getitem__
+    return self._graph._get_n_repr(self._ntid, self._nodes)[key]
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/frame.py", line 523, in __getitem__
+    return self._columns[name].data
+KeyError: 'pos_enc'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 453, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 445, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 175, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 36, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/graph_transformer.py", line 59, in forward
+    h, e = conv(g, h, e)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_edge_layer.py", line 167, in forward
+    h_attn_out, e_attn_out = self.attention(g, h, e)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_edge_layer.py", line 98, in forward
+    Q_h = self.Q(h)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+TypeError: linear(): argument 'input' (position 1) must be Tensor, not NoneType
