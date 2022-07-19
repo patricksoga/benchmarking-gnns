@@ -58,6 +58,7 @@ class PELayer(nn.Module):
         
         print(f"Using matrix: {self.matrix_type}")
 
+
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
             h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
@@ -93,7 +94,8 @@ class PELayer(nn.Module):
             #  B = -A
             #  Q = mu inverse + pi
             transition_inv = transition_inv.numpy()
-            mat = mat.numpy()
+            # mat = mat.numpy()
+            mat = mat.cpu().numpy()
             vec_init = vec_init.numpy()
             pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
             pe = torch.from_numpy(pe.T).to(self.device)
@@ -106,7 +108,8 @@ class PELayer(nn.Module):
         
         if self.dataset in ("CYCLES", "ZINC"):
             return pe
-        return h + pe if pe is not None else h
+        # return h + pe if pe is not None else h
+        return pe
 
     def get_normalized_laplacian(self, g):
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)

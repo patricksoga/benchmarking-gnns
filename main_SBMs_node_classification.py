@@ -162,64 +162,70 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        with tqdm(range(params['epochs'])) as t:
-            for epoch in t:
+        # with tqdm(range(params['epochs'])) as t:
+        for epoch in range(params['epochs']):
 
-                t.set_description('Epoch %d' % epoch)
+            print(f'Epoch {epoch + 1}/{params["epochs"]}')
 
-                start = time.time()
+            start = time.time()
 
-                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-                else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                    
-                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
-                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)        
+            if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+            else:   # for all other models common train function
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
                 
-                epoch_train_losses.append(epoch_train_loss)
-                epoch_val_losses.append(epoch_val_loss)
-                epoch_train_accs.append(epoch_train_acc)
-                epoch_val_accs.append(epoch_val_acc)
+            epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
+            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)        
+            
+            epoch_train_losses.append(epoch_train_loss)
+            epoch_val_losses.append(epoch_val_loss)
+            epoch_train_accs.append(epoch_train_acc)
+            epoch_val_accs.append(epoch_val_acc)
 
-                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                writer.add_scalar('train/_acc', epoch_train_acc, epoch)
-                writer.add_scalar('val/_acc', epoch_val_acc, epoch)
-                writer.add_scalar('test/_acc', epoch_test_acc, epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+            writer.add_scalar('train/_acc', epoch_train_acc, epoch)
+            writer.add_scalar('val/_acc', epoch_val_acc, epoch)
+            writer.add_scalar('test/_acc', epoch_test_acc, epoch)
+            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
-                t.set_postfix(time=time.time()-start, lr=optimizer.param_groups[0]['lr'],
-                              train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_acc=epoch_train_acc, val_acc=epoch_val_acc,
-                              test_acc=epoch_test_acc)
+            t = time.time() - start
+            lr = optimizer.param_groups[0]['lr']
+            train_loss = epoch_train_loss
+            val_loss = epoch_val_loss
+            train_acc = epoch_train_acc
+            val_acc = epoch_val_acc
+            test_acc = epoch_test_acc
 
-                per_epoch_time.append(time.time()-start)
+            print(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+                        Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
 
-                # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+            per_epoch_time.append(time.time()-start)
 
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
+            # Saving checkpoint
+            ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
 
-                scheduler.step(epoch_val_loss)
+            files = glob.glob(ckpt_dir + '/*.pkl')
+            for file in files:
+                epoch_nb = file.split('_')[-1]
+                epoch_nb = int(epoch_nb.split('.')[0])
+                if epoch_nb < epoch-1:
+                    os.remove(file)
 
-                if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                    print("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
-                    break
-                    
-                # Stop training after params['max_time'] hours
-                if time.time()-start0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+            scheduler.step(epoch_val_loss)
+
+            if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                print("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
+                break
+                
+            # Stop training after params['max_time'] hours
+            if time.time()-start0 > params['max_time']*3600:
+                print('-' * 89)
+                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                break
     
     except KeyboardInterrupt:
         print('-' * 89)
@@ -298,8 +304,8 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--job_num', help="Please give a value for job number")
-    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
-    parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool, default=False)
+    parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool, default=False)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     args = parser.parse_args()
 
@@ -406,6 +412,7 @@ def main():
         net_params['rand_pos_enc'] = args.rand_pos_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
+    # net_params['learned_pos_enc'] = False
 
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
