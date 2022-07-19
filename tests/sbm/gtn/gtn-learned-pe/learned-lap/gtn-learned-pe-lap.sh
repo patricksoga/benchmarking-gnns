@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-2:1
 
-encdims=(20 30)
+encdims=(0 20 30)
 
 conda activate gnn
 cd ../../../../../
