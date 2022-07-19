@@ -204,11 +204,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     break
                     
                 # Stop training after params['max_time'] hours
-                # if time.time()-t0 > params['max_time']*3600:
-                #     print('-' * 89)
-                #     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                #     break
-    
+                if time.time()-t0 > params['max_time']*3600:
+                    print('-' * 89)
+                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                    break
+
     except KeyboardInterrupt:
         print('-' * 89)
         print('Exiting from training early because of KeyboardInterrupt')
