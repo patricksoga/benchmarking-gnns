@@ -146,6 +146,6 @@ class PELayer(nn.Module):
             EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
             matrix = torch.from_numpy(EigVec).float().to(self.device)
 
-        matrix = np.linalg.matrix_power(matrix, pow)
+        matrix = torch.matrix_power(matrix, pow)
         return matrix
 
