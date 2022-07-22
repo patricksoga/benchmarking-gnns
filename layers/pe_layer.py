@@ -5,6 +5,8 @@ import numpy as np
 import networkx as nx
 import dgl
 
+from layers.graph_transformer_edge_layer import MultiHeadAttentionLayer
+
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
     pos_enc = net_params.get('pos_enc', False)
@@ -28,6 +30,7 @@ class PELayer(nn.Module):
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
         self.dataset = net_params.get('dataset', 'CYCLES')
+        self.pow_of_mat = net_params.get('pow_of_mat', 1)
 
         self.matrix_type = net_params['matrix_type']
         hidden_dim = net_params['hidden_dim']
@@ -70,11 +73,13 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             # mat = g.adjacency_matrix().to_dense().to(self.device)
-            mat = self.type_of_matrix(g, self.matrix_type)
+            mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
             vec_init = vec_init.transpose(1, 0).flatten()
-            kron_prod = torch.kron(mat.t().contiguous(), self.pos_transition).to(self.device)
+            kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
+            # dim0, dim1 = mat.shape[0]*self.pos_enc_dim, mat.shape[1]*self.pos_enc_dim
+            # kron_prod = torch.einsum('ik,jl', mat.t(), self.pos_transition).reshape(dim0, dim1)
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
 
             encs = torch.linalg.solve(B, vec_init)
@@ -85,7 +90,7 @@ class PELayer(nn.Module):
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(torch.device('cpu'))
             vec_init = torch.cat((self.pos_initial.to(torch.device('cpu')), z), dim=1).to(torch.device('cpu'))
             # mat = g.adjacency_matrix().to_dense().to(torch.device('cpu'))
-            mat = self.type_of_matrix(g, self.matrix_type)
+            mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
             transition_inv = torch.inverse(self.pos_transition).to(torch.device('cpu'))
 
             # AX + XB = Q
@@ -117,7 +122,7 @@ class PELayer(nn.Module):
         L = sp.sparse.eye(g.number_of_nodes()) - N * A * N
         return L
 
-    def type_of_matrix(self, g, matrix_type):
+    def type_of_matrix(self, g, matrix_type, pow):
         """
         Takes a DGL graph and returns the type of matrix to use for the layer.
             'A': adjacency matrix (default),
@@ -141,5 +146,6 @@ class PELayer(nn.Module):
             EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
             matrix = torch.from_numpy(EigVec).float().to(self.device)
 
+        matrix = np.linalg.matrix_power(matrix, pow)
         return matrix
 

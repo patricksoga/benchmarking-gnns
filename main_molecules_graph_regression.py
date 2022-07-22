@@ -307,6 +307,7 @@ def main():
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
+    parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -413,6 +414,7 @@ def main():
         net_params['pos_enc'] = args.pos_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
+    net_params['pow_of_mat'] = args.pow_of_mat
     
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type
