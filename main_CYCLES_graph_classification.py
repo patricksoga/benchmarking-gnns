@@ -27,6 +27,10 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
+from utils.logging import get_logger
+
+logger = get_logger()
+
 class DotDict(dict):
     def __init__(self, **kwds):
         self.update(kwds)
@@ -54,10 +58,10 @@ def gpu_setup(use_gpu, gpu_id):
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)  
 
     if torch.cuda.is_available() and use_gpu:
-        print('cuda available with GPU:',torch.cuda.get_device_name(0))
+        logger.info(f'cuda available with GPU: {torch.cuda.get_device_name(0)}')
         device = torch.device("cuda")
     else:
-        print('cuda not available')
+        logger.info('cuda not available')
         device = torch.device("cpu")
     return device
 
@@ -76,12 +80,12 @@ def gpu_setup(use_gpu, gpu_id):
 def view_model_param(MODEL_NAME, net_params):
     model = gnn_model(MODEL_NAME, net_params)
     total_param = 0
-    print("MODEL DETAILS:\n")
-    #print(model)
+    logger.info("MODEL DETAILS:\n")
+    #logger.info(model)
     for param in model.parameters():
-        # print(param.data.size())
+        # logger.info(param.data.size())
         total_param += np.prod(list(param.data.size()))
-    print('MODEL/Total parameters:', MODEL_NAME, total_param)
+    logger.info(f'MODEL/Total parameters:{MODEL_NAME}, {total_param}')
     return total_param
 
 
@@ -96,7 +100,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     DATASET_NAME = dataset.name
     
     if net_params['pos_enc']:
-        print("[!] Adding Laplacian graph positional encoding.")
+        logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
@@ -123,10 +127,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if device.type == 'cuda':
         torch.cuda.manual_seed(params['seed'])
     
-    print("Training Graphs: ", len(trainset))
-    print("Validation Graphs: ", len(valset))
-    print("Test Graphs: ", len(testset))
-    print("Number of Classes: ", net_params['n_classes'])
+    logger.info(f"Training Graphs: {len(trainset)}", )
+    logger.info(f"Validation Graphs: {len(valset)}", )
+    logger.info(f"Test Graphs: {len(testset)}", )
+    logger.info(f"Number of Classes: {net_params['n_classes']}", )
 
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
@@ -153,7 +157,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         # with tqdm(range(params['epochs'])) as t:
         for epoch in range(params['epochs']):
 
-            print(f'Epoch {epoch + 1}/{params["epochs"]}')
+            logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
             start = time.time()
 
             epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
@@ -181,7 +185,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             val_acc = epoch_val_acc
             test_acc = epoch_test_acc
 
-            print(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+            logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
                         Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
 
             per_epoch_time.append(time.time()-start)
@@ -202,26 +206,26 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             scheduler.step(epoch_val_loss)
 
             if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                print("\n!! LR EQUAL TO MIN LR SET.")
+                logger.info("\n!! LR EQUAL TO MIN LR SET.")
                 break
                 
             # Stop training after params['max_time'] hours
             if time.time()-t0 > params['max_time']*3600:
-                print('-' * 89)
-                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                logger.info('-' * 89)
+                logger.info("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                 break
     
     except KeyboardInterrupt:
-        print('-' * 89)
-        print('Exiting from training early because of KeyboardInterrupt')
+        logger.info('-' * 89)
+        logger.info('Exiting from training early because of KeyboardInterrupt')
     
     _, test_acc = evaluate_network(model, device, test_loader, epoch)
     _, train_acc = evaluate_network(model, device, train_loader, epoch)
-    print("Test Accuracy: {:.4f}".format(test_acc))
-    print("Train Accuracy: {:.4f}".format(train_acc))
-    print("Convergence Time (Epochs): {:.4f}".format(epoch))
-    print("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
-    print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+    logger.info("Test Accuracy: {:.4f}".format(test_acc))
+    logger.info("Train Accuracy: {:.4f}".format(train_acc))
+    logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
+    logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
+    logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
     writer.close()
 
@@ -289,11 +293,15 @@ def main():
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc", type=bool)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
+    parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
     args = parser.parse_args()
+
+    global logger
+    logger = get_logger(args.log_file)
 
     with open(args.config) as f:
         config = json.load(f)
-        
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
@@ -396,6 +404,8 @@ def main():
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
+    net_params['log_file'] = args.log_file
+
 
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)

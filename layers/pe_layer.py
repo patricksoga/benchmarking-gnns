@@ -6,6 +6,7 @@ import networkx as nx
 import dgl
 
 from layers.graph_transformer_edge_layer import MultiHeadAttentionLayer
+from utils.logging import get_logger
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
@@ -33,15 +34,16 @@ class PELayer(nn.Module):
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
 
         self.matrix_type = net_params['matrix_type']
+        self.logger = get_logger(net_params['log_file'])
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
-        print(type_of_enc(net_params))
+        self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
-            # print("Using Laplacian position encoding")
+            # logger.info("Using Laplacian position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
-            # print("Using automata position encoding")
+            # logger.info("Using automata position encoding")
             self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
             self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
             nn.init.normal_(self.pos_initial)
@@ -57,9 +59,10 @@ class PELayer(nn.Module):
 
         self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc
         if self.use_pos_enc:
-            print(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
+            self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
         
-        print(f"Using matrix: {self.matrix_type}")
+        self.logger.info(f"Using matrix: {self.matrix_type}")
+        self.logger.info(f"Matrix power: {self.pow_of_mat}")
 
 
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
