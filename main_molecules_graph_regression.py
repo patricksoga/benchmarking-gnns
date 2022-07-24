@@ -6,30 +6,23 @@
 """
     IMPORTING LIBS
 """
-import dgl
-
 import numpy as np
 import os
-import socket
 import time
 import random
 import glob
 import argparse, json
-import pickle
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
-from tqdm import tqdm
 
 from utils.logging import get_logger
 
-logger = get_logger()
+logger = None
 
 class DotDict(dict):
     def __init__(self, **kwds):
@@ -317,7 +310,11 @@ def main():
 
     with open(args.config) as f:
         config = json.load(f)
-        
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+    global logger
+    logger = get_logger(net_params['log_file'])
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
@@ -360,7 +357,7 @@ def main():
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
     # network parameters
-    net_params = config['net_params']
+    # net_params = config['net_params']
     net_params['device'] = device
     net_params['gpu_id'] = config['gpu']['id']
     net_params['batch_size'] = params['batch_size']
@@ -421,11 +418,6 @@ def main():
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
-    net_params['log_file'] = args.log_file
-
-    global logger
-    logger = get_logger(args.log_file)
-
     
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type
