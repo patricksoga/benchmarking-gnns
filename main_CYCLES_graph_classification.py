@@ -296,8 +296,6 @@ def main():
     parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
     args = parser.parse_args()
 
-    global logger
-    logger = get_logger(args.log_file)
 
     with open(args.config) as f:
         config = json.load(f)
@@ -405,6 +403,9 @@ def main():
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
     net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
 
 
     # Superpixels

@@ -14,6 +14,7 @@ from layers.mlp_readout_layer import MLPReadout
 class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
+        in_dim = net_params['in_dim']
         hidden_dim = net_params['hidden_dim']
         n_classes = net_params['n_classes']
         num_heads = net_params['n_heads']
@@ -34,6 +35,7 @@ class GraphTransformerNet(nn.Module):
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
         self.embedding_e = nn.Linear(1, hidden_dim)
+        self.embedding_h = nn.Linear(in_dim, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
@@ -44,6 +46,8 @@ class GraphTransformerNet(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, n_classes)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
+        h = self.embedding_h(h)
+        h = self.in_feat_dropout(h)
         h = self.pe_layer(g, h, pos_enc)
         # if not self.edge_feat: # edge feature set to 1
         e = torch.ones(e.size(0),1).to(self.device)

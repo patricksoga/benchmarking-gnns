@@ -49,6 +49,13 @@ class PELayer(nn.Module):
             nn.init.normal_(self.pos_initial)
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
+
+            # self.mat_pows = nn.Parameter(torch.Tensor(size=(1,)))
+            # nn.init.constant_(self.mat_pows, 1)
+            self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
+            for mat_pow in self.mat_pows:
+                nn.init.constant_(mat_pow, 1)
+
         in_dim = 1
         if self.dataset == "SBM_PATTERN":
             in_dim = net_params['in_dim']
@@ -76,7 +83,8 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             # mat = g.adjacency_matrix().to_dense().to(self.device)
-            mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
+            # mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
+            mat = self.type_of_matrix(g, self.matrix_type, self.mat_pows)
             z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
             vec_init = vec_init.transpose(1, 0).flatten()
@@ -111,8 +119,8 @@ class PELayer(nn.Module):
         else:
             if self.dataset == "ZINC":
                 pe = h
-            elif self.dataset == "CYCLES":
-                pe = self.embedding_h(h)
+            # elif self.dataset == "CYCLES":
+            #     pe = self.embedding_h(h)
         
         if self.dataset in ("CYCLES", "ZINC"):
             return pe
@@ -149,6 +157,15 @@ class PELayer(nn.Module):
             EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
             matrix = torch.from_numpy(EigVec).float().to(self.device)
 
-        matrix = torch.matrix_power(matrix, pow)
+        
+        # learnable adj matrix "masks"
+        # matrix = torch.matrix_power(matrix, pow)
+        matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]
+
+        # multiply each matrix by the corresponding mat_pow
+        for i in range(len(matrices)):
+            matrices[i] = matrices[i] * self.mat_pows[i]
+        matrix = torch.sum(torch.stack(matrices, dim=0), dim=0)
+
         return matrix
 
