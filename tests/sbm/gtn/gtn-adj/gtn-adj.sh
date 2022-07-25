@@ -9,4 +9,4 @@ fsync -d 10 $fname &
 
 conda activate gnn
 cd ../../../../
-python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_PATTERN_PE_500k.json --batch_size 2 --job_num ${SGE_TASK_ID} --log_file $fname --batch_size 2 --pos_enc_dim 20 --adj_enc
+python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_PATTERN_PE_500k.json --batch_size 4 --job_num ${SGE_TASK_ID} --log_file $fname --pos_enc_dim 20 --adj_enc --in_feat_dropout 0.5
