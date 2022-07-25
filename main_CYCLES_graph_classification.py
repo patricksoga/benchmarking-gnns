@@ -288,7 +288,7 @@ def main():
     parser.add_argument('--job_num', help="Please give a value for job number")
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", action='store_true')
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
-    parser.add_argument('--pos_enc', help="Please give a value for pos_enc", type=bool)
+    parser.add_argument('--pos_enc', help="Please give a value for pos_enc", action='store_true')
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
     parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")

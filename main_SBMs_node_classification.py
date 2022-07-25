@@ -302,7 +302,7 @@ def main():
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
-    parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--pos_enc', help="Please give a value for pos_enc", action='store_true')
     parser.add_argument('--job_num', help="Please give a value for job number")
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", action='store_true')
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
