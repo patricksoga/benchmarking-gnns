@@ -11,11 +11,14 @@ from utils.logging import get_logger
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
     pos_enc = net_params.get('pos_enc', False)
+    adj_enc = net_params.get('adj_enc', False)
     rand_pos_enc = net_params.get('rand_pos_enc', False)
     if learned_pos_enc:
         return 'learned_pos_enc'
     elif pos_enc:
         return 'pos_enc'
+    elif adj_enc:
+        return 'adj_enc'
     elif rand_pos_enc:
         return 'rand_pos_enc'
     else:
@@ -28,6 +31,7 @@ class PELayer(nn.Module):
         self.pos_enc = net_params.get('pos_enc', False)
         self.learned_pos_enc = net_params.get('learned_pos_enc', False)
         self.rand_pos_enc = net_params.get('rand_pos_enc', False)
+        self.adj_enc = net_params['adj_enc']
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
         self.dataset = net_params.get('dataset', 'CYCLES')
@@ -41,6 +45,9 @@ class PELayer(nn.Module):
         self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
             # logger.info("Using Laplacian position encoding")
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
+        if self.adj_enc:
+            # logger.info("Using adjacency matrix position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
             # logger.info("Using automata position encoding")
@@ -64,7 +71,7 @@ class PELayer(nn.Module):
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc
+        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
         
@@ -79,7 +86,8 @@ class PELayer(nn.Module):
             return h
 
         pe = None
-        if self.pos_enc:
+
+        if self.pos_enc or self.adj_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             # mat = g.adjacency_matrix().to_dense().to(self.device)
@@ -157,7 +165,6 @@ class PELayer(nn.Module):
             EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
             matrix = torch.from_numpy(EigVec).float().to(self.device)
 
-        
         # learnable adj matrix "masks"
         # matrix = torch.matrix_power(matrix, pow)
         matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]

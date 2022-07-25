@@ -119,7 +119,16 @@ def positional_encoding(g, pos_enc_dim):
     return g
         
         
-        
+def adj_encoding(g, pos_enc_dim):
+    """
+        Graph positional encoding w/ adjacency matrix eigenvectors
+    """
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    EigVal, EigVec = np.linalg.eig(A.toarray())
+    idx = EigVal.argsort() # increasing order
+    EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+    g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
+    return g
 
 class CyclesDataset(torch.utils.data.Dataset):
 
@@ -166,6 +175,11 @@ class CyclesDataset(torch.utils.data.Dataset):
         self.val.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
         self.test.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
 
+    def _add_adj_encodings(self, pos_enc_dim):
+        # Graph positional encoding w/ adjacency matrix eigenvectors
+        self.train.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.train.graph_lists]
+        self.val.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
+        self.test.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
 
 
 class DGLFormDataset(torch.utils.data.Dataset):

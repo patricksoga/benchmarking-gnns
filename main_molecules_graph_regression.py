@@ -306,6 +306,7 @@ def main():
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
     parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
+    parser.add_argument('--adj_enc', help="Please give a value for adj_enc", action='store_true')
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -313,8 +314,10 @@ def main():
 
     net_params = config['net_params']
     net_params['log_file'] = args.log_file
+
     global logger
     logger = get_logger(net_params['log_file'])
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
@@ -415,6 +418,8 @@ def main():
         net_params['rand_pos_enc'] = args.rand_pos_enc
     if args.pos_enc is not None:
         net_params['pos_enc'] = args.pos_enc
+
+    net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat

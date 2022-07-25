@@ -6,26 +6,22 @@
 """
     IMPORTING LIBS
 """
-import dgl
-
 import numpy as np
 import os
-import socket
 import time
 import random
 import glob
 import argparse, json
-import pickle
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
-from tqdm import tqdm
+from utils.logging import get_logger
+
+logger = None
 
 class DotDict(dict):
     def __init__(self, **kwds):
@@ -55,10 +51,10 @@ def gpu_setup(use_gpu, gpu_id):
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)  
 
     if torch.cuda.is_available() and use_gpu:
-        print('cuda available with GPU:',torch.cuda.get_device_name(0))
+        logger.info(f'cuda available with GPU: {torch.cuda.get_device_name(0)}')
         device = torch.device("cuda")
     else:
-        print('cuda not available')
+        logger.info('cuda not available')
         device = torch.device("cpu")
     return device
 
@@ -77,12 +73,12 @@ def gpu_setup(use_gpu, gpu_id):
 def view_model_param(MODEL_NAME, net_params):
     model = gnn_model(MODEL_NAME, net_params)
     total_param = 0
-    print("MODEL DETAILS:\n")
-    #print(model)
+    logger.info("MODEL DETAILS:\n")
+    #logger.info(model)
     for param in model.parameters():
-        # print(param.data.size())
+        # logger.info(param.data.size())
         total_param += np.prod(list(param.data.size()))
-    print('MODEL/Total parameters:', MODEL_NAME, total_param)
+    logger.info(f'MODEL/Total parameters:{MODEL_NAME}, {total_param}')
     return total_param
 
 
@@ -99,14 +95,18 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params['self_loop']:
-            print("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
+            logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
     
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
         if net_params['pos_enc']:
-            print("[!] Adding Laplacian graph positional encoding.")
+            logger.info("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
-            print('Time PE:',time.time()-start0)
+            logger.info(f'Time PE:{time.time()-start0}')
+        if net_params['adj_enc']:
+            logger.info("[!] Adding adjacency matrix graph positional encoding.")
+            dataset._add_adj_encodings(net_params['pos_enc_dim'])
+            logger.info(f'Time PE:{time.time()-start0}')
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
         
@@ -127,10 +127,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if device.type == 'cuda':
         torch.cuda.manual_seed(params['seed'])
     
-    print("Training Graphs: ", len(trainset))
-    print("Validation Graphs: ", len(valset))
-    print("Test Graphs: ", len(testset))
-    print("Number of Classes: ", net_params['n_classes'])
+    logger.info(f"Training Graphs: {len(trainset)}")
+    logger.info(f"Validation Graphs: {len(valset)}")
+    logger.info(f"Test Graphs: {len(testset)}")
+    logger.info(f"Number of Classes: {net_params['n_classes']}")
 
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
@@ -165,7 +165,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         # with tqdm(range(params['epochs'])) as t:
         for epoch in range(params['epochs']):
 
-            print(f'Epoch {epoch + 1}/{params["epochs"]}')
+            logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
 
             start = time.time()
 
@@ -197,7 +197,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             val_acc = epoch_val_acc
             test_acc = epoch_test_acc
 
-            print(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+            logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
                         Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
 
             per_epoch_time.append(time.time()-start)
@@ -218,27 +218,27 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             scheduler.step(epoch_val_loss)
 
             if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                print("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
+                logger.info("\n!! LR SMALLER OR EQUAL TO MIN LR THRESHOLD.")
                 break
                 
             # Stop training after params['max_time'] hours
             if time.time()-start0 > params['max_time']*3600:
-                print('-' * 89)
-                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                logger.info('-' * 89)
+                logger.info("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                 break
     
     except KeyboardInterrupt:
-        print('-' * 89)
-        print('Exiting from training early because of KeyboardInterrupt')
+        logger.info('-' * 89)
+        logger.info('Exiting from training early because of KeyboardInterrupt')
     
     
     _, test_acc = evaluate_network(model, device, test_loader, epoch)
     _, train_acc = evaluate_network(model, device, train_loader, epoch)
-    print("Test Accuracy: {:.4f}".format(test_acc))
-    print("Train Accuracy: {:.4f}".format(train_acc))
-    print("Convergence Time (Epochs): {:.4f}".format(epoch))
-    print("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-start0))
-    print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+    logger.info("Test Accuracy: {:.4f}".format(test_acc))
+    logger.info("Train Accuracy: {:.4f}".format(train_acc))
+    logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
+    logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-start0))
+    logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
     writer.close()
 
@@ -304,14 +304,23 @@ def main():
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--job_num', help="Please give a value for job number")
-    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", action='store_true')
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
+    parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
+    parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
+    parser.add_argument('--adj_enc', help="Please give a value for adj_enc", action='store_true')
     args = parser.parse_args()
 
     with open(args.config) as f:
         config = json.load(f)
-        
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
@@ -354,7 +363,6 @@ def main():
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
     # network parameters
-    net_params = config['net_params']
     net_params['device'] = device
     net_params['gpu_id'] = config['gpu']['id']
     net_params['batch_size'] = params['batch_size']
@@ -410,8 +418,11 @@ def main():
         net_params['learned_pos_enc'] = args.learned_pos_enc
     if args.rand_pos_enc is not None:
         net_params['rand_pos_enc'] = args.rand_pos_enc
+
+    net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
+    net_params['pow_of_mat'] = args.pow_of_mat
 
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)

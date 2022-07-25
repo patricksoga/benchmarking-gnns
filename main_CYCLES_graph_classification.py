@@ -97,6 +97,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
     
+    if net_params['adj_enc']:
+        logger.info("[!] Adding adjacency matrix graph positional encoding.")
+        dataset._add_adj_encodings(net_params['pos_enc_dim'])
+    
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
     
     if net_params['num_train_data'] is not None:
@@ -282,12 +286,13 @@ def main():
     parser.add_argument('--num_train_data', help="Please give a value for num_train_data")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--job_num', help="Please give a value for job number")
-    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", type=bool)
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", action='store_true')
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc", type=bool)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
     parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
     parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
+    parser.add_argument('--adj_enc', help="Please give a value for adj_enc", action='store_true')
     args = parser.parse_args()
 
 
@@ -296,7 +301,7 @@ def main():
 
     net_params = config['net_params']
     net_params['log_file'] = args.log_file
-    print(net_params['log_file'])
+
     global logger
     logger = get_logger(net_params['log_file'])
 
@@ -399,6 +404,10 @@ def main():
         net_params['rand_pos_enc'] = args.rand_pos_enc
     if args.pos_enc is not None:
         net_params['pos_enc'] = args.pos_enc
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+
+    net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
