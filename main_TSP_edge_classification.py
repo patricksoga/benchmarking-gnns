@@ -6,20 +6,14 @@
 """
     IMPORTING LIBS
 """
-import dgl
-
 import numpy as np
 import os
-import socket
 import time
 import random
 import glob
 import argparse, json
-import pickle
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -27,12 +21,7 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-class DotDict(dict):
-    def __init__(self, **kwds):
-        self.update(kwds)
-        self.__dict__ = self
-        
-
+from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 
 
@@ -45,22 +34,6 @@ from nets.TSP_edge_classification.load_net import gnn_model # import all GNNS
 from data.data import LoadData # import dataset
 
 
-
-
-"""
-    GPU Setup
-"""
-def gpu_setup(use_gpu, gpu_id):
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)  
-
-    if torch.cuda.is_available() and use_gpu:
-        print('cuda available with GPU:',torch.cuda.get_device_name(0))
-        device = torch.device("cuda")
-    else:
-        print('cuda not available')
-        device = torch.device("cpu")
-    return device
 
 
 
@@ -243,56 +216,18 @@ def main():
     """
         USER CONTROLS
     """
-    
-    
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', help="Please give a config.json file with training/model/data/param details")
-    parser.add_argument('--gpu_id', help="Please give a value for gpu id")
-    parser.add_argument('--model', help="Please give a value for model name")
-    parser.add_argument('--dataset', help="Please give a value for dataset name")
-    parser.add_argument('--out_dir', help="Please give a value for out_dir")
-    parser.add_argument('--seed', help="Please give a value for seed")
-    parser.add_argument('--epochs', help="Please give a value for epochs")
-    parser.add_argument('--batch_size', help="Please give a value for batch_size")
-    parser.add_argument('--init_lr', help="Please give a value for init_lr")
-    parser.add_argument('--lr_reduce_factor', help="Please give a value for lr_reduce_factor")
-    parser.add_argument('--lr_schedule_patience', help="Please give a value for lr_schedule_patience")
-    parser.add_argument('--min_lr', help="Please give a value for min_lr")
-    parser.add_argument('--weight_decay', help="Please give a value for weight_decay")
-    parser.add_argument('--print_epoch_interval', help="Please give a value for print_epoch_interval")    
-    parser.add_argument('--L', help="Please give a value for L")
-    parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
-    parser.add_argument('--out_dim', help="Please give a value for out_dim")
-    parser.add_argument('--residual', help="Please give a value for residual")
-    parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
-    parser.add_argument('--readout', help="Please give a value for readout")
-    parser.add_argument('--kernel', help="Please give a value for kernel")
-    parser.add_argument('--n_heads', help="Please give a value for n_heads")
-    parser.add_argument('--gated', help="Please give a value for gated")
-    parser.add_argument('--in_feat_dropout', help="Please give a value for in_feat_dropout")
-    parser.add_argument('--dropout', help="Please give a value for dropout")
-    parser.add_argument('--layer_norm', help="Please give a value for layer_norm")
-    parser.add_argument('--batch_norm', help="Please give a value for batch_norm")
-    parser.add_argument('--sage_aggregator', help="Please give a value for sage_aggregator")
-    parser.add_argument('--data_mode', help="Please give a value for data_mode")
-    parser.add_argument('--num_pool', help="Please give a value for num_pool")
-    parser.add_argument('--gnn_per_block', help="Please give a value for gnn_per_block")
-    parser.add_argument('--embedding_dim', help="Please give a value for embedding_dim")
-    parser.add_argument('--pool_ratio', help="Please give a value for pool_ratio")
-    parser.add_argument('--linkpred', help="Please give a value for linkpred")
-    parser.add_argument('--cat', help="Please give a value for cat")
-    parser.add_argument('--self_loop', help="Please give a value for self_loop")
-    parser.add_argument('--max_time', help="Please give a value for max_time")
-    parser.add_argument('--layer_type', help="Please give a value for layer_type (for GAT and GatedGCN only)")
+    parser = add_args(parser)
     args = parser.parse_args()
+
     with open(args.config) as f:
         config = json.load(f)
-        
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
         config['gpu']['use'] = True
-    device = gpu_setup(config['gpu']['use'], config['gpu']['id'])
+    device = gpu_setup(config['gpu']['use'], config['gpu']['id'], logger)
     # model, dataset, out_dir
     if args.model is not None:
         MODEL_NAME = args.model
@@ -308,54 +243,9 @@ def main():
     else:
         out_dir = config['out_dir']
     # parameters
-    params = config['params']
-    if args.seed is not None:
-        params['seed'] = int(args.seed)
-    if args.epochs is not None:
-        params['epochs'] = int(args.epochs)
-    if args.batch_size is not None:
-        params['batch_size'] = int(args.batch_size)
-    if args.init_lr is not None:
-        params['init_lr'] = float(args.init_lr)
-    if args.lr_reduce_factor is not None:
-        params['lr_reduce_factor'] = float(args.lr_reduce_factor)
-    if args.lr_schedule_patience is not None:
-        params['lr_schedule_patience'] = int(args.lr_schedule_patience)
-    if args.min_lr is not None:
-        params['min_lr'] = float(args.min_lr)
-    if args.weight_decay is not None:
-        params['weight_decay'] = float(args.weight_decay)
-    if args.print_epoch_interval is not None:
-        params['print_epoch_interval'] = int(args.print_epoch_interval)
-    if args.max_time is not None:
-        params['max_time'] = float(args.max_time)
+    params = get_parameters(config, args)
     # network parameters
-    net_params = config['net_params']
-    net_params['device'] = device
-    net_params['gpu_id'] = config['gpu']['id']
-    net_params['batch_size'] = params['batch_size']
-    if args.L is not None:
-        net_params['L'] = int(args.L)
-    if args.hidden_dim is not None:
-        net_params['hidden_dim'] = int(args.hidden_dim)
-    if args.out_dim is not None:
-        net_params['out_dim'] = int(args.out_dim)   
-    if args.residual is not None:
-        net_params['residual'] = True if args.residual=='True' else False
-    if args.edge_feat is not None:
-        net_params['edge_feat'] = True if args.edge_feat=='True' else False
-    if args.readout is not None:
-        net_params['readout'] = args.readout
-    if args.kernel is not None:
-        net_params['kernel'] = int(args.kernel)
-    if args.n_heads is not None:
-        net_params['n_heads'] = int(args.n_heads)
-    if args.gated is not None:
-        net_params['gated'] = True if args.gated=='True' else False
-    if args.in_feat_dropout is not None:
-        net_params['in_feat_dropout'] = float(args.in_feat_dropout)
-    if args.dropout is not None:
-        net_params['dropout'] = float(args.dropout)
+    net_params = get_net_params(config, args, device, params, DATASET_NAME)
     if args.layer_norm is not None:
         net_params['layer_norm'] = True if args.layer_norm=='True' else False
     if args.batch_norm is not None:
@@ -380,9 +270,6 @@ def main():
         net_params['self_loop'] = True if args.self_loop=='True' else False
     if args.layer_type is not None:
         net_params['layer_type'] = layer_type
- 
-
-      
     
     # TSP
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].shape[0]
@@ -394,52 +281,10 @@ def main():
         num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
         net_params['avg_node_num'] = int(np.ceil(np.mean(num_nodes)))
     
-    root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_file_name = out_dir + 'results/result_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    write_config_file = out_dir + 'configs/config_' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
-    dirs = root_log_dir, root_ckpt_dir, write_file_name, write_config_file
 
-    if not os.path.exists(out_dir + 'results'):
-        os.makedirs(out_dir + 'results')
-        
-    if not os.path.exists(out_dir + 'configs'):
-        os.makedirs(out_dir + 'configs')
+    dirs = setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config)
 
-    net_params['total_param'] = view_model_param(MODEL_NAME, net_params)
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
     train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
 
-    
-    
-    
-    
-    
-    
-    
 main()    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

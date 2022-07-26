@@ -6,7 +6,7 @@ import networkx as nx
 import dgl
 
 from layers.graph_transformer_edge_layer import MultiHeadAttentionLayer
-from utils.logging import get_logger
+from utils.main_utils import get_logger
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
