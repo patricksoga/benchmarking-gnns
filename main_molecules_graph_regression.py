@@ -20,7 +20,6 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
-from utils.logging import get_logger
 
 logger = None
 
@@ -34,46 +33,6 @@ logger = None
 from nets.molecules_graph_regression.load_net import gnn_model # import all GNNS
 from data.data import LoadData # import dataset
 
-
-
-
-"""
-    GPU Setup
-"""
-def gpu_setup(use_gpu, gpu_id):
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)  
-
-    if torch.cuda.is_available() and use_gpu:
-        logger.info(f'cuda available with GPU: {torch.cuda.get_device_name(0)}')
-        device = torch.device("cuda")
-    else:
-        logger.info('cuda not available')
-        device = torch.device("cpu")
-    return device
-
-
-
-
-
-
-
-
-
-
-"""
-    VIEWING MODEL CONFIG AND PARAMS
-"""
-def view_model_param(MODEL_NAME, net_params):
-    model = gnn_model(MODEL_NAME, net_params)
-    total_param = 0
-    logger.info("MODEL DETAILS:\n")
-    #logger.info(model)
-    for param in model.parameters():
-        # logger.info(param.data.size())
-        total_param += np.prod(list(param.data.size()))
-    logger.info(f'MODEL/Total parameters: {MODEL_NAME, total_param}')
-    return total_param
 
 
 """
