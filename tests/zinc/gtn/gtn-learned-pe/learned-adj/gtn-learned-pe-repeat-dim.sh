@@ -11,4 +11,4 @@ fsync -d 10 $fname &
 
 conda activate gnn
 cd ../../../../../
-python3 main_molecules_graph_regression.py --config configs/molecules_graph_regression_GraphTransformer_ZINC_learnedPE_500k.json --pos_enc_dim ${encdims[${SGE_TASK_ID}]} --job_num ${SGE_TASK_ID} --batch_size 4 --log_file $fname --in_feat_dropout 0.5
+python3 main_molecules_graph_regression.py --config configs/molecules_graph_regression_GraphTransformer_ZINC_learnedPE_500k.json --pos_enc_dim ${encdims[${SGE_TASK_ID}]} --job_num ${SGE_TASK_ID} --batch_size 4 --log_file $fname --in_feat_dropout 0.5 --edge_feat True
