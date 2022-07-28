@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -22,8 +17,6 @@ from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, a
 logger = None
 
 
-
-
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
@@ -32,26 +25,9 @@ from data.data import LoadData # import dataset
 
 
 
-
-"""
-    VIEWING MODEL CONFIG AND PARAMS
-"""
-def view_model_param(MODEL_NAME, net_params):
-    model = gnn_model(MODEL_NAME, net_params)
-    total_param = 0
-    print("MODEL DETAILS:\n")
-    print(model)
-    for param in model.parameters():
-        # print(param.data.size())
-        total_param += np.prod(list(param.data.size()))
-    print('MODEL/Total parameters:', MODEL_NAME, total_param)
-    return total_param
-
-
 """
     TRAINING CODE
 """
-
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     t0 = time.time()
     per_epoch_time = []
@@ -231,6 +207,12 @@ def main():
     with open(args.config) as f:
         config = json.load(f)
 
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)
@@ -254,6 +236,10 @@ def main():
     params = get_parameters(config, args)
     # network parameters
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
+
+    global logger
+    logger = get_logger(net_params['log_file'])
+
     if args.layer_norm is not None:
         net_params['layer_norm'] = True if args.layer_norm=='True' else False
     if args.batch_norm is not None:

@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -24,9 +19,6 @@ from tqdm import tqdm
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 
-
-
-
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
@@ -34,27 +26,9 @@ from nets.K3Colorable_graph_classification.load_net import gnn_model # import al
 from data.data import LoadData # import dataset
 
 
-
-
-"""
-    GPU Setup
-"""
-
-
-
-
-
-
-
-
-
-
-
-
 """
     TRAINING CODE
 """
-
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     t0 = time.time()
     per_epoch_time = []
@@ -219,7 +193,13 @@ def main():
 
     with open(args.config) as f:
         config = json.load(f)
-        
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)

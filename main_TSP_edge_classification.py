@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -23,21 +18,11 @@ from tqdm import tqdm
 
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
-
-
-
-
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
 from nets.TSP_edge_classification.load_net import gnn_model # import all GNNS
 from data.data import LoadData # import dataset
-
-
-
-
-
-
 
 
 """
@@ -222,6 +207,12 @@ def main():
 
     with open(args.config) as f:
         config = json.load(f)
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
 
     # device
     if args.gpu_id is not None:

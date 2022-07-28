@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -25,8 +20,6 @@ from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, a
 logger = None
 
 
-
-
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
@@ -34,12 +27,9 @@ from nets.GraphTheoryProp_multitask.load_net import gnn_model # import all GNNS
 from data.data import LoadData # import dataset
 
 
-
-
 """
     TRAINING CODE
 """
-
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     t0 = time.time()
     per_epoch_time = []
@@ -192,6 +182,12 @@ def main():
 
     with open(args.config) as f:
         config = json.load(f)
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
 
     # device
     if args.gpu_id is not None:

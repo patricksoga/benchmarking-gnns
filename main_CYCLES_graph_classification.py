@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -36,7 +31,6 @@ from data.data import LoadData # import dataset
 """
     TRAINING CODE
 """
-
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     t0 = time.time()
     per_epoch_time = []

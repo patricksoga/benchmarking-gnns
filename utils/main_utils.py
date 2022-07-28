@@ -4,6 +4,7 @@ import numpy as np
 import logging
 import time
 
+
 def get_logger(logfile=None):
     _logfile = logfile if logfile else './DEBUG.log'
     """Global logger for every logging"""
@@ -99,7 +100,7 @@ def add_args(parser):
     parser.add_argument('--num_train_data', help="Please give a value for num_train_data")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--job_num', help="Please give a value for job number")
-    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc", action='store_true')
+    parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc")
     parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc", type=bool)
     parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")

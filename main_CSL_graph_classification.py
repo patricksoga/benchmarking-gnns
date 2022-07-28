@@ -1,8 +1,3 @@
-
-
-
-
-
 """
     IMPORTING LIBS
 """
@@ -21,10 +16,6 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
-
-
-
-
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
@@ -36,7 +27,6 @@ from data.data import LoadData # import dataset
 """
     TRAINING CODE
 """
-
 def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
     avg_test_acc = []
     avg_train_acc = []
@@ -236,7 +226,13 @@ def main():
 
     with open(args.config) as f:
         config = json.load(f)
-        
+
+    net_params = config['net_params']
+    net_params['log_file'] = args.log_file
+
+    global logger
+    logger = get_logger(net_params['log_file'])
+
     # device
     if args.gpu_id is not None:
         config['gpu']['id'] = int(args.gpu_id)

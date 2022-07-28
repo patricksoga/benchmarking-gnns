@@ -44,13 +44,10 @@ class PELayer(nn.Module):
 
         self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
-            # logger.info("Using Laplacian position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         if self.adj_enc:
-            # logger.info("Using adjacency matrix position encoding")
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
-            # logger.info("Using automata position encoding")
             self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
             self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
             nn.init.normal_(self.pos_initial)
@@ -90,15 +87,13 @@ class PELayer(nn.Module):
         if self.pos_enc or self.adj_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
-            # mat = g.adjacency_matrix().to_dense().to(self.device)
-            # mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
             mat = self.type_of_matrix(g, self.matrix_type, self.mat_pows)
-            z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(self.device)
+            # z = torch.zeros(self.pos_enc_dim, g.num_nodes()-2, requires_grad=False).to(self.device)
+            # vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
+            z = self.pos_initial.repeat(1, g.num_nodes()-1).to(self.device)
             vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
-            # dim0, dim1 = mat.shape[0]*self.pos_enc_dim, mat.shape[1]*self.pos_enc_dim
-            # kron_prod = torch.einsum('ik,jl', mat.t(), self.pos_transition).reshape(dim0, dim1)
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
 
             encs = torch.linalg.solve(B, vec_init)
@@ -167,12 +162,13 @@ class PELayer(nn.Module):
 
         # learnable adj matrix "masks"
         # matrix = torch.matrix_power(matrix, pow)
-        matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]
+
+        # matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]
 
         # multiply each matrix by the corresponding mat_pow
-        for i in range(len(matrices)):
-            matrices[i] = matrices[i] * self.mat_pows[i]
-        matrix = torch.sum(torch.stack(matrices, dim=0), dim=0)
+        # for i in range(len(matrices)):
+        #     matrices[i] = matrices[i] * self.mat_pows[i]
+        # matrix = torch.sum(torch.stack(matrices, dim=0), dim=0)
 
         return matrix
 
