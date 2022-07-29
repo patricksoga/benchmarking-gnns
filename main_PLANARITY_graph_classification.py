@@ -13,6 +13,7 @@ import torch
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from pprint import pprint
 
 from tensorboardX import SummaryWriter
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
@@ -252,7 +253,9 @@ def main():
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
-        
+
+    pprint(net_params)
+
     if MODEL_NAME == 'PNA':
         D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

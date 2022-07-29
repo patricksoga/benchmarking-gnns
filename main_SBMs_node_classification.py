@@ -17,6 +17,7 @@ import torch
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from pprint import pprint
 
 from tensorboardX import SummaryWriter
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
@@ -274,7 +275,9 @@ def main():
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
-    
+
+    pprint(net_params)
+
     if MODEL_NAME == 'RingGNN':
         num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
         net_params['avg_node_num'] = int(np.ceil(np.mean(num_nodes)))

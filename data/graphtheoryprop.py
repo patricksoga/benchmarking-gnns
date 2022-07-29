@@ -122,7 +122,6 @@ def positional_encoding(g, pos_enc_dim):
     EigVal, EigVec = np.linalg.eig(L.toarray())
     idx = EigVal.argsort() # increasing order
     EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
-    plot_similarity(g, EigVec, EigVal)
     g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
 
     # # Eigenvectors with scipy

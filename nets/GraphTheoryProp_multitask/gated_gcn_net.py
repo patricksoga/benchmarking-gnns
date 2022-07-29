@@ -45,8 +45,7 @@ class GatedGCNNet(nn.Module):
                                                     self.residual) for _ in range(n_layers-1) ]) 
         self.layers.append(GatedGCNLayer(hidden_dim, hidden_dim, dropout, self.batch_norm,
                                          self.residual))
-       
-        
+
         if self.use_gru:
             self.gru = nn.GRU(hidden_dim, hidden_dim)
         

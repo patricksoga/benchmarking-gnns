@@ -125,8 +125,16 @@ class PELayer(nn.Module):
             # elif self.dataset == "CYCLES":
             #     pe = self.embedding_h(h)
         
-        if self.dataset in ("CYCLES", "ZINC"):
-            return pe
+        # # if self.dataset in ("CYCLES", "ZINC"):
+        # #     return pe
+        # A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        # N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        # L = sp.eye(g.number_of_nodes()) - N * A * N
+
+        # torch.save(torch.from_numpy(L), "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/graph_laplacian.pt")
+        # torch.save(pe, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/pe.pt")
+        # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
+
         # return h + pe if pe is not None else h
         return pe
 
@@ -163,12 +171,13 @@ class PELayer(nn.Module):
         # learnable adj matrix "masks"
         # matrix = torch.matrix_power(matrix, pow)
 
-        # matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]
+        if self.pow_of_mat > 1:
+            matrices = [torch.matrix_power(matrix, i) for i in range(self.pow_of_mat)]
 
-        # multiply each matrix by the corresponding mat_pow
-        # for i in range(len(matrices)):
-        #     matrices[i] = matrices[i] * self.mat_pows[i]
-        # matrix = torch.sum(torch.stack(matrices, dim=0), dim=0)
+            # multiply each matrix by the corresponding mat_pow
+            for i in range(len(matrices)):
+                matrices[i] = matrices[i] * self.mat_pows[i]
+            matrix = torch.sum(torch.stack(matrices, dim=0), dim=0)
 
         return matrix
 
