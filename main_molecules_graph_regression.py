@@ -271,7 +271,8 @@ def main():
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
 
-    pprint(net_params)
+    logger.info(net_params)
+    logger.info(params)
 
     if MODEL_NAME == 'DiffPool':
         # calculate assignment dimension: pool_ratio * largest graph's maximum

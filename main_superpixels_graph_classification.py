@@ -254,7 +254,8 @@ def main():
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
 
-    pprint(net_params)
+    logger.info(net_params)
+    logger.info(params)
 
     if MODEL_NAME == 'DiffPool':
         # calculate assignment dimension: pool_ratio * largest graph's maximum

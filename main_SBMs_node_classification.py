@@ -276,7 +276,8 @@ def main():
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
 
-    pprint(net_params)
+    logger.info(net_params)
+    logger.info(params)
 
     if MODEL_NAME == 'RingGNN':
         num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
