@@ -13,6 +13,7 @@ import torch
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from pprint import pprint
 
 from tensorboardX import SummaryWriter
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
@@ -96,7 +97,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        # with tqdm(range(params['epochs'])) as t:
         for epoch in range(params['epochs']):
 
             logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
@@ -256,12 +256,13 @@ def main():
     net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
 
-
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
+
+    pprint(net_params)
         
     if MODEL_NAME == 'PNA':
         D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in

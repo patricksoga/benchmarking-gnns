@@ -12,6 +12,7 @@ import torch
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from pprint import pprint
 
 from tensorboardX import SummaryWriter
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
@@ -270,7 +271,8 @@ def main():
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
 
-    
+    pprint(net_params)
+
     if MODEL_NAME == 'DiffPool':
         # calculate assignment dimension: pool_ratio * largest graph's maximum
         # number of nodes  in the dataset

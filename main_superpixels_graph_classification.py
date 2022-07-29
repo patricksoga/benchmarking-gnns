@@ -1,23 +1,18 @@
 """
     IMPORTING LIBS
 """
-import dgl
-
 import numpy as np
 import os
-import socket
 import time
 import random
 import glob
 import argparse, json
-import pickle
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from pprint import pprint
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
@@ -252,12 +247,14 @@ def main():
         net_params['cat'] = True if args.cat=='True' else False
     if args.self_loop is not None:
         net_params['self_loop'] = True if args.self_loop=='True' else False
-        
+
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
+
+    pprint(net_params)
 
     if MODEL_NAME == 'DiffPool':
         # calculate assignment dimension: pool_ratio * largest graph's maximum

@@ -85,62 +85,60 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        with tqdm(range(params['epochs'])) as t:
-            for epoch in t:
+        for epoch in range(params['epochs']):
 
-                t.set_description('Epoch %d' % epoch)
+            logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
 
-                start = time.time()
+            start = time.time()
 
-                epoch_train_loss, epoch_train_log_mse, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+            epoch_train_loss, epoch_train_log_mse, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
 
-                epoch_val_loss, epoch_val_log_mse, __ = evaluate_network(model, device, val_loader, epoch)
-                _, epoch_test_log_mse, __ = evaluate_network(model, device, test_loader, epoch)                
+            epoch_val_loss, epoch_val_log_mse, __ = evaluate_network(model, device, val_loader, epoch)
+            _, epoch_test_log_mse, __ = evaluate_network(model, device, test_loader, epoch)                
+            
+            epoch_train_losses.append(epoch_train_loss)
+            epoch_val_losses.append(epoch_val_loss)
+            epoch_train_mses.append(epoch_train_log_mse)
+            epoch_val_mses.append(epoch_val_log_mse)
+
+            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+            writer.add_scalar('train/_log_mse', epoch_train_log_mse, epoch)
+            writer.add_scalar('val/_log_mse', epoch_val_log_mse, epoch)
+            writer.add_scalar('test/_log_mse', epoch_test_log_mse, epoch)
+            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+
+            logger.info(f"""\tTime: {time.time()-start}s, LR: {optimizer.param_groups[0]['lr']:.4f}, 
+                        train_loss: {epoch_train_loss:.4f}, train_log_mse: {epoch_train_log_mse:.4f},
+                        val_loss: {epoch_val_loss:.4f},val_log_mse: {epoch_val_log_mse:.4f},
+                        test_log_mse: {epoch_test_log_mse:.4f}""")
+            
+            per_epoch_time.append(time.time()-start)
+
+            # Saving checkpoint
+            ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+
+            files = glob.glob(ckpt_dir + '/*.pkl')
+            for file in files:
+                epoch_nb = file.split('_')[-1]
+                epoch_nb = int(epoch_nb.split('.')[0])
+                if epoch_nb < epoch-1:
+                    os.remove(file)
+
+            scheduler.step(epoch_val_loss)
+
+            if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                print("\n!! LR EQUAL TO MIN LR SET.")
+                break
                 
-                epoch_train_losses.append(epoch_train_loss)
-                epoch_val_losses.append(epoch_val_loss)
-                epoch_train_mses.append(epoch_train_log_mse)
-                epoch_val_mses.append(epoch_val_log_mse)
-
-                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                writer.add_scalar('train/_log_mse', epoch_train_log_mse, epoch)
-                writer.add_scalar('val/_log_mse', epoch_val_log_mse, epoch)
-                writer.add_scalar('test/_log_mse', epoch_test_log_mse, epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-
-                
-                t.set_postfix(time=time.time()-start, lr=optimizer.param_groups[0]['lr'],
-                              train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_log_mse=epoch_train_log_mse, val_log_mse=epoch_val_log_mse,
-                              test_log_mse=epoch_test_log_mse)    
-
-                per_epoch_time.append(time.time()-start)
-
-                # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
-
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
-
-                scheduler.step(epoch_val_loss)
-
-                if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                    print("\n!! LR EQUAL TO MIN LR SET.")
-                    break
-                    
-                # Stop training after params['max_time'] hours
-                if time.time()-t0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+            # Stop training after params['max_time'] hours
+            if time.time()-t0 > params['max_time']*3600:
+                print('-' * 89)
+                print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                break
     
     except KeyboardInterrupt:
         print('-' * 89)
