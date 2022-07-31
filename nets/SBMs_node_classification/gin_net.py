@@ -54,7 +54,7 @@ class GINNet(nn.Module):
         
         
     def forward(self, g, h, e, pos_enc=None):
-        # h = self.embedding_h(h)
+        h = self.embedding_h(h)
         h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
 
