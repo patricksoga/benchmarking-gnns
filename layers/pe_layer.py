@@ -52,7 +52,8 @@ class PELayer(nn.Module):
             self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
             nn.init.normal_(self.pos_initial)
             nn.init.orthogonal_(self.pos_transition)
-            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, self.pos_enc_dim)
+            self.ll = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             # self.mat_pows = nn.Parameter(torch.Tensor(size=(1,)))
             # nn.init.constant_(self.mat_pows, 1)
@@ -71,6 +72,9 @@ class PELayer(nn.Module):
         self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
+        
+        if not self.use_pos_enc:
+            self.embedding_h = nn.Embedding(in_dim, hidden_dim)
         
         self.logger.info(f"Using matrix: {self.matrix_type}")
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
@@ -101,11 +105,12 @@ class PELayer(nn.Module):
             stacked_encs = stacked_encs.transpose(1, 0)
             pe = self.embedding_pos_enc(stacked_encs)
         elif self.rand_pos_enc:
-            z = torch.zeros(self.pos_enc_dim, g.num_nodes()-1, requires_grad=False).to(torch.device('cpu'))
-            vec_init = torch.cat((self.pos_initial.to(torch.device('cpu')), z), dim=1).to(torch.device('cpu'))
+            device = torch.device("cpu")
+            z = self.pos_initial.repeat(1, g.num_nodes()-1).to(device)
+            vec_init = torch.cat((self.pos_initial.to(device), z), dim=1).to(device)
             # mat = g.adjacency_matrix().to_dense().to(torch.device('cpu'))
             mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
-            transition_inv = torch.inverse(self.pos_transition).to(torch.device('cpu'))
+            transition_inv = torch.inverse(self.pos_transition).to(device)
 
             # AX + XB = Q
             #  X = alpha
@@ -122,6 +127,7 @@ class PELayer(nn.Module):
         else:
             if self.dataset == "ZINC":
                 pe = h
+            pe = self.embedding_h(h)
             # elif self.dataset == "CYCLES":
             #     pe = self.embedding_h(h)
         
