@@ -3,6 +3,10 @@
 #$ -q gpu
 #$ -l gpu_card=1
 
+fname=$(pwd)/lape_DEBUG.log
+touch $fname
+fsync -d 10 $fname &
+
 conda activate gnn
-cd ../../../
-python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GIN_PATTERN_PE_100k.json
+cd ../../../../
+python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GIN_PATTERN_PE_100k.json --log_file $fname
