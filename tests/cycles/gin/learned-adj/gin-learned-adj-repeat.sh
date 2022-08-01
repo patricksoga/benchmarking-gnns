@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N gin-cycles-100k-learned-pe-repeat-dim
+#$ -N gin-cycles-100k-learned-pe-repeat-dim-dropout
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-2:1

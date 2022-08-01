@@ -2,7 +2,7 @@
 #$ -N gin-cycles-100k-learned-pe-repeat-dim
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-2:1
+#$ -t 1-3:1
 
 encdims=(0 8 10 15)
 fname=$(pwd)/laplacian_${SGE_TASK_ID}_DEBUG_.log
