@@ -101,12 +101,13 @@ def add_args(parser):
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--job_num', help="Please give a value for job number")
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc")
-    parser.add_argument('--rand_pos_enc', help="Please give a value for rand_pos_enc", type=bool)
-    parser.add_argument('--pos_enc', help="Please give a value for pos_enc", type=bool)
-    parser.add_argument('--matrix_type', help="Please give a value for matrix_type", type=str, default="A")
-    parser.add_argument('--pow_of_mat', help="Please give a value for pow_of_mat", type=int, default=1)
-    parser.add_argument('--log_file', help="Please give a value for log_file", type=str, default="./DEBUG.log")
-    parser.add_argument('--adj_enc', help="Please give a value for adj_enc", action='store_true')
+    parser.add_argument('--rand_pos_enc', type=bool, help="Whether to use a random automata PE")
+    parser.add_argument('--pos_enc', type=bool, help="Whether to use Laplacian PE or not")
+    parser.add_argument('--matrix_type', type=str, default="A", help="Type of matrix to use in automata PE")
+    parser.add_argument('--pow_of_mat', type=int, default=1, help="Highest power of adjacency matrix to use in automata PE")
+    parser.add_argument('--log_file', type=str, default="./DEBUG.log")
+    parser.add_argument('--adj_enc', action='store_true', help="Use adjacency matrix eigenvectors for PE")
+    parser.add_argument('--num_initials', type=int, default=1, help="Number of initial weight vectors for automata PE")
     return parser
 
 def setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config):
@@ -194,6 +195,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['pos_enc'] = args.pos_enc
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+    if args.num_initials is not None:
+        net_params['num_initials'] = int(args.num_initials)
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME

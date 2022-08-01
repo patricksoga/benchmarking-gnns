@@ -36,6 +36,7 @@ class PELayer(nn.Module):
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
         self.dataset = net_params.get('dataset', 'CYCLES')
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
+        self.num_initials = net_params.get('num_initials', 1)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -48,12 +49,17 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
-            self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
+            # self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
+            self.pos_initials = nn.ParameterList(
+                nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
+                for _ in range(self.num_initials)
+            )
             self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
-            nn.init.normal_(self.pos_initial)
+            # nn.init.normal_(self.pos_initial)
+            for pos_initial in self.pos_initials:
+                nn.init.normal_(pos_initial)
             nn.init.orthogonal_(self.pos_transition)
-            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, self.pos_enc_dim)
-            self.ll = nn.Linear(self.pos_enc_dim, hidden_dim)
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             # self.mat_pows = nn.Parameter(torch.Tensor(size=(1,)))
             # nn.init.constant_(self.mat_pows, 1)
@@ -79,6 +85,27 @@ class PELayer(nn.Module):
         self.logger.info(f"Using matrix: {self.matrix_type}")
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
 
+    def stack_strategy(self, g):
+        """
+            Given more than one initial weight vector, define the stack strategy.
+
+            If n = number of nodes and k = number of weight vectors,
+                by default, we repeat each initial weight vector n//k times
+                and stack them together with final n-(n//k) weight vectors.
+        """
+        num_pos_initials = len(self.pos_initials)
+        num_nodes = g.num_nodes()
+        if num_pos_initials == 1:
+            return torch.cat([self.pos_initials[0] for _ in range(num_nodes)], dim=1)
+
+        remainder = num_nodes % num_pos_initials
+        capacity = num_nodes - remainder
+        out = torch.cat([self.pos_initials[i] for i in range(num_pos_initials)], dim=1)
+        out = torch.repeat_interleave(out, capacity//num_pos_initials, dim=1)
+        if remainder != 0:
+            remaining_stack = torch.cat([self.pos_initials[-1] for _ in range(remainder)], dim=1)
+            out = torch.cat([out, remaining_stack], dim=1)
+        return out
 
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
@@ -94,8 +121,10 @@ class PELayer(nn.Module):
             mat = self.type_of_matrix(g, self.matrix_type, self.mat_pows)
             # z = torch.zeros(self.pos_enc_dim, g.num_nodes()-2, requires_grad=False).to(self.device)
             # vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
-            z = self.pos_initial.repeat(1, g.num_nodes()-1).to(self.device)
-            vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
+
+            # z = self.pos_initial.repeat(1, g.num_nodes()-1).to(self.device)
+            # vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
+            vec_init = self.stack_strategy(g)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
             B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
@@ -108,7 +137,6 @@ class PELayer(nn.Module):
             device = torch.device("cpu")
             z = self.pos_initial.repeat(1, g.num_nodes()-1).to(device)
             vec_init = torch.cat((self.pos_initial.to(device), z), dim=1).to(device)
-            # mat = g.adjacency_matrix().to_dense().to(torch.device('cpu'))
             mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
             transition_inv = torch.inverse(self.pos_transition).to(device)
 
