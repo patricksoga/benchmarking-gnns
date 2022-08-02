@@ -29,6 +29,7 @@ class GINNet(nn.Module):
         readout = net_params['readout']                      # this is graph_pooling_type
         batch_norm = net_params['batch_norm']
         residual = net_params['residual']
+        in_feat_dropout = net_params['in_feat_dropout']
         self.pos_enc = net_params['pos_enc']
         self.pe_layer = PELayer(net_params)
         
@@ -44,6 +45,7 @@ class GINNet(nn.Module):
         # Linear function for graph poolings (readout) of output of each layer
         # which maps the output of different layers into a prediction score
         self.linears_prediction = torch.nn.ModuleList()
+        self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
         for layer in range(self.n_layers+1):
             self.linears_prediction.append(nn.Linear(hidden_dim, n_classes))
@@ -60,6 +62,7 @@ class GINNet(nn.Module):
         
     def forward(self, g, h, e, pos_enc=None):
         h = self.pe_layer(g, h, pos_enc)
+        h = self.in_feat_dropout(h)
         # list of hidden representation at each layer (including input)
         hidden_rep = [h]
 
