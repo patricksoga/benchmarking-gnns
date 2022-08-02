@@ -111,6 +111,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
         
     # At any point you can hit Ctrl + C to break out of training early.
+    best_test_acc = -1.0
     try:
         # with tqdm(range(params['epochs'])) as t:
         for epoch in range(params['epochs']):
@@ -126,6 +127,15 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 
             epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
             _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)        
+
+            if epoch_test_acc > best_test_acc:
+                best_test_acc = epoch_test_acc
+                model_dir = os.path.join(root_ckpt_dir, "MODELS_")
+                if not os.path.exists(model_dir):
+                    os.makedirs(model_dir)
+                fname = f"/best_model{best_test_acc:.4f}_{params['job_num']}.pt"
+                torch.save(model.state_dict(), model_dir + fname)
+                logger.info(f"Saving best model with test accuracy: {best_test_acc:.4f} to {model_dir}")
             
             epoch_train_losses.append(epoch_train_loss)
             epoch_val_losses.append(epoch_val_loss)
@@ -186,6 +196,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     _, train_acc = evaluate_network(model, device, train_loader, epoch)
     logger.info("Test Accuracy: {:.4f}".format(test_acc))
     logger.info("Train Accuracy: {:.4f}".format(train_acc))
+    logger.info("Best Test Accuracy: {:.4f}".format(best_test_acc))
     logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
     logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-start0))
     logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
