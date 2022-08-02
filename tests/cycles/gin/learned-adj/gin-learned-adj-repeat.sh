@@ -1,11 +1,11 @@
 #!/bin/bash
-#$ -N gin-cycles-100k-learned-pe-repeat-dim-dropout
+#$ -N gin-cycles-100k-learned-pe-repeat-dim-dropout-0.25
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
 encdims=(0 10 11 12 13 14)
-fname=$(pwd)/repeat_dout_25_${SGE_TASK_ID}_DEBUG_.log
+fname=$(pwd)/repeat_dout_0.25_${SGE_TASK_ID}_DEBUG_.log
 touch $fname
 fsync -d 10 $fname &
 
