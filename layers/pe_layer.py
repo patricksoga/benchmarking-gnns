@@ -5,7 +5,6 @@ import numpy as np
 import networkx as nx
 import dgl
 
-from layers.graph_transformer_edge_layer import MultiHeadAttentionLayer
 from utils.main_utils import get_logger
 
 def type_of_enc(net_params):
@@ -78,10 +77,10 @@ class PELayer(nn.Module):
         self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
-        
+
         if not self.use_pos_enc:
             self.embedding_h = nn.Embedding(in_dim, hidden_dim)
-        
+
         self.logger.info(f"Using matrix: {self.matrix_type}")
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
 
