@@ -3,6 +3,10 @@
 #$ -q gpu
 #$ -l gpu_card=1
 
+fname=$(pwd)/baseline_DEBUG_.log
+touch $fname
+fsync -d 10 $fname &
+
 conda activate gnn
 cd ../../../../
-python3 main_CYCLES_graph_classification.py --config configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json
+python3 main_CYCLES_graph_classification.py --config configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --log_file $fname
