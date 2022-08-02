@@ -78,7 +78,7 @@ class PELayer(nn.Module):
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
-        if not self.use_pos_enc:
+        if not self.use_pos_enc and self.dataset != 'CYCLES':
             self.embedding_h = nn.Embedding(in_dim, hidden_dim)
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
