@@ -155,6 +155,8 @@ def get_parameters(config, args):
         params['print_epoch_interval'] = int(args.print_epoch_interval)
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
+    if args.job_num is not None:
+        params['job_num'] = int(args.job_num)
 
     return params
 
