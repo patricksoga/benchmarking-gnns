@@ -36,6 +36,7 @@ class PELayer(nn.Module):
         self.dataset = net_params.get('dataset', 'CYCLES')
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
         self.num_initials = net_params.get('num_initials', 1)
+        self.pagerank = net_params.get('pagerank', False)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -65,6 +66,8 @@ class PELayer(nn.Module):
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             for mat_pow in self.mat_pows:
                 nn.init.constant_(mat_pow, 1)
+        elif self.pagerank:
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         in_dim = 1
         if self.dataset == "SBM_PATTERN":
@@ -151,6 +154,11 @@ class PELayer(nn.Module):
             pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
             pe = torch.from_numpy(pe.T).to(self.device)
             pe = self.embedding_pos_enc(pe)
+        elif self.pagerank:
+            graph = dgl.to_networkx(g.cpu())
+            google_matrix = nx.google_matrix(graph).A
+            pe = self.embedding_pos_enc(torch.from_numpy(google_matrix).to(self.device)[:, :self.pos_enc_dim].type(torch.float32))
+            torch.save(pe, "/home/psoga/Documents/projects/benchmarking-gnns/google_matrix.pt")
         else:
             if self.dataset == "ZINC":
                 pe = h

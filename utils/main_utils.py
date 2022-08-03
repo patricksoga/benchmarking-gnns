@@ -108,6 +108,7 @@ def add_args(parser):
     parser.add_argument('--log_file', type=str, default="./DEBUG.log")
     parser.add_argument('--adj_enc', action='store_true', help="Use adjacency matrix eigenvectors for PE")
     parser.add_argument('--num_initials', type=int, default=1, help="Number of initial weight vectors for automata PE")
+    parser.add_argument('--pagerank')
     return parser
 
 def setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config):
@@ -190,7 +191,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['dropout'] = float(args.dropout)
 
     if args.learned_pos_enc is not None:
-        net_params['learned_pos_enc'] = args.learned_pos_enc
+        # net_params['learned_pos_enc'] = args.learned_pos_enc
+        net_params['learned_pos_enc'] = True if args.learned_pos_enc=='True' else False
     if args.rand_pos_enc is not None:
         net_params['rand_pos_enc'] = args.rand_pos_enc
     if args.pos_enc is not None:
@@ -199,6 +201,12 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:
         net_params['num_initials'] = int(args.num_initials)
+    if args.pagerank is not None:
+        net_params['pagerank'] = True if args.pagerank=='True' else False
+    if args.layer_norm is not None:
+        net_params['layer_norm'] = True if args.layer_norm=='True' else False
+    if args.batch_norm is not None:
+        net_params['batch_norm'] = True if args.batch_norm=='True' else False
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
