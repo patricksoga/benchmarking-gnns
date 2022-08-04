@@ -101,7 +101,7 @@ def add_args(parser):
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--job_num', help="Please give a value for job number")
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc")
-    parser.add_argument('--rand_pos_enc', type=bool, help="Whether to use a random automata PE")
+    parser.add_argument('--rand_pos_enc', help="Whether to use a random automata PE")
     parser.add_argument('--pos_enc', type=bool, help="Whether to use Laplacian PE or not")
     parser.add_argument('--matrix_type', type=str, default="A", help="Type of matrix to use in automata PE")
     parser.add_argument('--pow_of_mat', type=int, default=1, help="Highest power of adjacency matrix to use in automata PE")
@@ -194,7 +194,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         # net_params['learned_pos_enc'] = args.learned_pos_enc
         net_params['learned_pos_enc'] = True if args.learned_pos_enc=='True' else False
     if args.rand_pos_enc is not None:
-        net_params['rand_pos_enc'] = args.rand_pos_enc
+        net_params['rand_pos_enc'] = True if args.rand_pos_enc=='True' else False
     if args.pos_enc is not None:
         net_params['pos_enc'] = args.pos_enc
     if args.pos_enc_dim is not None:
