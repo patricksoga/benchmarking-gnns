@@ -107,7 +107,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
 
             epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
-            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)                
+            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)
 
             if epoch_test_acc > best_test_acc:
                 best_test_acc = epoch_test_acc
