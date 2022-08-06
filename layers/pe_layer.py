@@ -67,8 +67,8 @@ class PELayer(nn.Module):
             for mat_pow in self.mat_pows:
                 nn.init.constant_(mat_pow, 1)
 
-            self.add_initial = nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=True) 
-            nn.init.normal_(self.add_initial)
+            # self.add_initial = nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=True) 
+            # nn.init.normal_(self.add_initial)
 
         elif self.pagerank:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -157,9 +157,9 @@ class PELayer(nn.Module):
             mat = mat.cpu().numpy()
             vec_init = vec_init.cpu().numpy()
             pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
-            v = self.add_initial.repeat(1, g.num_nodes())
+            # v = self.add_initial.repeat(1, g.num_nodes())
             pe = torch.from_numpy(pe.T).to(self.device)
-            pe += v.transpose(1, 0)
+            # pe += v.transpose(1, 0)
             pe = self.embedding_pos_enc(pe)
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
