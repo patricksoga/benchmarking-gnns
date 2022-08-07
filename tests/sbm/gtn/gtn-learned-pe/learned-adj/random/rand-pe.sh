@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
-encdims=(0 64 128 256 512 1024)
+encdims=(0 10 15 20 40 50)
 fname=$(pwd)/repeat_${SGE_TASK_ID}_DEBUG_.log
 touch $fname
 fsync -d 10 $fname &

@@ -4,8 +4,8 @@
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
-encdims=(0 64 128 256 512)
-fname=$(pwd)/rand_${SGE_TASK_ID}_DEBUG_.log
+encdims=(0 10 15 20 40 50)
+fname=$(pwd)/rand_${SGE_TASK_ID}_${encdims[${SGE_TASK_ID}]}_DEBUG_.log
 touch $fname
 fsync -d 10 $fname &
 

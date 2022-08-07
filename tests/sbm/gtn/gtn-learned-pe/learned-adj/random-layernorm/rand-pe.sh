@@ -5,7 +5,7 @@
 #$ -t 1-5:1
 
 encdims=(0 32 64 128 256 512)
-fname=$(pwd)/rand_layernorm_${SGE_TASK_ID}_DEBUG_.log
+fname=$(pwd)/rand_layernorm_${SGE_TASK_ID}_${encdims[${SGE_TASK_ID}]}_DEBUG_.log
 touch $fname
 fsync -d 10 $fname &
 
