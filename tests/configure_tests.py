@@ -2,12 +2,27 @@ import json
 import os
 import argparse
 import torch
+import pprint
 
 import sys 
 sys.path.append('..')
 
 from utils.main_utils import add_args, get_net_params, get_parameters
 
+dataset_to_graph_task = {
+    "COLLAB": "edge_classification",
+    "CSL": "graph_classification",
+    "CYCLES": "graph_classification",
+    "GraphTheoryProp": "multitask",
+    "K3Colorable": "graph_classification",
+    "molecules": "graph_regression",
+    "PLANARITY": "graph_classification",
+    "SBMs": "node_classification",
+    "superpixels": "graph_classification",
+    "TSP": "edge_classification",
+    "TUs": "graph_classification",
+    "WikiCS": "node_classification"
+}
 
 def gpu_setup(use_gpu, gpu_id):
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -21,6 +36,9 @@ def gpu_setup(use_gpu, gpu_id):
 
 
 def script_boilerplate(args):
+    """
+    Generates the string setting up the job information for the experiment.
+    """
     num_cards = len(args.param_values)
     model = args.model
     dataset = args.dataset
@@ -34,7 +52,10 @@ def script_boilerplate(args):
 """
 
 def pre_run_boilerplate(args):
-    debug_file = f"fname=$(pwd)/{args.job_note}_${{SGE_TASK_ID}}_${{args.varying_param[${{SGE_TASK_ID}}]}}_DEBUG.txt"
+    """
+    Generates the string setting up the environment for the experiment.
+    """
+    debug_file = f"fname=$(pwd)/{args.job_note}_${{SGE_TASK_ID}}_${{{args.varying_param}[${{SGE_TASK_ID}}]}}_DEBUG.txt"
     rest = f"""touch $fname
 fsync -d 10 $fname &
 
@@ -43,6 +64,26 @@ cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
 """
     return debug_file + "\n" + rest
+
+
+def config_string(config):
+    """
+    Generates the string detailing parameters for the experiment.
+    """
+    pretty_params = pprint.pformat(config)
+
+    pretty_params = '\n'.join('# ' + s for s in pretty_params.split('\n')) 
+
+    return pretty_params + "\n"
+
+
+def run_string(args, config_path):
+    """
+    Generates the string for running the experiment.
+    """
+    dataset = args.dataset
+    graph_task = dataset_to_graph_task[dataset]
+    return f"python3 main_{dataset}_{graph_task}.py --config {config_path} --job_num ${{SGE_TASK_ID}} --{args.varying_param} ${{{args.varying_param}[${{SGE_TASK_ID}}]}}"
 
 
 def main(args):
@@ -64,14 +105,40 @@ def main(args):
 
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
 
+    model = args.model
+    dataset = args.dataset
+
+    config = {
+        "gpu": {
+            "use": config["gpu"]["use"],
+            "id": config["gpu"]["id"]
+        },
+        "model": config["model"],
+        "dataset": config["dataset"],
+        "out_dir": f"out/{dataset}_{dataset_to_graph_task[dataset]}_{args.job_note}",
+        "params": params,
+        "net_params": net_params,
+    }
+
+    del config["net_params"]["device"]
+
+    config_filename = f"./test-configs/{model}_{dataset}_{args.job_note}.json"
+    with open(config_filename, "w+") as f:
+        json.dump(config, f)
+
+    config_filename = os.path.join('tests', '/'.join(config_filename.split('/')[1:]))
+
     script_string += script_boilerplate(args)
 
     varying_param_str = f"{args.varying_param}=({' '.join(args.param_values)})"
     script_string += varying_param_str + "\n"
     script_string += pre_run_boilerplate(args)
+    script_string += run_string(args, config_filename) + "\n\n"
+
+    script_string += config_string(config) + "\n"
+
     with open('./test.sh', 'w') as f:
         f.write(script_string)
-    print(script_string)
 
 
 if __name__ == '__main__':
