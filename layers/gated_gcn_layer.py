@@ -13,16 +13,21 @@ class GatedGCNLayer(nn.Module):
     """
         Param: []
     """
-    def __init__(self, input_dim, output_dim, dropout, batch_norm, residual=False):
+    def __init__(self, input_dim, output_dim, dropout, batch_norm, layer_norm, residual=False):
         super().__init__()
         self.in_channels = input_dim
         self.out_channels = output_dim
         self.dropout = dropout
         self.batch_norm = batch_norm
+        self.layer_norm = layer_norm
         self.residual = residual
         
         if input_dim != output_dim:
             self.residual = False
+
+        if self.layer_norm:
+            self.layer_norm_h = nn.LayerNorm(output_dim)
+            self.layer_norm_e = nn.LayerNorm(output_dim)
         
         self.A = nn.Linear(input_dim, output_dim, bias=True)
         self.B = nn.Linear(input_dim, output_dim, bias=True)
@@ -48,7 +53,6 @@ class GatedGCNLayer(nn.Module):
         return {'h' : h}
     
     def forward(self, g, h, e):
-        
         h_in = h # for residual connection
         e_in = e # for residual connection
         
@@ -83,7 +87,11 @@ class GatedGCNLayer(nn.Module):
         
         h = F.dropout(h, self.dropout, training=self.training)
         e = F.dropout(e, self.dropout, training=self.training)
-        
+
+        if self.layer_norm:
+            h = self.layer_norm_h(h)
+            e = self.layer_norm_e(e)
+
         return h, e
     
     def __repr__(self):

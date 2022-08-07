@@ -23,8 +23,9 @@ class GatedGCNNet(nn.Module):
         in_feat_dropout = net_params['in_feat_dropout']
         dropout = net_params['dropout']
         n_layers = net_params['L']
+        batch_norm = net_params['batch_norm']
+        layer_norm = net_params['layer_norm']
         self.readout = net_params['readout']
-        self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
         self.device = net_params['device']
         self.pe_layer = PELayer(net_params)
@@ -34,8 +35,8 @@ class GatedGCNNet(nn.Module):
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
         self.layers = nn.ModuleList([ GatedGCNLayer(hidden_dim, hidden_dim, dropout,
-                                                       self.batch_norm, self.residual) for _ in range(n_layers-1) ]) 
-        self.layers.append(GatedGCNLayer(hidden_dim, out_dim, dropout, self.batch_norm, self.residual))
+                                                       batch_norm, layer_norm, self.residual) for _ in range(n_layers-1) ]) 
+        self.layers.append(GatedGCNLayer(hidden_dim, out_dim, dropout, batch_norm, self.layer_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, n_classes)
 
         
