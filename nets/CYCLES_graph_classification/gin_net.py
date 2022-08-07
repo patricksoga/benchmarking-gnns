@@ -28,6 +28,7 @@ class GINNet(nn.Module):
         neighbor_aggr_type = net_params['neighbor_aggr_GIN'] # GIN
         readout = net_params['readout']                      # this is graph_pooling_type
         batch_norm = net_params['batch_norm']
+        layer_norm = net_params['layer_norm']
         residual = net_params['residual']
         in_feat_dropout = net_params['in_feat_dropout']
         self.pos_enc = net_params['pos_enc']
@@ -40,7 +41,7 @@ class GINNet(nn.Module):
             mlp = MLP(n_mlp_layers, hidden_dim, hidden_dim, hidden_dim)
             
             self.ginlayers.append(GINLayer(ApplyNodeFunc(mlp), neighbor_aggr_type,
-                                           dropout, batch_norm, residual, 0, learn_eps))
+                                           dropout, batch_norm, layer_norm, residual, 0, learn_eps))
 
         # Linear function for graph poolings (readout) of output of each layer
         # which maps the output of different layers into a prediction score

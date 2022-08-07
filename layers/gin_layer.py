@@ -34,7 +34,7 @@ class GINLayer(nn.Module):
         If True, :math:`\epsilon` will be a learnable parameter.
     
     """
-    def __init__(self, apply_func, aggr_type, dropout, batch_norm, residual=False, init_eps=0, learn_eps=False):
+    def __init__(self, apply_func, aggr_type, dropout, batch_norm, layer_norm, residual=False, init_eps=0, learn_eps=False):
         super().__init__()
         self.apply_func = apply_func
         
@@ -48,6 +48,7 @@ class GINLayer(nn.Module):
             raise KeyError('Aggregator type {} not recognized.'.format(aggr_type))
             
         self.batch_norm = batch_norm
+        self.layer_norm = layer_norm
         self.residual = residual
         self.dropout = dropout
         
@@ -64,6 +65,9 @@ class GINLayer(nn.Module):
             self.register_buffer('eps', torch.FloatTensor([init_eps]))
             
         self.bn_node_h = nn.BatchNorm1d(out_dim)
+
+        if layer_norm:
+            self.ln_node_h = nn.LayerNorm(out_dim)
 
     def forward(self, g, h):
         h_in = h # for residual connection
@@ -84,6 +88,8 @@ class GINLayer(nn.Module):
             h = h_in + h # residual connection
         
         h = F.dropout(h, self.dropout, training=self.training)
+        if self.layer_norm:
+            h = self.ln_node_h(h)
         
         return h
     

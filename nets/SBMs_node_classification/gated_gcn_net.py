@@ -31,6 +31,7 @@ class GatedGCNNet(nn.Module):
         self.residual = net_params['residual']
         self.n_classes = n_classes
         self.device = net_params['device']
+        layer_norm = net_params['layer_norm']
         # self.pos_enc = net_params['pos_enc']
         # if self.pos_enc:
         #     pos_enc_dim = net_params['pos_enc_dim']
@@ -40,7 +41,7 @@ class GatedGCNNet(nn.Module):
         self.embedding_h = nn.Embedding(in_dim_node, hidden_dim) # node feat is an integer
         self.embedding_e = nn.Linear(in_dim_edge, hidden_dim) # edge feat is a float
         self.layers = nn.ModuleList([ GatedGCNLayer(hidden_dim, hidden_dim, dropout,
-                                                    self.batch_norm, self.residual) for _ in range(n_layers) ])
+                                                    self.batch_norm, layer_norm, self.residual) for _ in range(n_layers) ])
         self.MLP_layer = MLPReadout(hidden_dim, n_classes)
         
 
