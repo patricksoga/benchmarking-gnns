@@ -167,6 +167,10 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     net_params['device'] = device
     net_params['gpu_id'] = config['gpu']['id']
     net_params['batch_size'] = params['batch_size']
+    if args.layer_norm is not None:
+        net_params['layer_norm'] = True if args.layer_norm=='True' else False
+    if args.batch_norm is not None:
+        net_params['batch_norm'] = True if args.batch_norm=='True' else False
     if args.L is not None:
         net_params['L'] = int(args.L)
     if args.hidden_dim is not None:
@@ -203,10 +207,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['num_initials'] = int(args.num_initials)
     if args.pagerank is not None:
         net_params['pagerank'] = True if args.pagerank=='True' else False
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
