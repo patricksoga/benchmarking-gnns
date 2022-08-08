@@ -4,15 +4,16 @@
 #$ -l gpu_card=1
 #$ -t 1-3:1
 
-pos_enc_dim=(64 128 80)
-fname=$(pwd)/infeatdropout-0.5-dout-0.4-b5-random_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.txt
+pos_enc_dim=(0 64 128 80)
+fname=$(pwd)/infeatdropout-0.5-dout-0.4-b5-random_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_infeatdropout-0.5-dout-0.4-b5-random.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]}
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_infeatdropout-0.5-dout-0.4-b5-random.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+
 
 # {'dataset': 'CYCLES',
 #  'gpu': {'id': 0, 'use': True},
@@ -22,7 +23,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'batch_norm': True,
 #                 'batch_size': 5,
 #                 'dataset': 'CYCLES',
-#                 'dropout': 0.5,
+#                 'dropout': 0.4,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,

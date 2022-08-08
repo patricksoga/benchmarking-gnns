@@ -4,15 +4,16 @@
 #$ -l gpu_card=1
 #$ -t 1-3:1
 
-pos_enc_dim=(64 128 80)
-fname=$(pwd)/infeatdropout-0.5-b1-random_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.txt
+pos_enc_dim=(0 64 128 80)
+fname=$(pwd)/infeatdropout-0.5-b1-random_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBM_PATTERN_infeatdropout-0.5-b1-random.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]}
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBM_PATTERN_infeatdropout-0.5-b1-random.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+
 
 # {'dataset': 'SBM_PATTERN',
 #  'gpu': {'id': 0, 'use': True},

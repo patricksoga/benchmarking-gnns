@@ -59,7 +59,7 @@ def pre_run_boilerplate(args):
     """
     Generates the string setting up the environment for the experiment.
     """
-    debug_file = f"fname=$(pwd)/{args.job_note}_${{SGE_TASK_ID}}_${{{args.varying_param}[${{SGE_TASK_ID}}]}}_DEBUG.txt"
+    debug_file = f"fname=$(pwd)/{args.job_note}_${{SGE_TASK_ID}}_${{{args.varying_param}[${{SGE_TASK_ID}}]}}_DEBUG.log"
     rest = f"""touch $fname
 fsync -d 10 $fname &
 
@@ -89,7 +89,7 @@ def run_string(args, config_path):
     if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
         dataset = "SBMs"
     graph_task = dataset_to_graph_task(dataset)
-    return f"python3 main_{dataset}_{graph_task}.py --config {config_path} --job_num ${{SGE_TASK_ID}} --{args.varying_param} ${{{args.varying_param}[${{SGE_TASK_ID}}]}}"
+    return f"python3 main_{dataset}_{graph_task}.py --config {config_path} --job_num ${{SGE_TASK_ID}} --{args.varying_param} ${{{args.varying_param}[${{SGE_TASK_ID}}]}} --log_file $fname\n"
 
 
 def main(args):
@@ -137,7 +137,7 @@ def main(args):
 
     script_string += script_boilerplate(args)
 
-    varying_param_str = f"{args.varying_param}=({' '.join(args.param_values)})"
+    varying_param_str = f"{args.varying_param}=({' '.join(['0'] + args.param_values)})"
     script_string += varying_param_str + "\n"
     script_string += pre_run_boilerplate(args)
     script_string += run_string(args, config_filename) + "\n\n"
