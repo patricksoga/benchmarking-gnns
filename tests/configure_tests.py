@@ -151,7 +151,11 @@ def main(args):
     if not os.path.isdir(exp_dataset_dir):
         os.makedirs(exp_dataset_dir)
 
-    script_folder_1 = f"{exp_dataset_dir}/{type_of_enc(net_params)}"
+    model_dataset_dir = f"{exp_dataset_dir}/{model}"
+    if not os.path.isdir(model_dataset_dir):
+        os.makedirs(model_dataset_dir)
+
+    script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
     if not os.path.isdir(script_folder_1):
         os.makedirs(script_folder_1)
     
