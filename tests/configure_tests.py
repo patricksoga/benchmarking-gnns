@@ -8,21 +8,25 @@ import sys
 sys.path.append('..')
 
 from utils.main_utils import add_args, get_net_params, get_parameters
+from layers.pe_layer import type_of_enc
 
-dataset_to_graph_task = {
-    "COLLAB": "edge_classification",
-    "CSL": "graph_classification",
-    "CYCLES": "graph_classification",
-    "GraphTheoryProp": "multitask",
-    "K3Colorable": "graph_classification",
-    "molecules": "graph_regression",
-    "PLANARITY": "graph_classification",
-    "SBMs": "node_classification",
-    "superpixels": "graph_classification",
-    "TSP": "edge_classification",
-    "TUs": "graph_classification",
-    "WikiCS": "node_classification"
-}
+def dataset_to_graph_task(dataset):
+    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
+        dataset = "SBMs"
+
+    if dataset in ("COLLAB", "TSP"):
+        return "edge_classification"
+    elif dataset in ("CSL", "CYCLES", "PLANARITY", "K3Colorable", "TUs", "superpixels"):
+        return "graph_classification"
+    elif dataset in ("GraphTheoryProp"):
+        return "multitask"
+    elif dataset in ("molecules"):
+        return "graph_regression"
+    elif dataset in ("SBMs", "WikiCS"):
+        return "node_classification" 
+    else:
+        raise ValueError(f"Dataset {dataset} not recognized")
+
 
 def gpu_setup(use_gpu, gpu_id):
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -82,7 +86,9 @@ def run_string(args, config_path):
     Generates the string for running the experiment.
     """
     dataset = args.dataset
-    graph_task = dataset_to_graph_task[dataset]
+    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
+        dataset = "SBMs"
+    graph_task = dataset_to_graph_task(dataset)
     return f"python3 main_{dataset}_{graph_task}.py --config {config_path} --job_num ${{SGE_TASK_ID}} --{args.varying_param} ${{{args.varying_param}[${{SGE_TASK_ID}}]}}"
 
 
@@ -108,6 +114,7 @@ def main(args):
     model = args.model
     dataset = args.dataset
 
+
     config = {
         "gpu": {
             "use": config["gpu"]["use"],
@@ -115,7 +122,7 @@ def main(args):
         },
         "model": config["model"],
         "dataset": config["dataset"],
-        "out_dir": f"out/{dataset}_{dataset_to_graph_task[dataset]}_{args.job_note}",
+        "out_dir": f"out/{dataset}_{dataset_to_graph_task(dataset)}_{args.job_note}",
         "params": params,
         "net_params": net_params,
     }
@@ -134,10 +141,26 @@ def main(args):
     script_string += varying_param_str + "\n"
     script_string += pre_run_boilerplate(args)
     script_string += run_string(args, config_filename) + "\n\n"
-
     script_string += config_string(config) + "\n"
 
-    with open('./test.sh', 'w') as f:
+    out_dir = f"../{config['out_dir']}"
+    if not os.path.isdir(out_dir):
+        os.makedirs(out_dir)
+
+    exp_dataset_dir = f"./{dataset}" 
+    if not os.path.isdir(exp_dataset_dir):
+        os.makedirs(exp_dataset_dir)
+
+    script_folder_1 = f"{exp_dataset_dir}/{type_of_enc(net_params)}"
+    if not os.path.isdir(script_folder_1):
+        os.makedirs(script_folder_1)
+    
+    script_folder_2 = f"{script_folder_1}/{args.job_note}"
+    if not os.path.isdir(script_folder_2):
+        os.makedirs(script_folder_2)
+
+    script_path = f"{script_folder_2}/{args.job_note}.sh"
+    with open(script_path, 'w') as f:
         f.write(script_string)
 
 
@@ -145,6 +168,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--varying_param", type=str, help="Parameter to vary, only one allowed")
     parser.add_argument("--param_values", nargs='+', help="Values to vary, max 5 values")
-    parser.add_argument("--job_note", type=str, help="Job note for job name")
+    parser.add_argument("--job_note", type=str, help="Job note for job name and script header")
     parser = add_args(parser)
     main(parser.parse_args())

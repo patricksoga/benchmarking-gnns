@@ -1,48 +1,48 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_batch_norm
+#$ -N GraphTransformer_SBM_PATTERN_infeatdropout-0.5-b1-random
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-3:1
 
-L=(3 4 5)
-fname=$(pwd)/batch_norm_${SGE_TASK_ID}_${L[${SGE_TASK_ID}]}_DEBUG.txt
+pos_enc_dim=(64 128 80)
+fname=$(pwd)/infeatdropout-0.5-b1-random_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.txt
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_batch_norm.json --job_num ${SGE_TASK_ID} --L ${L[${SGE_TASK_ID}]}
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBM_PATTERN_infeatdropout-0.5-b1-random.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]}
 
-# {'dataset': 'CYCLES',
+# {'dataset': 'SBM_PATTERN',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'GraphTransformer',
 #  'net_params': {'L': 6,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 10,
-#                 'dataset': 'CYCLES',
+#                 'batch_size': 1,
+#                 'dataset': 'SBM_PATTERN',
 #                 'dropout': 0.0,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
-#                 'in_feat_dropout': 0.0,
+#                 'in_feat_dropout': 0.5,
 #                 'layer_norm': False,
 #                 'learned_pos_enc': False,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
 #                 'num_initials': 1,
-#                 'num_train_data': 200,
 #                 'out_dim': 80,
-#                 'pos_enc': True,
+#                 'pos_enc': False,
 #                 'pos_enc_dim': 20,
 #                 'pow_of_mat': 1,
+#                 'rand_pos_enc': True,
 #                 'readout': 'sum',
 #                 'residual': True,
 #                 'self_loop': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_batch_norm',
-#  'params': {'batch_size': 10,
+#  'out_dir': 'out/SBM_PATTERN_node_classification_infeatdropout-0.5-b1-random',
+#  'params': {'batch_size': 1,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
