@@ -22,7 +22,7 @@ def dataset_to_graph_task(dataset):
         return "multitask"
     elif dataset in ("molecules"):
         return "graph_regression"
-    elif dataset in ("SBMs", "WikiCS"):
+    elif dataset in ("SBMs", "WikiCS", "cora"):
         return "node_classification" 
     else:
         raise ValueError(f"Dataset {dataset} not recognized")
@@ -80,14 +80,23 @@ def config_string(config):
 
     return pretty_params + "\n"
 
+def parse_dataset(args):
+    """
+    Gives correct string to use for dataset accordingly. E.g. superpixels
+    could correspond to MNIST or CIFAR10.
+    """
+    dataset = args.dataset
+    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
+        dataset = "SBMs"
+    if dataset in ("MNIST", "CIFAR10"):
+        dataset = "superpixels"
+    return dataset
 
 def run_string(args, config_path):
     """
     Generates the string for running the experiment.
     """
-    dataset = args.dataset
-    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
-        dataset = "SBMs"
+    dataset = parse_dataset(args)
     graph_task = dataset_to_graph_task(dataset)
     return f"python3 main_{dataset}_{graph_task}.py --config {config_path} --job_num ${{SGE_TASK_ID}} --{args.varying_param} ${{{args.varying_param}[${{SGE_TASK_ID}}]}} --log_file $fname\n"
 
@@ -112,8 +121,7 @@ def main(args):
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
 
     model = args.model
-    dataset = args.dataset
-
+    dataset = parse_dataset(args)
 
     config = {
         "gpu": {
