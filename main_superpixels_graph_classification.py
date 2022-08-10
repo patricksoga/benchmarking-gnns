@@ -18,6 +18,7 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
+logger = None
 
 """
     IMPORTING CUSTOM MODULES/METHODS
@@ -59,10 +60,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if device.type == 'cuda':
         torch.cuda.manual_seed(params['seed'])
     
-    print("Training Graphs: ", len(trainset))
-    print("Validation Graphs: ", len(valset))
-    print("Test Graphs: ", len(testset))
-    print("Number of Classes: ", net_params['n_classes'])
+    logger.info(f"Training Graphs: {len(trainset)}")
+    logger.info(f"Validation Graphs: {len(valset)}")
+    logger.info(f"Test Graphs: {len(testset)}")
+    logger.info(f"Number of Classes: {net_params['n_classes']}")
 
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
@@ -97,77 +98,70 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
-        with tqdm(range(params['epochs'])) as t:
-            for epoch in t:
+        # with tqdm(range(params['epochs'])) as t:
+        for epoch in range(params['epochs']):
 
-                t.set_description('Epoch %d' % epoch)
+            logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
+            start = time.time()
 
-                start = time.time()
+            if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+            else:   # for all other models common train function
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
 
-                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-                else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+            epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
+            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)                
+            
+            epoch_train_losses.append(epoch_train_loss)
+            epoch_val_losses.append(epoch_val_loss)
+            epoch_train_accs.append(epoch_train_acc)
+            epoch_val_accs.append(epoch_val_acc)
 
-                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
-                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)                
+            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+            writer.add_scalar('train/_acc', epoch_train_acc, epoch)
+            writer.add_scalar('val/_acc', epoch_val_acc, epoch)
+            writer.add_scalar('test/_acc', epoch_test_acc, epoch)
+            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+
+            per_epoch_time.append(time.time()-start)
+
+            # Saving checkpoint
+            ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+
+            files = glob.glob(ckpt_dir + '/*.pkl')
+            for file in files:
+                epoch_nb = file.split('_')[-1]
+                epoch_nb = int(epoch_nb.split('.')[0])
+                if epoch_nb < epoch-1:
+                    os.remove(file)
+
+            scheduler.step(epoch_val_loss)
+
+            if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                logger.info("\n!! LR EQUAL TO MIN LR SET.")
+                break
                 
-                epoch_train_losses.append(epoch_train_loss)
-                epoch_val_losses.append(epoch_val_loss)
-                epoch_train_accs.append(epoch_train_acc)
-                epoch_val_accs.append(epoch_val_acc)
-
-                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                writer.add_scalar('train/_acc', epoch_train_acc, epoch)
-                writer.add_scalar('val/_acc', epoch_val_acc, epoch)
-                writer.add_scalar('test/_acc', epoch_test_acc, epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-
-                
-                t.set_postfix(time=time.time()-start, lr=optimizer.param_groups[0]['lr'],
-                              train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_acc=epoch_train_acc, val_acc=epoch_val_acc,
-                              test_acc=epoch_test_acc)    
-
-                per_epoch_time.append(time.time()-start)
-
-                # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
-
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
-
-                scheduler.step(epoch_val_loss)
-
-                if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                    print("\n!! LR EQUAL TO MIN LR SET.")
-                    break
-                    
-                # Stop training after params['max_time'] hours
-                if time.time()-t0 > params['max_time']*3600:
-                    print('-' * 89)
-                    print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                    break
+            # Stop training after params['max_time'] hours
+            if time.time()-t0 > params['max_time']*3600:
+                logger.info('-' * 89)
+                logger.info(f"Max_time for training elapsed {params['max_time']:.2f} hours, so stopping")
+                break
     
     except KeyboardInterrupt:
-        print('-' * 89)
-        print('Exiting from training early because of KeyboardInterrupt')
+        logger.info('-' * 89)
+        logger.info('Exiting from training early because of KeyboardInterrupt')
     
     _, test_acc = evaluate_network(model, device, test_loader, epoch)
     _, train_acc = evaluate_network(model, device, train_loader, epoch)
-    print("Test Accuracy: {:.4f}".format(test_acc))
-    print("Train Accuracy: {:.4f}".format(train_acc))
-    print("Convergence Time (Epochs): {:.4f}".format(epoch))
-    print("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
-    print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+    logger.info(f"Test Accuracy: {test_acc:.4f}")
+    logger.info(f"Train Accuracy: {train_acc:.4f}")
+    logger.info(f"Convergence Time (Epochs): {epoch:.4f}")
+    logger.info(f"TOTAL TIME TAKEN: {(time.time()-t0):.4f}s")
+    logger.info(f"AVG TIME PER EPOCH: {np.mean(per_epoch_time):.4f}s")
 
     writer.close()
 
@@ -225,10 +219,7 @@ def main():
     params = get_parameters(config, args)
     # network parameters
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator
     if args.data_mode is not None:
