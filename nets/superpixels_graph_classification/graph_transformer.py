@@ -30,7 +30,6 @@ class GraphTransformerNet(nn.Module):
         self.device = net_params['device']
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
-        self.n_classes = n_classes
 
         # if self.edge_feat:
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
@@ -47,7 +46,7 @@ class GraphTransformerNet(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, n_classes)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
-        h = self.embedding_h(h)
+        # h = self.embedding_h(h)
         h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
         # if not self.edge_feat: # edge feature set to 1
@@ -57,9 +56,18 @@ class GraphTransformerNet(nn.Module):
         # convnets
         for conv in self.layers:
             h, e = conv(g, h, e)
+        g.ndata['h'] = h
 
-        out = self.MLP_layer(h)
-        return out
+        if self.readout == "sum":
+            hg = dgl.sum_nodes(g, 'h')
+        elif self.readout == "max":
+            hg = dgl.max_nodes(g, 'h')
+        elif self.readout == "mean":
+            hg = dgl.mean_nodes(g, 'h')
+        else:
+            hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
+
+        return self.MLP_layer(hg)
 
     def loss(self, pred, label):
         criterion = nn.CrossEntropyLoss()
