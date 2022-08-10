@@ -124,6 +124,17 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             writer.add_scalar('test/_acc', epoch_test_acc, epoch)
             writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
+            t = time.time() - start
+            lr = optimizer.param_groups[0]['lr']
+            train_loss = epoch_train_loss
+            val_loss = epoch_val_loss
+            train_acc = epoch_train_acc
+            val_acc = epoch_val_acc
+            test_acc = epoch_test_acc
+
+            logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+                        Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
+
             per_epoch_time.append(time.time()-start)
 
             # Saving checkpoint
