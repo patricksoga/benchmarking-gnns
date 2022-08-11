@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import logging
 import time
-
+import sqlite3
 
 def get_logger(logfile=None):
     _logfile = logfile if logfile else './DEBUG.log'
@@ -87,6 +87,7 @@ def add_args(parser):
     parser.add_argument('--dropout', help="Please give a value for dropout")
     parser.add_argument('--layer_norm', help="Please give a value for layer_norm")
     parser.add_argument('--batch_norm', help="Please give a value for batch_norm")
+    parser.add_argument('--graph_norm', help="Please give a value for graph_norm")
     parser.add_argument('--sage_aggregator', help="Please give a value for sage_aggregator")
     parser.add_argument('--data_mode', help="Please give a value for data_mode")
     parser.add_argument('--num_pool', help="Please give a value for num_pool")
@@ -102,7 +103,7 @@ def add_args(parser):
     parser.add_argument('--job_num', help="Please give a value for job number")
     parser.add_argument('--learned_pos_enc', help="Please give a value for learned_pos_enc")
     parser.add_argument('--rand_pos_enc', help="Whether to use a random automata PE")
-    parser.add_argument('--pos_enc', type=bool, help="Whether to use Laplacian PE or not")
+    parser.add_argument('--pos_enc', help="Whether to use Laplacian PE or not")
     parser.add_argument('--matrix_type', type=str, default="A", help="Type of matrix to use in automata PE")
     parser.add_argument('--pow_of_mat', type=int, default=1, help="Highest power of adjacency matrix to use in automata PE")
     parser.add_argument('--log_file', type=str, default="./DEBUG.log")
@@ -166,7 +167,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     net_params = config['net_params']
     net_params['device'] = device
     net_params['gpu_id'] = config['gpu']['id']
-    net_params['batch_size'] = params['batch_size']
+    net_params['batch_size'] = params.get('batch_size', -1)
     if args.layer_norm is not None:
         net_params['layer_norm'] = True if args.layer_norm=='True' else False
     if args.batch_norm is not None:
@@ -200,7 +201,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     if args.rand_pos_enc is not None:
         net_params['rand_pos_enc'] = True if args.rand_pos_enc=='True' else False
     if args.pos_enc is not None:
-        net_params['pos_enc'] = args.pos_enc
+        net_params['pos_enc'] = True if args.pos_enc =='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:
