@@ -78,7 +78,7 @@ def get_all_split_idx(dataset):
         for i in range(len(dataset.graph_lists)):
             dataset[i][0].a = lambda: None
             setattr(dataset[i][0].a, 'index', i)
-            
+
         for indexes in cross_val_fold.split(dataset.graph_lists, dataset.graph_labels):
             remain_index, test_index = indexes[0], indexes[1]    
 
@@ -101,7 +101,7 @@ def get_all_split_idx(dataset):
             f_train_w = csv.writer(open(root_idx_dir + dataset.name + '_train.index', 'a+'))
             f_val_w = csv.writer(open(root_idx_dir + dataset.name + '_val.index', 'a+'))
             f_test_w = csv.writer(open(root_idx_dir + dataset.name + '_test.index', 'a+'))
-            
+
             f_train_w.writerow(idx_train)
             f_val_w.writerow(idx_val)
             f_test_w.writerow(idx_test)
@@ -139,7 +139,7 @@ class CSL(torch.utils.data.Dataset):
         print("[I] Preparing Circular Skip Link Graphs v4 ...")
         for sample in self.adj_list:
             _g = dgl.from_scipy(sample)
-            g = dgl.transform.remove_self_loop(_g)
+            g = dgl.transforms.remove_self_loop(_g)
             g.ndata['feat'] = torch.zeros(g.number_of_nodes()).long()
             #g.ndata['feat'] = torch.arange(0, g.number_of_nodes()).long() # v1
             #g.ndata['feat'] = torch.randperm(g.number_of_nodes()).long() # v3
