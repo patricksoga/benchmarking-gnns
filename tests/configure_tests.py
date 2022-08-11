@@ -20,7 +20,7 @@ def dataset_to_graph_task(dataset):
         return "graph_classification"
     elif dataset in ("GraphTheoryProp"):
         return "multitask"
-    elif dataset in ("ZINC", "AQSOL"):
+    elif dataset in ("molecules"):
         return "graph_regression"
     elif dataset in ("SBMs", "WikiCS", "cora"):
         return "node_classification" 
