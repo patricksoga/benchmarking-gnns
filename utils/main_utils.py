@@ -108,7 +108,8 @@ def add_args(parser):
     parser.add_argument('--pow_of_mat', type=int, default=1, help="Highest power of adjacency matrix to use in automata PE")
     parser.add_argument('--log_file', type=str, default="./DEBUG.log")
     parser.add_argument('--adj_enc', action='store_true', help="Use adjacency matrix eigenvectors for PE")
-    parser.add_argument('--num_initials', type=int, default=1, help="Number of initial weight vectors for automata PE")
+    parser.add_argument('--num_initials', "Number of initial weight vectors for automata PE")
+    parser.add_argument('--full_graph', help="Use full graph for graph transformer")
     parser.add_argument('--pagerank')
     return parser
 
@@ -208,6 +209,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['num_initials'] = int(args.num_initials)
     if args.pagerank is not None:
         net_params['pagerank'] = True if args.pagerank=='True' else False
+    if args.full_graph is not None:
+        net_params['full_graph'] = True if args.full_graph=='True' else False
 
 
     net_params['adj_enc'] = args.adj_enc
