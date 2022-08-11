@@ -34,15 +34,16 @@ def parse_dataset(args):
     should correspond to superpixels.
     """
     dataset = args.dataset
+    dataset_supertype = None
     if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
-        dataset = "SBMs"
+        dataset_supertype = "SBMs"
     elif dataset in ("MNIST", "CIFAR10"):
-        dataset = "superpixels"
+        dataset_supertype = "superpixels"
     elif dataset in ("ZINC", "AQSOL"):
-        dataset = "molecules"
+        dataset_supertype = "molecules"
     else:
         raise ValueError(f"Dataset {dataset} not recognized")
-    return dataset
+    return dataset_supertype
 
 
 def gpu_setup(use_gpu, gpu_id):
@@ -168,7 +169,7 @@ def main(args):
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir)
 
-        exp_dataset_dir = f"./{dataset}" 
+        exp_dataset_dir = f"./{dataset}_{args.dataset}" 
         if not os.path.isdir(exp_dataset_dir):
             os.makedirs(exp_dataset_dir)
 
