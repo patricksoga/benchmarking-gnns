@@ -28,6 +28,23 @@ def dataset_to_graph_task(dataset):
         raise ValueError(f"Dataset {dataset} not recognized")
 
 
+def parse_dataset(args):
+    """
+    Gives correct string to use for dataset accordingly. E.g. MNIST or CIFAR10
+    should correspond to superpixels.
+    """
+    dataset = args.dataset
+    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
+        dataset = "SBMs"
+    elif dataset in ("MNIST", "CIFAR10"):
+        dataset = "superpixels"
+    elif dataset in ("ZINC", "AQSOL"):
+        dataset = "molecules"
+    else:
+        raise ValueError(f"Dataset {dataset} not recognized")
+    return dataset
+
+
 def gpu_setup(use_gpu, gpu_id):
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)  
@@ -80,19 +97,6 @@ def config_string(config):
 
     return pretty_params + "\n"
 
-def parse_dataset(args):
-    """
-    Gives correct string to use for dataset accordingly. E.g. superpixels
-    could correspond to MNIST or CIFAR10.
-    """
-    dataset = args.dataset
-    if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
-        dataset = "SBMs"
-    if dataset in ("MNIST", "CIFAR10"):
-        dataset = "superpixels"
-    if dataset in ("ZINC", "AQSOL"):
-        dataset = "molecules"
-    return dataset
 
 def run_string(args, config_path):
     """
@@ -175,7 +179,7 @@ def main(args):
         script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
         if not os.path.isdir(script_folder_1):
             os.makedirs(script_folder_1)
-        
+
         script_folder_2 = f"{script_folder_1}/{args.job_note}"
         if not os.path.isdir(script_folder_2):
             os.makedirs(script_folder_2)
