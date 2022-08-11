@@ -45,7 +45,7 @@ class GraphTransformerNet(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
-        # h = self.embedding_h(h)
+        h = self.embedding_h(h)
         # h = self.in_feat_dropout(h)
         h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
