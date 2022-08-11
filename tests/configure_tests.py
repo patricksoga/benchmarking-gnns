@@ -151,29 +151,37 @@ def main(args):
     script_string += run_string(args, config_filename) + "\n\n"
     script_string += config_string(config) + "\n"
 
-    out_dir = f"../{config['out_dir']}"
-    if not os.path.isdir(out_dir):
-        os.makedirs(out_dir)
+    try:
+        out_dir = f"../{config['out_dir']}"
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
 
-    exp_dataset_dir = f"./{dataset}" 
-    if not os.path.isdir(exp_dataset_dir):
-        os.makedirs(exp_dataset_dir)
+        exp_dataset_dir = f"./{dataset}" 
+        if not os.path.isdir(exp_dataset_dir):
+            os.makedirs(exp_dataset_dir)
 
-    model_dataset_dir = f"{exp_dataset_dir}/{model}"
-    if not os.path.isdir(model_dataset_dir):
-        os.makedirs(model_dataset_dir)
+        model_dataset_dir = f"{exp_dataset_dir}/{model}"
+        if not os.path.isdir(model_dataset_dir):
+            os.makedirs(model_dataset_dir)
 
-    script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
-    if not os.path.isdir(script_folder_1):
-        os.makedirs(script_folder_1)
-    
-    script_folder_2 = f"{script_folder_1}/{args.job_note}"
-    if not os.path.isdir(script_folder_2):
-        os.makedirs(script_folder_2)
+        script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
+        if not os.path.isdir(script_folder_1):
+            os.makedirs(script_folder_1)
+        
+        script_folder_2 = f"{script_folder_1}/{args.job_note}"
+        if not os.path.isdir(script_folder_2):
+            os.makedirs(script_folder_2)
 
-    script_path = f"{script_folder_2}/{args.job_note}.sh"
-    with open(script_path, 'w') as f:
-        f.write(script_string)
+        script_path = f"{script_folder_2}/{args.job_note}.sh"
+        with open(script_path, 'w') as f:
+            f.write(script_string)
+
+        print("Script written to: ", script_path)
+
+    except Exception as e:
+        print(f"Could not write script to {script_path}")
+        print(e)
+        raise e
 
 
 if __name__ == '__main__':
