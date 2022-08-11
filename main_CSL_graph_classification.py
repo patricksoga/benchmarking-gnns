@@ -16,6 +16,8 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
+logger = None
+
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
@@ -39,11 +41,11 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
     
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params['self_loop']:
-            print("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
+            logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
 
     if net_params['pos_enc']:
-        print("[!] Adding Laplacian graph positional encoding.")
+        logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
         
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
@@ -70,12 +72,12 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
             if device.type == 'cuda':
                 torch.cuda.manual_seed(params['seed'])
 
-            print("RUN NUMBER: ", split_number)
+            logger.info(f"RUN NUMBER: {split_number}")
             trainset, valset, testset = dataset.train[split_number], dataset.val[split_number], dataset.test[split_number]
-            print("Training Graphs: ", len(trainset))
-            print("Validation Graphs: ", len(valset))
-            print("Test Graphs: ", len(testset))
-            print("Number of Classes: ", net_params['n_classes'])
+            logger.info(f"Training Graphs: {len(trainset)}")
+            logger.info(f"Validation Graphs: {len(valset)}")
+            logger.info(f"Test Graphs: {len(testset)}")
+            logger.info(f"Number of Classes: {net_params['n_classes']}")
 
             model = gnn_model(MODEL_NAME, net_params)
             model = model.to(device)
@@ -110,70 +112,80 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                 val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
                 test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
 
-        
-            with tqdm(range(params['epochs'])) as t:
-                for epoch in t:
+            best_test_acc = -1.0
+            best_train_acc = -1.0
+            for epoch in range(params['epochs']):
 
-                    t.set_description('Epoch %d' % epoch)    
+                logger.info(f'Epoch {epoch}')    
 
-                    start = time.time()
-                    
-                    if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
-                        epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-                    else:   # for all other models common train function
-                        epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                    
-                    #epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                    epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
+                start = time.time()
 
-                    _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)
-                    
-                    epoch_train_losses.append(epoch_train_loss)
-                    epoch_val_losses.append(epoch_val_loss)
-                    epoch_train_accs.append(epoch_train_acc)
-                    epoch_val_accs.append(epoch_val_acc)
+                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
+                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+                else:   # for all other models common train function
+                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
 
-                    writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                    writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                    writer.add_scalar('train/_acc', epoch_train_acc, epoch)
-                    writer.add_scalar('val/_acc', epoch_val_acc, epoch)
-                    writer.add_scalar('test/_acc', epoch_test_acc, epoch)
-                    writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-                    
-                    epoch_train_acc = 100.* epoch_train_acc
-                    epoch_test_acc = 100.* epoch_test_acc
-                    
-                    t.set_postfix(time=time.time()-start, lr=optimizer.param_groups[0]['lr'],
-                                  train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                                  train_acc=epoch_train_acc, val_acc=epoch_val_acc,
-                                  test_acc=epoch_test_acc)  
+                #epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
 
-                    per_epoch_time.append(time.time()-start)
+                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)
 
-                    # Saving checkpoint
-                    ckpt_dir = os.path.join(root_ckpt_dir, "RUN_" + str(split_number))
-                    if not os.path.exists(ckpt_dir):
-                        os.makedirs(ckpt_dir)
-                    torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+                if epoch_test_acc > best_test_acc:
+                    best_test_acc = epoch_test_acc
+                    best_train_acc = epoch_train_acc
 
-                    files = glob.glob(ckpt_dir + '/*.pkl')
-                    for file in files:
-                        epoch_nb = file.split('_')[-1]
-                        epoch_nb = int(epoch_nb.split('.')[0])
-                        if epoch_nb < epoch-1:
-                            os.remove(file)
+                epoch_train_losses.append(epoch_train_loss)
+                epoch_val_losses.append(epoch_val_loss)
+                epoch_train_accs.append(epoch_train_acc)
+                epoch_val_accs.append(epoch_val_acc)
 
-                    scheduler.step(epoch_val_loss)
+                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+                writer.add_scalar('train/_acc', epoch_train_acc, epoch)
+                writer.add_scalar('val/_acc', epoch_val_acc, epoch)
+                writer.add_scalar('test/_acc', epoch_test_acc, epoch)
+                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
-                    if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                        print("\n!! LR EQUAL TO MIN LR SET.")
-                        break
-                        
-                    # Stop training after params['max_time'] hours
-                    if time.time()-t0_split > params['max_time']*3600/10:       # Dividing max_time by 10, since there are 10 runs in TUs
-                        print('-' * 89)
-                        print("Max_time for one train-val-test split experiment elapsed {:.3f} hours, so stopping".format(params['max_time']/10))
-                        break
+                t = time.time() - start
+                lr = optimizer.param_groups[0]['lr']
+                train_loss = epoch_train_loss
+                val_loss = epoch_val_loss
+                train_acc = epoch_train_acc
+                val_acc = epoch_val_acc
+                test_acc = epoch_test_acc
+
+                logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+                            Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
+
+                epoch_train_acc = 100.* epoch_train_acc
+                epoch_test_acc = 100.* epoch_test_acc
+                
+                per_epoch_time.append(time.time()-start)
+
+                # Saving checkpoint
+                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_" + str(split_number))
+                if not os.path.exists(ckpt_dir):
+                    os.makedirs(ckpt_dir)
+                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+
+                files = glob.glob(ckpt_dir + '/*.pkl')
+                for file in files:
+                    epoch_nb = file.split('_')[-1]
+                    epoch_nb = int(epoch_nb.split('.')[0])
+                    if epoch_nb < epoch-1:
+                        os.remove(file)
+
+                scheduler.step(epoch_val_loss)
+
+                if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                    logger.info("\n!! LR EQUAL TO MIN LR SET.")
+                    break
+
+                # Stop training after params['max_time'] hours
+                if time.time()-t0_split > params['max_time']*3600/10:       # Dividing max_time by 10, since there are 10 runs in TUs
+                    logger.info('-' * 89)
+                    logger.info(f"Max_time for one train-val-test split experiment elapsed {params['max_time']/10:.3f} hours, so stopping")
+                    break
 
             _, test_acc = evaluate_network(model, device, test_loader, epoch)   
             _, train_acc = evaluate_network(model, device, train_loader, epoch)    
@@ -181,22 +193,26 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
             avg_train_acc.append(train_acc)
             avg_epochs.append(epoch)
 
-            print("Test Accuracy [LAST EPOCH]: {:.4f}".format(test_acc))
-            print("Train Accuracy [LAST EPOCH]: {:.4f}".format(train_acc))
-    
+            logger.info("Test Accuracy: {:.4f}".format(test_acc))
+            logger.info("Best Test Accuracy: {:.4f}".format(best_test_acc))
+            logger.info("Train Accuracy: {:.4f}".format(train_acc))
+            logger.info("Best Train Accuracy Corresponding to Best Test Accuracy: {:.4f}".format(best_train_acc))
+            logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
+            writer.close()
+
     except KeyboardInterrupt:
-        print('-' * 89)
-        print('Exiting from training early because of KeyboardInterrupt')
-        
-    
-    print("TOTAL TIME TAKEN: {:.4f}hrs".format((time.time()-t0)/3600))
-    print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+        logger.info('-' * 90)
+        logger.info('Exiting from training early because of KeyboardInterrupt')
+
+
+    logger.info(f"TOTAL TIME TAKEN: {((time.time()-t0)/3600):.4f}hrs")
+    logger.info(f"AVG TIME PER EPOCH: {np.mean(per_epoch_time):.4f}s")
 
     # Final test accuracy value averaged over 5-fold
-    print("""\n\n\nFINAL RESULTS\n\nTEST ACCURACY averaged: {:.4f} with s.d. {:.4f}"""          .format(np.mean(np.array(avg_test_acc))*100, np.std(avg_test_acc)*100))
-    print("\nAll splits Test Accuracies:\n", avg_test_acc)
-    print("""\n\n\nFINAL RESULTS\n\nTRAIN ACCURACY averaged: {:.4f} with s.d. {:.4f}"""          .format(np.mean(np.array(avg_train_acc))*100, np.std(avg_train_acc)*100))
-    print("\nAll splits Train Accuracies:\n", avg_train_acc)
+    logger.info(f"""\n\n\nFINAL RESULTS\n\nTEST ACCURACY averaged: {np.mean(np.array(avg_test_acc))*100:.4f} with s.d. {(np.std(avg_test_acc)*100):.4f}""")
+    logger.info(f"\nAll splits Test Accuracies: {avg_test_acc}\n")
+    logger.info(f"""\n\n\nFINAL RESULTS\n\nTRAIN ACCURACY averaged: {(np.mean(np.array(avg_train_acc))*100):.4f} with s.d. {np.std(avg_train_acc)*100:.4f}""")
+    logger.info(f"\nAll splits Train Accuracies: {avg_train_acc}\n")
 
     writer.close()
 
