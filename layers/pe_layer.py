@@ -21,7 +21,7 @@ def type_of_enc(net_params):
     elif rand_pos_enc:
         return 'rand_pos_enc'
     else:
-        return 'none'
+        return 'no_pe'
 
 class PELayer(nn.Module):
     def __init__(self, net_params):
@@ -66,6 +66,7 @@ class PELayer(nn.Module):
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             for mat_pow in self.mat_pows:
                 nn.init.constant_(mat_pow, 1)
+            self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
 
             # self.add_initial = nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=True) 
             # nn.init.normal_(self.add_initial)
@@ -74,7 +75,7 @@ class PELayer(nn.Module):
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         in_dim = 1
-        if self.dataset == "SBM_PATTERN":
+        if self.dataset in ("SBM_PATTERN", "CIFAR10", "MNIST"):
             in_dim = net_params['in_dim']
         self.embedding_h = nn.Linear(in_dim, hidden_dim)
 
@@ -85,7 +86,7 @@ class PELayer(nn.Module):
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
-        if not self.use_pos_enc and self.dataset != 'CYCLES':
+        if not self.use_pos_enc and self.dataset != 'CYCLES' and self.dataset != 'Cora':
             self.embedding_h = nn.Embedding(in_dim, hidden_dim)
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
@@ -157,7 +158,7 @@ class PELayer(nn.Module):
             mat = mat.cpu().numpy()
             vec_init = vec_init.cpu().numpy()
             pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
-            # v = self.add_initial.repeat(1, g.num_nodes())
+            # v = self.adder.repeat(1, g.num_nodes())
             pe = torch.from_numpy(pe.T).to(self.device)
             # pe += v.transpose(1, 0)
             pe = self.embedding_pos_enc(pe)
@@ -169,6 +170,8 @@ class PELayer(nn.Module):
         else:
             if self.dataset == "ZINC":
                 pe = h
+            elif self.dataset == "Cora":
+                return h
             pe = self.embedding_h(h)
             # elif self.dataset == "CYCLES":
             #     pe = self.embedding_h(h)
@@ -208,7 +211,7 @@ class PELayer(nn.Module):
             matrix = torch.from_numpy(laplacian.A).float().to(self.device) 
         elif matrix_type == "L":
             graph = g.cpu().to_networkx().to_undirected()
-            matrix = torch.from_numpy(nx.laplacian_matrix(graph).A).to(self.device)
+            matrix = torch.from_numpy(nx.laplacian_matrix(graph).A).to(self.device).type(torch.float32)
         elif matrix_type == "E":
             laplacian = self.get_normalized_laplacian(g)
             EigVal, EigVec = np.linalg.eig(laplacian.toarray())
