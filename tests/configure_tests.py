@@ -20,7 +20,7 @@ def dataset_to_graph_task(dataset):
         return "graph_classification"
     elif dataset in ("GraphTheoryProp"):
         return "multitask"
-    elif dataset in ("molecules"):
+    elif dataset in ("ZINC", "AQSOL"):
         return "graph_regression"
     elif dataset in ("SBMs", "WikiCS", "cora"):
         return "node_classification" 
@@ -108,6 +108,8 @@ def main(args):
         raise ValueError('Must specify varying parameter')
     if args.varying_param and args.param_values is None:
         raise ValueError('Must specify param values')
+    if args.job_note is None:
+        raise ValueError('Must specify job note')
 
     script_string = ""
 
