@@ -90,6 +90,8 @@ def parse_dataset(args):
         dataset = "SBMs"
     if dataset in ("MNIST", "CIFAR10"):
         dataset = "superpixels"
+    if dataset in ("ZINC", "AQSOL"):
+        dataset = "molecules"
     return dataset
 
 def run_string(args, config_path):
