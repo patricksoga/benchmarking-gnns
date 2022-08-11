@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_ZINC_b128_lnorm_edge_feat_d128
+#$ -N GraphTransformer_ZINC_b64_lnorm_edge_feat_d128
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 128)
-fname=$(pwd)/b128_lnorm_edge_feat_d128_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+pos_enc_dim=(0 64)
+fname=$(pwd)/b64_lnorm_edge_feat_d128_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_lnorm_edge_feat_d128.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_lnorm_edge_feat_d128.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 64
 
 
 # {'dataset': 'ZINC',
