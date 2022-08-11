@@ -120,6 +120,8 @@ class PELayer(nn.Module):
             h = h + h_wl_pos_enc
             return h
 
+        if not self.use_pos_enc and self.dataset in ("ZINC"):
+            return h
         if not self.use_pos_enc:
             return self.embedding_h(h)
 
