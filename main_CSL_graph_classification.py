@@ -301,6 +301,9 @@ def main():
     num_classes = len(np.unique(dataset.all.graph_labels))
     net_params['n_classes'] = num_classes
     
+    logger.info(net_params)
+    logger.info(params)
+
     # RingGNN
     if MODEL_NAME == 'RingGNN':
         num_nodes_train = [dataset.train[0][i][0].number_of_nodes() for i in range(len(dataset.train))]
