@@ -66,9 +66,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if device.type == 'cuda':
         torch.cuda.manual_seed(params['seed'])
     
-    logger.info(f"Training Graphs: {len(testset)}")
+    logger.info(f"Training Graphs: {len(trainset)}")
     logger.info(f"Validation Graphs: {len(valset)}")
-    logger.info(f"Test Graphs: {len(trainset)}")
+    logger.info(f"Test Graphs: {len(testset)}")
 
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
@@ -253,10 +253,7 @@ def main():
     # network parameters
     # net_params = config['net_params']
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator
     if args.data_mode is not None:
