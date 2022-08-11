@@ -108,7 +108,7 @@ def add_args(parser):
     parser.add_argument('--pow_of_mat', type=int, default=1, help="Highest power of adjacency matrix to use in automata PE")
     parser.add_argument('--log_file', type=str, default="./DEBUG.log")
     parser.add_argument('--adj_enc', action='store_true', help="Use adjacency matrix eigenvectors for PE")
-    parser.add_argument('--num_initials', "Number of initial weight vectors for automata PE")
+    parser.add_argument('--num_initials', help="Number of initial weight vectors for automata PE")
     parser.add_argument('--full_graph', help="Use full graph for graph transformer")
     parser.add_argument('--pagerank')
     return parser
