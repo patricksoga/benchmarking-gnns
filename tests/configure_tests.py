@@ -104,6 +104,10 @@ def run_string(args, config_path):
 def main(args):
     if len(args.param_values) > 5:
         raise ValueError(f'Too many param values for {args.varying_param}')
+    if args.varying_param is None:
+        raise ValueError('Must specify varying parameter')
+    if args.varying_param and args.param_values is None:
+        raise ValueError('Must specify param values')
 
     script_string = ""
 
