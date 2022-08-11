@@ -74,7 +74,7 @@ class PELayer(nn.Module):
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         in_dim = 1
-        if self.dataset == "SBM_PATTERN":
+        if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10"):
             in_dim = net_params['in_dim']
         self.embedding_h = nn.Linear(in_dim, hidden_dim)
 
@@ -85,7 +85,7 @@ class PELayer(nn.Module):
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
-        if not self.use_pos_enc and self.dataset != 'CYCLES':
+        if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST'):
             self.embedding_h = nn.Embedding(in_dim, hidden_dim)
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
@@ -118,6 +118,9 @@ class PELayer(nn.Module):
             h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
             h = h + h_wl_pos_enc
             return h
+
+        if not self.use_pos_enc:
+            return self.embedding_h(h)
 
         pe = None
 
