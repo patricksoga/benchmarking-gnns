@@ -12,6 +12,7 @@ from nets.CSL_graph_classification.mo_net import MoNet as MoNet_
 from nets.CSL_graph_classification.mlp_net import MLPNet
 from nets.CSL_graph_classification.ring_gnn_net import RingGNNNet
 from nets.CSL_graph_classification.three_wl_gnn_net import ThreeWLGNNNet
+from nets.CSL_graph_classification.graph_transformer import GraphTransformerNet
 
 
 def GatedGCN(net_params):
@@ -41,6 +42,9 @@ def RingGNN(net_params):
 def ThreeWLGNN(net_params):
     return ThreeWLGNNNet(net_params)
 
+def GraphTransformer(net_params):
+    return GraphTransformerNet(net_params)
+
 def gnn_model(MODEL_NAME, net_params):
     models = {
         'GatedGCN': GatedGCN,
@@ -51,7 +55,8 @@ def gnn_model(MODEL_NAME, net_params):
         'MoNet': MoNet,
         'MLP': MLP,
         'RingGNN': RingGNN,
-        '3WLGNN': ThreeWLGNN
+        '3WLGNN': ThreeWLGNN,
+        'GraphTransformer': GraphTransformer
     }
         
     return models[MODEL_NAME](net_params)
