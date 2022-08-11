@@ -49,27 +49,20 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
-            # self.pos_initial = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=not self.rand_pos_enc)
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
                 for _ in range(self.num_initials)
             )
             self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
-            # nn.init.normal_(self.pos_initial)
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
-            # self.mat_pows = nn.Parameter(torch.Tensor(size=(1,)))
-            # nn.init.constant_(self.mat_pows, 1)
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             for mat_pow in self.mat_pows:
                 nn.init.constant_(mat_pow, 1)
             self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
-
-            # self.add_initial = nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=True) 
-            # nn.init.normal_(self.add_initial)
 
         elif self.pagerank:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -131,11 +124,6 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             mat = self.type_of_matrix(g, self.matrix_type, self.mat_pows)
-            # z = torch.zeros(self.pos_enc_dim, g.num_nodes()-2, requires_grad=False).to(self.device)
-            # vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
-
-            # z = self.pos_initial.repeat(1, g.num_nodes()-1).to(self.device)
-            # vec_init = torch.cat((self.pos_initial, z), dim=1).to(self.device)
             vec_init = self.stack_strategy(g)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
@@ -147,8 +135,6 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(stacked_encs)
         elif self.rand_pos_enc:
             device = torch.device("cpu")
-            # z = self.pos_initial.repeat(1, g.num_nodes()-1).to(device)
-            # vec_init = torch.cat((self.pos_initial.to(device), z), dim=1).to(device)
             vec_init = self.stack_strategy(g)
             mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
             transition_inv = torch.inverse(self.pos_transition).to(device)
@@ -159,13 +145,10 @@ class PELayer(nn.Module):
             #  B = -A
             #  Q = mu inverse + pi
             transition_inv = transition_inv.numpy()
-            # mat = mat.numpy()
             mat = mat.cpu().numpy()
             vec_init = vec_init.cpu().numpy()
             pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
-            # v = self.adder.repeat(1, g.num_nodes())
             pe = torch.from_numpy(pe.T).to(self.device)
-            # pe += v.transpose(1, 0)
             pe = self.embedding_pos_enc(pe)
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
@@ -192,6 +175,8 @@ class PELayer(nn.Module):
         # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
 
         # return h + pe if pe is not None else h
+        if self.dataset in ("ZINC"):
+            return pe + h
         return pe
 
     def get_normalized_laplacian(self, g):
