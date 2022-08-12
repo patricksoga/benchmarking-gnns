@@ -175,7 +175,7 @@ class PELayer(nn.Module):
         # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("ZINC", "AQSOL"):
+        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER"):
             return pe + h
         return pe
 
