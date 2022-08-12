@@ -113,7 +113,7 @@ class PELayer(nn.Module):
             h = h + h_wl_pos_enc
             return h
 
-        if not self.use_pos_enc and self.dataset in ("ZINC"):
+        if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL"):
             return h
         if not self.use_pos_enc:
             return self.embedding_h(h)
@@ -175,7 +175,7 @@ class PELayer(nn.Module):
         # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("ZINC"):
+        if self.dataset in ("ZINC", "AQSOL"):
             return pe + h
         return pe
 
