@@ -5,14 +5,14 @@
 #$ -t 1-1:1
 
 pos_enc_dim=(0 20)
-fname=$(pwd)/b2-lnorm-lape_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b2-lnorm-lape_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_dwivedi_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_b2-lnorm-lape.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --init_lr 0.001
+python3 main_SBMs_node_classification.py --config configs/configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --pos_enc True --batch_size 2 --L 10
 
 
 # {'dataset': 'SBM_CLUSTER',
