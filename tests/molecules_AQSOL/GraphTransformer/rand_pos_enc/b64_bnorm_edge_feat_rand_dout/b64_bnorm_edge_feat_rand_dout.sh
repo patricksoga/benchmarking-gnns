@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_AQSOL_b64_bnorm_edge_feat_rand_dout
-#$ -q gpu
+#$ -q *@@lalor
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
