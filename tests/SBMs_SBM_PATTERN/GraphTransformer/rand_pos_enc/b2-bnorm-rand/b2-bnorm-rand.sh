@@ -5,14 +5,14 @@
 #$ -t 1-5:1
 
 pos_enc_dim=(0 8 16 20 32 64)
-fname=$(pwd)/b2-bnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b2-bnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_0.0005_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_b2-bnorm-rand.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_b2-bnorm-rand.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --init_lr 0.0005
 
 
 # {'dataset': 'SBM_PATTERN',
