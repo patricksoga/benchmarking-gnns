@@ -11,7 +11,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b64_bnorm_edge_feat_rand.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b64_bnorm_edge_feat_rand.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --edge_feat True
 
 
 # {'dataset': 'AQSOL',
