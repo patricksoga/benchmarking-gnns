@@ -12,7 +12,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_b2-lnorm-rand.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_norm False --layer_norm True --L 10 --readout "sum" --rand_pos_enc True --batch_size 2
 
 
 # {'dataset': 'SBM_CLUSTER',
