@@ -13,7 +13,6 @@ from layers.pe_layer import type_of_enc
 def dataset_to_graph_task(dataset):
     if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
         dataset = "SBMs"
-
     if dataset in ("COLLAB", "TSP"):
         return "edge_classification"
     elif dataset in ("CSL", "CYCLES", "PLANARITY", "K3Colorable", "TUs", "superpixels"):
