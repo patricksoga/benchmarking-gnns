@@ -5,14 +5,14 @@
 #$ -t 1-5:1
 
 pos_enc_dim=(0 16 32 40 64 80)
-fname=$(pwd)/b2-lnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_dwivedi_DEBUG.log
+fname=$(pwd)/b2-lnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_0.0005_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_norm False --layer_norm True --L 10 --readout "sum" --rand_pos_enc True --batch_size 2
+python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_norm False --layer_norm True --L 10 --readout "sum" --rand_pos_enc True --batch_size 2 --init_lr 0.0005
 
 
 # {'dataset': 'SBM_CLUSTER',
