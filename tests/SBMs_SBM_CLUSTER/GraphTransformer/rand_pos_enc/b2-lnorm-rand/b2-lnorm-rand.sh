@@ -5,7 +5,7 @@
 #$ -t 1-5:1
 
 pos_enc_dim=(0 16 32 40 64 80)
-fname=$(pwd)/b2-lnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b2-lnorm-rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_dwivedi_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
