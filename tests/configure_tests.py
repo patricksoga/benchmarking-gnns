@@ -3,6 +3,7 @@ import os
 import argparse
 import torch
 import pprint
+import sys
 
 import sys 
 sys.path.append('..')
@@ -162,6 +163,9 @@ def main(args):
     script_string += pre_run_boilerplate(args)
     script_string += run_string(args, config_filename) + "\n\n"
     script_string += config_string(config) + "\n"
+
+    generating_command = "python3 " + ' '.join(sys.argv)
+    script_string += "\n\n# Generated with command:\n#" + generating_command + "\n"
 
     try:
         out_dir = f"../{config['out_dir']}"
