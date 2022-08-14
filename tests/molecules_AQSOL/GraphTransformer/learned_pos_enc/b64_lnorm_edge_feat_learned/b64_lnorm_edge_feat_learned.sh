@@ -5,7 +5,7 @@
 #$ -t 1-4:1
 
 pos_enc_dim=(0 4 8 12 16)
-fname=$(pwd)/b64_lnorm_edge_feat_learned_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b64_lnorm_edge_feat_learned_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_learned_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
