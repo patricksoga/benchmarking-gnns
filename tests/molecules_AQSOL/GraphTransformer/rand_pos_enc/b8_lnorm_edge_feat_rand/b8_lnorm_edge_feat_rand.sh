@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_AQSOL_b8_lnorm_edge_feat_rand
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 4 8 16 32 64)
+pos_enc_dim=(0 128)
 fname=$(pwd)/b8_lnorm_edge_feat_rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
