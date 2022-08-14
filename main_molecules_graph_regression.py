@@ -121,7 +121,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
 
             if epoch_val_mae < best_test_MAE:
-                best_test_MAE = epoch_val_mae
+                best_test_MAE = epoch_test_mae
                 best_train_MAE = epoch_train_mae
                 model_dir = os.path.join(root_ckpt_dir, "MODELS_")
                 if not os.path.exists(model_dir):

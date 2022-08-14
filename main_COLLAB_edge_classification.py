@@ -240,10 +240,7 @@ def main():
     global logger
     logger = get_logger(net_params['log_file'])
 
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator
     if args.data_mode is not None:

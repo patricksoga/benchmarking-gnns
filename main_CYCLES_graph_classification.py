@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
+from db import store_results
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -32,7 +33,7 @@ from data.data import LoadData # import dataset
 """
     TRAINING CODE
 """
-def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
+def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_file, config):
     t0 = time.time()
     per_epoch_time = []
         
@@ -185,6 +186,23 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     writer.close()
 
+    pprint(params)
+    pprint(net_params)
+    params['config'] = config_file
+    params['model'] = MODEL_NAME
+    params['dataset'] = DATASET_NAME
+    store_results(params, net_params, {
+        'best_test_metric': best_test_acc,
+        'best_train_metric': best_train_acc,
+        'final_test_metric': test_acc,
+        'final_train_metric': train_acc,
+        'epochs_to_convergence': epoch,
+        'total_time_taken': time.time()-t0,
+        'avg_time_per_epoch': np.mean(per_epoch_time),
+        'train_loss': epoch_train_losses,
+        'lr': optimizer.param_groups[0]['lr']
+    }, config)
+
     """
         Write the results in out_dir/results folder
     """
@@ -197,14 +215,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                
 
 
-def main():    
+def main(args):    
     """
         USER CONTROLS
     """
-    parser = argparse.ArgumentParser()
-    parser = add_args(parser)
-    args = parser.parse_args()
-
 
     with open(args.config) as f:
         config = json.load(f)
@@ -240,10 +254,7 @@ def main():
     # network parameters
     # net_params = config['net_params']
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator
     if args.data_mode is not None:
@@ -289,6 +300,12 @@ def main():
     dirs = setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config)
 
     net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
-    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
 
-main()    
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser = add_args(parser)
+    args = parser.parse_args()
+
+    main(args) 

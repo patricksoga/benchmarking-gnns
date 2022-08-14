@@ -248,10 +248,7 @@ def main():
     # network parameters
     #net_params['batch_size'] = params['batch_size']
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm=='True' else False
-    if args.batch_norm is not None:
-        net_params['batch_norm'] = True if args.batch_norm=='True' else False
+
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator
     if args.data_mode is not None:
@@ -274,6 +271,9 @@ def main():
     # SBM
     net_params['in_dim'] = dataset.n_feats
     net_params['n_classes'] = dataset.num_classes
+    
+    logger.info(params)
+    logger.info(net_params)
     
     dirs = setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config)
 

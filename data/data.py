@@ -1,6 +1,7 @@
 """
     File to load dataset based on user control from main file
 """
+from data.cora import CoraDataset
 from data.k3colorable import K3ColorableDataset
 from data.planarity import PlanarityDataset
 from data.superpixels import SuperPixDataset
@@ -13,6 +14,7 @@ from data.CSL import CSLDataset
 from data.cycles import CyclesDataset
 from data.graphtheoryprop import GraphTheoryPropDataset
 from data.WikiCS import WikiCSDataset
+from .webkb import WebKBDataset
 
 
 def LoadData(DATASET_NAME):
@@ -67,3 +69,9 @@ def LoadData(DATASET_NAME):
 
     if DATASET_NAME == 'K3Colorable':
         return K3ColorableDataset(DATASET_NAME)
+
+    if DATASET_NAME == 'Cora':
+        return CoraDataset(DATASET_NAME)
+    
+    if DATASET_NAME in ('cornell', 'wisconsin', 'texas'):
+        return WebKBDataset(DATASET_NAME)
