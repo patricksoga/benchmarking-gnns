@@ -42,7 +42,8 @@ def parse_dataset(args):
     elif dataset in ("ZINC", "AQSOL"):
         dataset_supertype = "molecules"
     else:
-        raise ValueError(f"Dataset {dataset} not recognized")
+        return dataset
+
     return dataset_supertype
 
 
@@ -202,7 +203,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--varying_param", type=str, help="Parameter to vary, only one allowed")
+    parser.add_argument("--varying_param", type=str, help="Parameter to vary, only one allowed", default="pos_enc_dim")
     parser.add_argument("--param_values", nargs='+', help="Values to vary, max 5 values")
     parser.add_argument("--job_note", type=str, help="Job note for job name and script header")
     parser = add_args(parser)
