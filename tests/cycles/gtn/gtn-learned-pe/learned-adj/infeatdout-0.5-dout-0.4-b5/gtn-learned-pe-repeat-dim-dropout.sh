@@ -2,10 +2,10 @@
 #$ -N gtn-cycles-500k-learned-pe-repeat-dim
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-encdims=(0 10 11 12 13 14)
-fname=$(pwd)/repeat_dout_${SGE_TASK_ID}_DEBUG_.log
+encdims=(0 12)
+fname=$(pwd)/repeat_dout_${SGE_TASK_ID}_DEBUG_approx.log
 touch $fname
 fsync -d 10 $fname &
 
