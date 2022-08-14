@@ -203,6 +203,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['rand_pos_enc'] = True if args.rand_pos_enc=='True' else False
     if args.pos_enc is not None:
         net_params['pos_enc'] = True if args.pos_enc =='True' else False
+    else:
+        net_params['pos_enc'] = False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:
