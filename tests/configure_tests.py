@@ -151,7 +151,7 @@ def main(args):
 
     del config["net_params"]["device"]
 
-    config_filename = f"./test-configs/{model}_{dataset}_{args.job_note}.json"
+    config_filename = f"./test-configs/{model}_{dataset}_{args.dataset}_{args.job_note}.json"
     with open(config_filename, "w+") as f:
         json.dump(config, f)
 
