@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_AQSOL_b8_lnorm_edge_feat_rand
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-1:1
+#$ -t 1-5:1
 
-pos_enc_dim=(0 128)
+pos_enc_dim=(0 4 8 16 32 64)
 fname=$(pwd)/b8_lnorm_edge_feat_rand_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -24,6 +24,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'batch_size': 8,
 #                 'dataset': 'AQSOL',
 #                 'dropout': 0.0,
+#                 'edge_feat': True,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
@@ -57,4 +58,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_AQSOL_500k.json --batch_size 8 --param_values 4 8 16 32 64 --varying_param pos_enc_dim --init_lr 0.0005 --batch_norm False --layer_norm True --job_note b8_lnorm_edge_feat_rand --rand_pos_enc True
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_AQSOL_500k.json --batch_size 8 --param_values 4 8 16 32 64 --varying_param pos_enc_dim --init_lr 0.0005 --batch_norm False --layer_norm True --job_note b8_lnorm_edge_feat_rand --rand_pos_enc True --edge_feat True

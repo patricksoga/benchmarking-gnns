@@ -34,6 +34,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
 #                 'out_dim': 64,
+#                 'pos_enc': False,
 #                 'pos_enc_dim': 8,
 #                 'pow_of_mat': 1,
 #                 'rand_pos_enc': True,
@@ -56,4 +57,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 64 --job_note b64-bnorm-alt --batch_norm True --layer_norm False --rand_pos_enc True --param_values 4 8 16 32 64
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 64 --job_note b64-bnorm-alt --batch_norm True --layer_norm False --rand_pos_enc True --param_values 4 8 16 32 64 --edge_feat True

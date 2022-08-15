@@ -24,6 +24,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'batch_size': 64,
 #                 'dataset': 'AQSOL',
 #                 'dropout': 0.0,
+#                 'edge_feat': True,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
@@ -57,4 +58,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_AQSOL_500k.json --batch_size 64 --job_note b64-lnorm-alt --batch_norm False --layer_norm True --rand_pos_enc True --param_values 4 8 16 32 64
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_AQSOL_500k.json --batch_size 64 --job_note b64-lnorm-alt --batch_norm False --layer_norm True --rand_pos_enc True --param_values 4 8 16 32 64 --edge_feat True
