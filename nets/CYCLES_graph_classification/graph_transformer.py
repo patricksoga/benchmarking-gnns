@@ -8,7 +8,8 @@ from layers.pe_layer import PELayer
     Graph Transformer with edge features
     
 """
-from layers.graph_transformer_edge_layer import GraphTransformerLayer
+# from layers.graph_transformer_edge_layer import GraphTransformerLayer
+from layers.graph_transformer_layer import GraphTransformerLayer
 from layers.mlp_readout_layer import MLPReadout
 
 class GraphTransformerNet(nn.Module):
@@ -31,10 +32,11 @@ class GraphTransformerNet(nn.Module):
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
 
+        self.use_pos_enc = net_params.get('pos_enc', False) or net_params.get('wl_pos_enc', False) or net_params.get('learned_pos_enc', False) or net_params.get('rand_pos_enc', False) or net_params.get('adj_enc', False)
         # if self.edge_feat:
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
-        self.embedding_e = nn.Linear(1, hidden_dim)
+        # self.embedding_e = nn.Linear(1, hidden_dim)
         self.embedding_h = nn.Linear(in_dim, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
@@ -46,17 +48,21 @@ class GraphTransformerNet(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, n_classes)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
+        if not self.use_pos_enc:
+            h = self.embedding_h(h)
+        else:
         # h = self.embedding_h(h)
         # h = self.in_feat_dropout(h)
-        h = self.pe_layer(g, h, pos_enc)
+            h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
         # if not self.edge_feat: # edge feature set to 1
-        e = torch.ones(e.size(0),1).to(self.device)
-        e = self.embedding_e(e)   
+        # e = torch.ones(e.size(0),1).to(self.device)
+        # e = self.embedding_e(e)   
         
         # convnets
         for conv in self.layers:
-            h, e = conv(g, h, e)
+            # h, e = conv(g, h, e)
+            h = conv(g, h)
         g.ndata['h'] = h
         
         if self.readout == "sum":
