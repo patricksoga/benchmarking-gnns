@@ -8,7 +8,8 @@ from layers.pe_layer import PELayer
     Graph Transformer with edge features
     
 """
-from layers.graph_transformer_edge_layer import GraphTransformerLayer
+# from layers.graph_transformer_edge_layer import GraphTransformerLayer
+from layers.graph_transformer_layer import GraphTransformerLayer
 from layers.mlp_readout_layer import MLPReadout
 
 class GraphTransformerNet(nn.Module):
@@ -36,7 +37,7 @@ class GraphTransformerNet(nn.Module):
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
         self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
-        self.embedding_e = nn.Linear(1, hidden_dim)
+        # self.embedding_e = nn.Linear(1, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
@@ -52,11 +53,12 @@ class GraphTransformerNet(nn.Module):
         h = self.in_feat_dropout(h)
         # if not self.edge_feat: # edge feature set to 1
         # e = torch.ones(e.size(0),1).to(self.device)
-        e = self.embedding_e(e)   
+        # e = self.embedding_e(e)   
 
         # convnets
         for conv in self.layers:
-            h, e = conv(g, h, e)
+            # h, e = conv(g, h, e)
+            h = conv(g, h, e)
 
         out = self.MLP_layer(h)
         return out
