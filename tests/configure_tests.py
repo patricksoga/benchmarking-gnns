@@ -127,7 +127,10 @@ def main(args):
     device = gpu_setup(config['gpu']['use'], config['gpu']['id'])
 
     args.model = config["model"]
-    args.dataset = config["dataset"]
+    if args.dataset is None:
+        args.dataset = config["dataset"]
+    else:
+        config["dataset"] = args.dataset
 
     if args.dataset is not None:
         DATASET_NAME = args.dataset
