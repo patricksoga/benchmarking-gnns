@@ -7,7 +7,7 @@ import torch.nn as nn
 import math
 
 from train.metrics import accuracy_TU as accuracy
-
+from tqdm import tqdm
 """
     For GCNs
 """
@@ -17,7 +17,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     epoch_train_acc = 0
     nb_data = 0
     gpu_mem = 0
-    for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+    for iter, (batch_graphs, batch_labels) in tqdm(enumerate(data_loader)):
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_graphs = batch_graphs.to(device)

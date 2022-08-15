@@ -7,7 +7,7 @@ import torch.nn as nn
 import math
 
 from train.metrics import MAE
-
+from tqdm import tqdm
 """
     For GCNs
 """
@@ -17,7 +17,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     epoch_train_mae = 0
     nb_data = 0
     gpu_mem = 0
-    for iter, (batch_graphs, batch_targets) in enumerate(data_loader):
+    for iter, (batch_graphs, batch_targets) in tqdm(enumerate(data_loader)):
         batch_graphs = batch_graphs.to(device)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
@@ -86,7 +86,6 @@ def train_epoch_dense(model, optimizer, device, data_loader, epoch, batch_size):
         if x_with_edge_feat is not None:
             x_with_edge_feat = x_with_edge_feat.to(device)
         targets = targets.to(device)
-        
         scores = model.forward(x_no_edge_feat, x_with_edge_feat)
         loss = model.loss(scores, targets)
         loss.backward()

@@ -68,10 +68,9 @@ class PELayer(nn.Module):
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         in_dim = 1
-        if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10"):
+        if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
             in_dim = net_params['in_dim']
         self.embedding_h = nn.Linear(in_dim, hidden_dim)
-
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
@@ -79,7 +78,7 @@ class PELayer(nn.Module):
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
-        if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST', 'SBM_PATTERN', 'SBM_CLUSTER'):
+        if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST', 'SBM_PATTERN', 'SBM_CLUSTER', 'Cora'):
             self.embedding_h = nn.Embedding(in_dim, hidden_dim)
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
@@ -107,13 +106,22 @@ class PELayer(nn.Module):
             out = torch.cat([out, remaining_stack], dim=1)
         return out
 
+
+    def kron(self, mat1, mat2):
+        n1 = mat1.size(0)
+        m1 = mat2.size(0)
+        n2 = mat1.size(1)
+        m2 = mat2.size(1)
+        return torch.einsum("ab,cd->acbd", mat1, mat2).view(n1*m1,  n2*m2)
+
+
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
             h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
             h = h + h_wl_pos_enc
             return h
 
-        if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER"):
+        if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "wisconsin", "Cora"):
             return h
         if not self.use_pos_enc:
             return self.embedding_h(h)
@@ -127,9 +135,24 @@ class PELayer(nn.Module):
             vec_init = self.stack_strategy(g)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
-            B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+            # kron_prod = self.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
 
-            encs = torch.linalg.solve(B, vec_init)
+            # sparse_vec_init = vec_init.to_sparse().to(self.device)
+            # sparse_kron_prod = kron_prod.to_sparse().to(self.device)
+            # sparse_I = torch.sparse.eye(mat.shape[0], mat.shape[1], format='coo', device=self.device)
+
+            # B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+            # B = sparse_I - sparse_kron_prod
+
+            # encs = torch.linalg.solve(B, vec_init)
+            encs = vec_init
+            for _ in range(50):
+                encs = (kron_prod @ encs) + vec_init
+                norm = torch.norm(encs, p=2, dim=0)
+                encs = encs / norm
+                # encs = encs.clamp(min=-1, max=1)
+                # encs = encs / torch.norm(encs, dim=0)
+
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
             stacked_encs = stacked_encs.transpose(1, 0)
             pe = self.embedding_pos_enc(stacked_encs)
@@ -175,7 +198,7 @@ class PELayer(nn.Module):
         # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER"):
+        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora"):
             return pe + h
         return pe
 
