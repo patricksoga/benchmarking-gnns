@@ -9,7 +9,7 @@ from layers.pe_layer import PELayer
     
 """
 # from layers.graph_transformer_edge_layer import GraphTransformerLayer
-from layers.graph_transformer_layer import GraphTransformerLayer
+# from layers.graph_transformer_layer import GraphTransformerLayer
 from layers.mlp_readout_layer import MLPReadout
 
 class GraphTransformerNet(nn.Module):
@@ -27,7 +27,7 @@ class GraphTransformerNet(nn.Module):
         self.layer_norm = net_params['layer_norm']
         self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
-        # self.edge_feat = net_params['edge_feat']
+        self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
@@ -36,7 +36,12 @@ class GraphTransformerNet(nn.Module):
         # if self.edge_feat:
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
-        # self.embedding_e = nn.Linear(1, hidden_dim)
+        if self.edge_feat:
+            from layers.graph_transformer_edge_layer import GraphTransformerLayer
+            self.embedding_e = nn.Linear(1, hidden_dim)
+        else:
+            from layers.graph_transformer_layer import GraphTransformerLayer
+
         self.embedding_h = nn.Linear(in_dim, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
@@ -56,12 +61,15 @@ class GraphTransformerNet(nn.Module):
             h = self.pe_layer(g, h, pos_enc)
         h = self.in_feat_dropout(h)
         # if not self.edge_feat: # edge feature set to 1
-        # e = torch.ones(e.size(0),1).to(self.device)
-        # e = self.embedding_e(e)   
+        if self.edge_feat:
+            e = torch.ones(e.size(0),1).to(self.device)
+            e = self.embedding_e(e)   
         
         # convnets
-        for conv in self.layers:
-            # h, e = conv(g, h, e)
+        if self.edge_feat:
+            for conv in self.layers:
+                h, e = conv(g, h, e)
+        else:
             h = conv(g, h)
         g.ndata['h'] = h
         
