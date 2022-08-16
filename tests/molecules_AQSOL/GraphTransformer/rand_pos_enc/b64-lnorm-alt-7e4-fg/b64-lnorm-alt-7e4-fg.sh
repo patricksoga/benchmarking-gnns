@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N GraphTransformer_AQSOL_b64-lnorm-alt-1e-3-fg
+#$ -N GraphTransformer_AQSOL_b64-lnorm-alt-7e4-fg
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
@@ -46,7 +46,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #  'out_dir': 'out/molecules_graph_regression_b64-lnorm-alt-1e-3-fg',
 #  'params': {'batch_size': 64,
 #             'epochs': 1000,
-#             'init_lr': 0.001,
+#             'init_lr': 0.0007,
 #             'lr_reduce_factor': 0.5,
 #             'lr_schedule_patience': 10,
 #             'max_time': 24,
