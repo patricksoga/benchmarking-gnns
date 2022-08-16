@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_CYCLES_b5-lnorm-alt-edge_feat
-#$ -q gpu
+#$ -q gpu@@lalor
 #$ -l gpu_card=1
 #$ -t 1-1:1
 

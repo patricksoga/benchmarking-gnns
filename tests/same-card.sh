@@ -9,9 +9,6 @@ fname2=$(pwd)/b25.log
 touch $fname1
 touch $fname2
 
-fsync -d 10 $fname1 &
-fsync -d 10 $fname2
-
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
