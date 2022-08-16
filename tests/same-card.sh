@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_CYCLES
-#$ -q gpu
+#$ -q gpu@@lalor
 #$ -l gpu_card=1
 
 fname1=$(pwd)/edge_feat.log
