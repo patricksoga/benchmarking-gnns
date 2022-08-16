@@ -41,8 +41,8 @@ class PELayer(nn.Module):
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
 
-        self.power_method = net_params.get('power_method')
-        self.power_method_iters = net_params.get('power_iters')
+        self.power_method = net_params.get('power_method', False)
+        self.power_method_iters = net_params.get('power_iters', 50)
 
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
@@ -155,18 +155,31 @@ class PELayer(nn.Module):
             device = torch.device("cpu")
             vec_init = self.stack_strategy(g)
             mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
-            transition_inv = torch.inverse(self.pos_transition).to(device)
 
-            # AX + XB = Q
-            #  X = alpha
-            #  A = mu inverse
-            #  B = -A
-            #  Q = mu inverse + pi
-            transition_inv = transition_inv.numpy()
-            mat = mat.cpu().numpy()
-            vec_init = vec_init.cpu().numpy()
-            pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
-            pe = torch.from_numpy(pe.T).to(self.device)
+            if self.power_method:
+                vec_init = vec_init.transpose(1, 0).flatten().to(self.device)
+                kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
+                pe = vec_init
+                for _ in range(self.power_method_iters):
+                    pe = (kron_prod @ pe) + vec_init
+                    norm = torch.norm(pe, p=2, dim=0)
+                    pe = pe / norm
+                    # encs = encs.clamp(min=-1, max=1)
+                pe = pe.reshape(self.pos_enc_dim, -1).transpose(1, 0).to(self.device)
+            else:
+                transition_inv = torch.inverse(self.pos_transition).to(device)
+
+                # AX + XB = Q
+                #  X = alpha
+                #  A = mu inverse
+                #  B = -A
+                #  Q = mu inverse + pi
+                transition_inv = transition_inv.numpy()
+                mat = mat.cpu().numpy()
+                vec_init = vec_init.cpu().numpy()
+                pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+
+                pe = torch.from_numpy(pe.T).to(self.device)
             pe = self.embedding_pos_enc(pe)
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
