@@ -40,6 +40,10 @@ class PELayer(nn.Module):
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
+
+        self.power_method = net_params.get('power_method')
+        self.power_method_iters = net_params.get('power_method_iters')
+
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
@@ -83,6 +87,8 @@ class PELayer(nn.Module):
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
+        if self.power_method:
+            self.logger.info(f"Using power method with {self.power_method_iters} iterations")
 
     def stack_strategy(self, g):
         """
@@ -107,22 +113,17 @@ class PELayer(nn.Module):
         return out
 
 
-    def kron(self, mat1, mat2):
-        n1 = mat1.size(0)
-        m1 = mat2.size(0)
-        n2 = mat1.size(1)
-        m2 = mat2.size(1)
-        return torch.einsum("ab,cd->acbd", mat1, mat2).view(n1*m1,  n2*m2)
-
-
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
             h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
             h = h + h_wl_pos_enc
             return h
 
-        if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "wisconsin", "Cora"):
+        # if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "wisconsin", "Cora"):
+        #     return h
+        if not self.use_pos_enc:
             return h
+
         if not self.use_pos_enc:
             return self.embedding_h(h)
 
@@ -135,23 +136,17 @@ class PELayer(nn.Module):
             vec_init = self.stack_strategy(g)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
-            # kron_prod = self.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
 
-            # sparse_vec_init = vec_init.to_sparse().to(self.device)
-            # sparse_kron_prod = kron_prod.to_sparse().to(self.device)
-            # sparse_I = torch.sparse.eye(mat.shape[0], mat.shape[1], format='coo', device=self.device)
-
-            # B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
-            # B = sparse_I - sparse_kron_prod
-
-            # encs = torch.linalg.solve(B, vec_init)
-            encs = vec_init
-            for _ in range(50):
-                encs = (kron_prod @ encs) + vec_init
-                norm = torch.norm(encs, p=2, dim=0)
-                encs = encs / norm
-                # encs = encs.clamp(min=-1, max=1)
-                # encs = encs / torch.norm(encs, dim=0)
+            if self.power_method:
+                encs = vec_init
+                for _ in range(self.power_method_iters):
+                    encs = (kron_prod @ encs) + vec_init
+                    norm = torch.norm(encs, p=2, dim=0)
+                    encs = encs / norm
+                    # encs = encs.clamp(min=-1, max=1)
+            else:
+                B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
+                encs = torch.linalg.solve(B, vec_init)
 
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
             stacked_encs = stacked_encs.transpose(1, 0)
@@ -186,16 +181,9 @@ class PELayer(nn.Module):
             pe = self.embedding_h(h)
             # elif self.dataset == "CYCLES":
             #     pe = self.embedding_h(h)
-        
+
         # # if self.dataset in ("CYCLES", "ZINC"):
         # #     return pe
-        # A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        # N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-        # L = sp.eye(g.number_of_nodes()) - N * A * N
-
-        # torch.save(torch.from_numpy(L), "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/graph_laplacian.pt")
-        # torch.save(pe, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/pe.pt")
-        # torch.save(mat, "/home/psoga/Documents/projects/gnn-exp/eigvec_prediction/mat.pt")
 
         # return h + pe if pe is not None else h
         if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora"):
