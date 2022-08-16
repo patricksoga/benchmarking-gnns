@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_ZINC_b64-bnorm-alt-1e-3
-#$ -q gpu
+#$ -q gpu@@
 #$ -l gpu_card=1
 #$ -t 1-4:1
 
