@@ -42,7 +42,7 @@ class PELayer(nn.Module):
         self.logger = get_logger(net_params['log_file'])
 
         self.power_method = net_params.get('power_method')
-        self.power_method_iters = net_params.get('power_method_iters')
+        self.power_method_iters = net_params.get('power_iters')
 
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
