@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N GraphTransformer_AQSOL_b64-lnorm-alt-1e-3-fg
+#$ -N GraphTransformer_AQSOL_b64-lnorm-alt-7e4-fg
 #$ -q gpu
 #$ -l gpu_card=1
 
