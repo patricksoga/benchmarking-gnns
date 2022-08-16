@@ -110,6 +110,8 @@ def add_args(parser):
     parser.add_argument('--adj_enc', action='store_true', help="Use adjacency matrix eigenvectors for PE")
     parser.add_argument('--num_initials', help="Number of initial weight vectors for automata PE")
     parser.add_argument('--full_graph', help="Use full graph for graph transformer")
+    parser.add_argument('--power_method', help="Use power method for graph transformer automata PE")
+    parser.add_argument('--power_iters', help="Number of power method iterations for graph transformer automata PE")
     parser.add_argument('--pagerank')
     return parser
 
@@ -213,7 +215,12 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['pagerank'] = True if args.pagerank=='True' else False
     if args.full_graph is not None:
         net_params['full_graph'] = True if args.full_graph=='True' else False
-
+    if args.power_method is not None:
+        net_params['power_method'] = True if args.power_method=='True' else False
+    else:
+        args.power_method == False
+    if args.power_iters is not None:
+        net_params['power_iters'] = int(args.power_iters)
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
