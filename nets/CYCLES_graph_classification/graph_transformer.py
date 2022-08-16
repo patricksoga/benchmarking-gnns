@@ -70,7 +70,8 @@ class GraphTransformerNet(nn.Module):
             for conv in self.layers:
                 h, e = conv(g, h, e)
         else:
-            h = conv(g, h)
+            for conv in self.layers:
+                h = conv(g, h)
         g.ndata['h'] = h
         
         if self.readout == "sum":
