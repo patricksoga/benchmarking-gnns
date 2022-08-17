@@ -40,6 +40,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         
     DATASET_NAME = dataset.name
 
+    model = gnn_model(MODEL_NAME, net_params)
+    model = model.to(device)
+
     if net_params['pos_enc']:
         logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
@@ -84,9 +87,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
     logger.info(f"Validation Graphs: {len(valset)}", )
     logger.info(f"Test Graphs: {len(testset)}", )
     logger.info(f"Number of Classes: {net_params['n_classes']}", )
-
-    model = gnn_model(MODEL_NAME, net_params)
-    model = model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
