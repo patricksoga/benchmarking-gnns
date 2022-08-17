@@ -40,6 +40,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         
     DATASET_NAME = dataset.name
 
+    device = net_params['device']
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
 
@@ -67,7 +68,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         trainset = DGLFormDataset(trainset[:net_params['num_train_data']][0], trainset[:net_params['num_train_data']][1])
 
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
-    device = net_params['device']
 
     # Write the network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
