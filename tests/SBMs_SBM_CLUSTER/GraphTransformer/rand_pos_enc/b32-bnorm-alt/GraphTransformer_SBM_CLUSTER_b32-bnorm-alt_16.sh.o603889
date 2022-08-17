@@ -1,0 +1,30 @@
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 15.2212s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 306, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 303, in main
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/utils/main_utils.py", line 51, in view_model_param
+    model = gnn_model(MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 62, in gnn_model
+    return models[MODEL_NAME](net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 46, in GraphTransformer
+    return GraphTransformerNet(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/graph_transformer.py", line 33, in __init__
+    self.pe_layer = PELayer(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 56, in __init__
+    self.pos_initials = nn.ParameterList(
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/container.py", line 449, in __init__
+    self += values
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/container.py", line 497, in __iadd__
+    return self.extend(parameters)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/container.py", line 525, in extend
+    for value in values:
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 57, in <genexpr>
+    nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
+RuntimeError: CUDA error: all CUDA-capable devices are busy or unavailable
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
