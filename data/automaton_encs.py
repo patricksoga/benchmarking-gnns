@@ -20,7 +20,7 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector):
     dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.val.graph_lists]
     dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.test.graph_lists]
-    dump_encodings(dataset, transition_matrix.shape[0])
+    # dump_encodings(dataset, transition_matrix.shape[0])
 
 
 def dump_encodings(dataset, pos_enc_dim):
