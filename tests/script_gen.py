@@ -3,7 +3,7 @@ import argparse
 
 def get_script_text(job_name, v, command):
     text = f"""#!/bin/bash
-#$ -N {job_name}
+#$ -N {job_name}_{v}
 #$ -q gpu
 #$ -l gpu_card=1
 
