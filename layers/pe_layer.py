@@ -63,10 +63,10 @@ class PELayer(nn.Module):
             nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
-            self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
-            for mat_pow in self.mat_pows:
-                nn.init.constant_(mat_pow, 1)
-            self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
+            # self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
+            # for mat_pow in self.mat_pows:
+            #     nn.init.constant_(mat_pow, 1)
+            # self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
 
         elif self.pagerank:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -74,7 +74,7 @@ class PELayer(nn.Module):
         in_dim = 1
         if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
             in_dim = net_params['in_dim']
-        self.embedding_h = nn.Linear(in_dim, hidden_dim)
+        # self.embedding_h = nn.Linear(in_dim, hidden_dim)
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
@@ -112,6 +112,8 @@ class PELayer(nn.Module):
             out = torch.cat([out, remaining_stack], dim=1)
         return out
 
+    def kronecker(self, mat1, mat2):
+        return torch.einsum('ab,cd->acbd', mat1, mat2).reshape(mat1.shape[0] * mat2.shape[0], mat1.shape[1] * mat2.shape[1])
 
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
@@ -132,7 +134,7 @@ class PELayer(nn.Module):
         if self.pos_enc or self.adj_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
-            mat = self.type_of_matrix(g, self.matrix_type, self.mat_pows)
+            mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g)
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
@@ -152,9 +154,9 @@ class PELayer(nn.Module):
             stacked_encs = stacked_encs.transpose(1, 0)
             pe = self.embedding_pos_enc(stacked_encs)
         elif self.rand_pos_enc:
-            device = torch.device("cpu")
-            vec_init = self.stack_strategy(g)
-            mat = self.type_of_matrix(g, self.matrix_type, self.pow_of_mat)
+            # device = torch.device("cpu")
+            # vec_init = self.stack_strategy(g)
+            # mat = self.type_of_matrix(g, self.matrix_type)
 
             if self.power_method:
                 vec_init = vec_init.transpose(1, 0).flatten().to(self.device)
@@ -167,19 +169,20 @@ class PELayer(nn.Module):
                     # encs = encs.clamp(min=-1, max=1)
                 pe = pe.reshape(self.pos_enc_dim, -1).transpose(1, 0).to(self.device)
             else:
-                transition_inv = torch.inverse(self.pos_transition).to(device)
+                # transition_inv = torch.inverse(self.pos_transition).to(device)
 
                 # AX + XB = Q
                 #  X = alpha
                 #  A = mu inverse
                 #  B = -A
                 #  Q = mu inverse + pi
-                transition_inv = transition_inv.numpy()
-                mat = mat.cpu().numpy()
-                vec_init = vec_init.cpu().numpy()
-                pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+                # transition_inv = transition_inv.numpy()
+                # mat = mat.cpu().numpy()
+                # vec_init = vec_init.cpu().numpy()
+                # pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+                pe = pos_enc
 
-                pe = torch.from_numpy(pe.T).to(self.device)
+                # pe = torch.from_numpy(pe.T).to(self.device)
             pe = self.embedding_pos_enc(pe)
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
@@ -209,7 +212,7 @@ class PELayer(nn.Module):
         L = sp.sparse.eye(g.number_of_nodes()) - N * A * N
         return L
 
-    def type_of_matrix(self, g, matrix_type, pow):
+    def type_of_matrix(self, g, matrix_type):
         """
         Takes a DGL graph and returns the type of matrix to use for the layer.
             'A': adjacency matrix (default),
