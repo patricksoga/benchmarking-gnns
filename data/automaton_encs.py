@@ -1,3 +1,4 @@
+import os
 import torch
 import scipy
 import pickle
@@ -24,6 +25,9 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector):
 
 def dump_encodings(dataset):
     name = dataset.name
+    if not os.path.exists(f'./{name}'):
+        os.makedirs(f'./{name}')
+
     with open(f'./{name}/train.pkl', 'wb+') as f:
         pickle.dump(dataset.train.graph_lists, f)
 
