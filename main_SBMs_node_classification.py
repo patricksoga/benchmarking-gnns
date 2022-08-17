@@ -38,6 +38,10 @@ from data.data import LoadData # import dataset
 
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
+    device = net_params['device']
+    model = gnn_model(MODEL_NAME, net_params)
+    model = model.to(device)
+
     start0 = time.time()
     per_epoch_time = []
     
@@ -57,11 +61,14 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding adjacency matrix graph positional encoding.")
             dataset._add_adj_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
+        if net_params['rand_pos_enc']:
+            logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
+            dataset._add_automaton_encodings(model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
+            logger.info(f'Time PE:{time.time()-start0}')
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
         
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
-    device = net_params['device']
     
     # Write network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
@@ -81,9 +88,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     logger.info(f"Validation Graphs: {len(valset)}")
     logger.info(f"Test Graphs: {len(testset)}")
     logger.info(f"Number of Classes: {net_params['n_classes']}")
-
-    model = gnn_model(MODEL_NAME, net_params)
-    model = model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',

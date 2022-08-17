@@ -8,6 +8,7 @@ import dgl
 import torch
 
 from scipy import sparse as sp
+import scipy
 import numpy as np
 
 
@@ -155,6 +156,18 @@ def adj_encoding(g, pos_enc_dim):
     g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
     return g
 
+def automaton_encoding(g, transition_matrix, initial_vector):
+    """
+    Graph positional encoding w/ automaton weights
+    """
+    transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
+    matrix = g.adjacency_matrix().to_dense().cpu().numpy()
+    initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+    initial_vector = initial_vector.cpu().numpy()
+    pe = scipy.linalg.solve_sylvester(transition_inv, -matrix, transition_inv @ initial_vector)
+    g.ndata['pos_enc'] = torch.from_numpy(pe.T).float()
+    return g
+
 
 class SBMsDataset(torch.utils.data.Dataset):
 
@@ -260,3 +273,12 @@ class SBMsDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.train.graph_lists]
         self.val.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
         self.test.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
+
+    def _add_automaton_encodings(self, transition_matrix, initial_vector):
+        # Graph positional encoding w/ pre-computed automaton encoding
+        # self.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.train.graph_lists]
+        import tqdm
+        for graph in tqdm.tqdm(self.train.graph_lists):
+            automaton_encoding(graph, transition_matrix, initial_vector)
+        self.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.val.graph_lists]
+        self.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.test.graph_lists]
