@@ -20,32 +20,32 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector):
     dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.val.graph_lists]
     dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in dataset.test.graph_lists]
-    dump_encodings(dataset)
+    dump_encodings(dataset, transition_matrix.shape[0])
 
 
-def dump_encodings(dataset):
+def dump_encodings(dataset, pos_enc_dim):
     name = dataset.name
     if not os.path.exists(f'./{name}'):
         os.makedirs(f'./{name}')
 
-    with open(f'./{name}/train.pkl', 'wb+') as f:
+    with open(f'./{name}/train_{pos_enc_dim}.pkl', 'wb+') as f:
         pickle.dump(dataset.train.graph_lists, f)
 
-    with open(f'./{name}/val.pkl', 'wb+') as f:
+    with open(f'./{name}/val_{pos_enc_dim}.pkl', 'wb+') as f:
         pickle.dump(dataset.val.graph_lists, f)
 
-    with open(f'./{name}/test.pkl', 'wb+') as f:
+    with open(f'./{name}/test_{pos_enc_dim}.pkl', 'wb+') as f:
         pickle.dump(dataset.test.graph_lists, f)
 
-def load_encodings(dataset):
+def load_encodings(dataset, pos_enc_dim):
     name = dataset.name
-    with open(f'./{name}/train.pkl', 'rb') as f:
+    with open(f'./{name}/train_{pos_enc_dim}.pkl', 'rb') as f:
         dataset.train.graph_lists = pickle.load(f)
 
-    with open(f'./{name}/val.pkl', 'rb') as f:
+    with open(f'./{name}/val_{pos_enc_dim}.pkl', 'rb') as f:
         dataset.val.graph_lists = pickle.load(f)
 
-    with open(f'./{name}/test.pkl', 'rb') as f:
+    with open(f'./{name}/test_{pos_enc_dim}.pkl', 'rb') as f:
         dataset.test.graph_lists = pickle.load(f)
 
     return dataset
