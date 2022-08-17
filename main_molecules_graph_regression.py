@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
+from data.automaton_encs import add_automaton_encodings, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -33,29 +34,36 @@ from data.data import LoadData # import dataset
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     t0 = time.time()
     per_epoch_time = []
-        
+
     DATASET_NAME = dataset.name
-    
+
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params['self_loop']:
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
-            
+
     if MODEL_NAME in ['GatedGCN', 'GraphTransformer', 'GIN']:
         if net_params['pos_enc']:
             logger.info("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE: {time.time()-t0}')
-        
+        if net_params['rand_pos_enc']:
+            logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
+            try:
+                load_encodings(dataset)
+            except:
+                add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
+                logger.info(f'Time PE:{time.time()-t0}')
+
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
-        
+
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
     device = net_params['device']
-    
+
     # Write the network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
         f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
-        
+
     log_dir = os.path.join(root_log_dir, "RUN_" + str(0))
     writer = SummaryWriter(log_dir=log_dir)
 
