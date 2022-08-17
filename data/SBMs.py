@@ -276,9 +276,7 @@ class SBMsDataset(torch.utils.data.Dataset):
 
     def _add_automaton_encodings(self, transition_matrix, initial_vector):
         # Graph positional encoding w/ pre-computed automaton encoding
-        # self.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.train.graph_lists]
-        import tqdm
-        for graph in tqdm.tqdm(self.train.graph_lists):
-            automaton_encoding(graph, transition_matrix, initial_vector)
+        # need to implement caching
+        self.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.train.graph_lists]
         self.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.val.graph_lists]
         self.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.test.graph_lists]
