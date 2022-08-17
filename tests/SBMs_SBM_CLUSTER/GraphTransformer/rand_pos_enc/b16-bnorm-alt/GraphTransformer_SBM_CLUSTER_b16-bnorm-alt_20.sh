@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_CLUSTER_b16-bnorm-alt
+#$ -N GraphTransformer_SBM_CLUSTER_b16-bnorm-alt_20
 #$ -q gpu
 #$ -l gpu_card=1
 
