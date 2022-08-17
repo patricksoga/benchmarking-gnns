@@ -21,7 +21,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 2,
+#                 'batch_size': 32,
 #                 'dataset': 'SBM_CLUSTER',
 #                 'dropout': 0.0,
 #                 'full_graph': False,
@@ -40,7 +40,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'self_loop': False,
 #                 'wl_pos_enc': False},
 #  'out_dir': 'out/SBMs_node_classification_b32-bnorm-alt',
-#  'params': {'batch_size': 2,
+#  'params': {'batch_size': 32,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
@@ -54,4 +54,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt --param_values 8 16 20 64 70 --batch_size 2 --rand_pos_enc True --batch_norm True --layer_norm False
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt --param_values 8 16 20 64 70 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False
