@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_PATTERN_b16-lnorm-alt
+#$ -N GraphTransformer_SBM_PATTERN_b16-lnorm-alt-8
 #$ -q gpu
 #$ -l gpu_card=1
 

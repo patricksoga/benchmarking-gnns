@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_SBM_PATTERN_b16-lnorm-alt
-#$ -q gpu
+#$ -q gpu@@csecri-v100
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
