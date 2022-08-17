@@ -276,7 +276,17 @@ class SBMsDataset(torch.utils.data.Dataset):
 
     def _add_automaton_encodings(self, transition_matrix, initial_vector):
         # Graph positional encoding w/ pre-computed automaton encoding
-        # need to implement caching
         self.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.train.graph_lists]
         self.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.val.graph_lists]
         self.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector) for g in self.test.graph_lists]
+
+        with open('./SBMs/train_SBM.pkl', 'wb') as f:
+            pickle.dump(self.train.graph_lists, f)
+
+        with open('./SBMs/val_SBM.pkl', 'wb') as f:
+            pickle.dump(self.val.graph_lists, f)
+
+        with open('./SBMs/test_SBM.pkl', 'wb') as f:
+            pickle.dump(self.test.graph_lists, f)
+
+        return self.train.graph_lists, self.val.graph_lists, self.test.graph_lists

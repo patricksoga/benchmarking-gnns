@@ -12,6 +12,7 @@ import time
 import random
 import glob
 import argparse, json
+import pickle
 
 import torch
 
@@ -63,13 +64,23 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info(f'Time PE:{time.time()-start0}')
         if net_params['rand_pos_enc']:
             logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
-            dataset._add_automaton_encodings(model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
-            logger.info(f'Time PE:{time.time()-start0}')
+            try:
+                with open('./data/SBMs/train_SBM.pkl', 'rb') as f:
+                    dataset.train.graph_lists = pickle.load(f)
+
+                with open('./data/SBMs/val_SBM.pkl', 'rb') as f:
+                    dataset.val.graph_lists = pickle.load(f)
+
+                with open('./data/SBMs/test_SBM.pkl', 'rb') as f:
+                    dataset.test.graph_lists = pickle.load(f)
+            except:
+                dataset._add_automaton_encodings(model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
+                logger.info(f'Time PE:{time.time()-start0}')
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
-        
+
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
-    
+
     # Write network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
         f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
