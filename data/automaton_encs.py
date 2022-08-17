@@ -47,3 +47,5 @@ def load_encodings(dataset):
 
     with open(f'./{name}/test.pkl', 'rb') as f:
         dataset.test.graph_lists = pickle.load(f)
+
+    return dataset
