@@ -58,7 +58,7 @@ class GraphTransformerNet(nn.Module):
         # convnets
         for conv in self.layers:
             # h, e = conv(g, h, e)
-            h = conv(g, h, e)
+            h = conv(g, h)
 
         out = self.MLP_layer(h)
         return out
