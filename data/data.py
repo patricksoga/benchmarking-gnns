@@ -9,7 +9,7 @@ from data.molecules import MoleculeDataset
 from data.TUs import TUsDataset
 from data.SBMs import SBMsDataset
 from data.TSP import TSPDataset
-from data.COLLAB import COLLABDataset
+# from data.COLLAB import COLLABDataset
 from data.CSL import CSLDataset
 from data.cycles import CyclesDataset
 from data.graphtheoryprop import GraphTheoryPropDataset
