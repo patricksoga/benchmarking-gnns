@@ -39,11 +39,11 @@ def dump_encodings(dataset):
 
 def load_encodings(dataset):
     name = dataset.name
-    with open(f'./{name}/train_{name}.pkl', 'rb') as f:
+    with open(f'./{name}/train.pkl', 'rb') as f:
         dataset.train.graph_lists = pickle.load(f)
 
-    with open(f'./{name}/val_{name}.pkl', 'rb') as f:
+    with open(f'./{name}/val.pkl', 'rb') as f:
         dataset.val.graph_lists = pickle.load(f)
 
-    with open(f'./{name}/test_{name}.pkl', 'rb') as f:
+    with open(f'./{name}/test.pkl', 'rb') as f:
         dataset.test.graph_lists = pickle.load(f)
