@@ -132,12 +132,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             if epoch_val_mae < best_test_MAE:
                 best_test_MAE = epoch_test_mae
                 best_train_MAE = epoch_train_mae
-                model_dir = os.path.join(root_ckpt_dir, "MODELS_")
-                if not os.path.exists(model_dir):
-                    os.makedirs(model_dir)
-                fname = f"/best_model{best_test_MAE:.4f}_{params['job_num']}.pt"
-                torch.save(model.state_dict(), model_dir + fname)
-                logger.info(f'Saving best model with MAE {best_test_MAE}')
+                # model_dir = os.path.join(root_ckpt_dir, "MODELS_")
+                # if not os.path.exists(model_dir):
+                #     os.makedirs(model_dir)
+                # fname = f"/best_model{best_test_MAE:.4f}_{params['job_num']}.pt"
+                # torch.save(model.state_dict(), model_dir + fname)
+                # logger.info(f'Saving best model with MAE {best_test_MAE}')
             
             epoch_train_losses.append(epoch_train_loss)
             epoch_val_losses.append(epoch_val_loss)
