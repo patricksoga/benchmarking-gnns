@@ -5,6 +5,7 @@
 #$ -t 1-5:1
 
 pos_enc_dim=(0 1 1 1 1 1)
+random_seeds=(0 1 2 3 4 5)
 fname=$(pwd)/b64_bnorm_edge_feat_baseline_${SGE_TASK_ID}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -12,7 +13,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_bnorm_edge_feat_baseline.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 64 --init_lr 0.001 --batch_norm True --layer_norm False
+python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_bnorm_edge_feat_baseline.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 64 --init_lr 0.001 --batch_norm True --layer_norm False --seed ${random_seeds[${SGE_TASK_ID}]}
 
 
 # {'dataset': 'ZINC',
