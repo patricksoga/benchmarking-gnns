@@ -1,14 +1,14 @@
 #!/bin/bash
-#$ -N GraphTransformer_ZINC_b64_lnorm_edge_feat_d128
+#$ -N GraphTransformer_ZINC_b64_lnorm_edge_feat_d12-ape
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
 # pos_enc_dim=(0 8 16 32 48 64)
 
-pos_enc_dim=(0 16 16 16 16 16)
-random_seeds=(0 41 95 22 35 62)
-fname=$(pwd)/b64_lnorm_edge_feat_d128_${SGE_TASK_ID}_DEBUG.log
+pos_enc_dim=(0 16)
+random_seeds=(0 55)
+fname=$(pwd)/b64_lnorm_edge_feat_d128_${SGE_TASK_ID}_ape_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
