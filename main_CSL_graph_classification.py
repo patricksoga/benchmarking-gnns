@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
+from data.automaton_encs import add_automaton_encodings_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -38,7 +39,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
     per_epoch_time = []
 
     dataset = LoadData(DATASET_NAME)
-    
+
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params['self_loop']:
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
@@ -47,11 +48,10 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
     if net_params['pos_enc']:
         logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
-        
+
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
     
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
-    device = net_params['device']
     
     # Write the network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
@@ -60,7 +60,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
     # At any point you can hit Ctrl + C to break out of training early.
     try:
         for split_number in range(5):
-            
+
             t0_split = time.time()
             log_dir = os.path.join(root_log_dir, "RUN_" + str(split_number))
             writer = SummaryWriter(log_dir=log_dir)
@@ -69,18 +69,28 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
             random.seed(params['seed'])
             np.random.seed(params['seed'])
             torch.manual_seed(params['seed'])
+            device = net_params['device']
+
             if device.type == 'cuda':
                 torch.cuda.manual_seed(params['seed'])
 
             logger.info(f"RUN NUMBER: {split_number}")
+
             trainset, valset, testset = dataset.train[split_number], dataset.val[split_number], dataset.test[split_number]
+            
+            model = gnn_model(MODEL_NAME, net_params)
+            model = model.to(device)
+
+            if net_params.get('rand_pos_enc', False):
+                trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
+                valset.lists = add_automaton_encodings_CSL(valset.lists, model)
+                testset.lists = add_automaton_encodings_CSL(testset.lists, model)
+
             logger.info(f"Training Graphs: {len(trainset)}")
             logger.info(f"Validation Graphs: {len(valset)}")
             logger.info(f"Test Graphs: {len(testset)}")
             logger.info(f"Number of Classes: {net_params['n_classes']}")
 
-            model = gnn_model(MODEL_NAME, net_params)
-            model = model.to(device)
             optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
             scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
                                                              factor=params['lr_reduce_factor'],
@@ -111,6 +121,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                 train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
                 val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
                 test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+
 
             best_test_acc = -1.0
             best_train_acc = -1.0
