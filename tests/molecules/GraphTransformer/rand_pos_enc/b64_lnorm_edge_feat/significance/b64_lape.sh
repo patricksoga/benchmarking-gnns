@@ -13,7 +13,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_bnorm_edge_feat_lape.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 64 --init_lr 0.001 --batch_norm True --layer_norm False --seed ${random_seeds[${SGE_TASK_ID}]}
+python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_b128_bnorm_edge_feat_lape.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 64 --init_lr 0.001 --batch_norm True --layer_norm False --seed ${random_seeds[${SGE_TASK_ID}]} --pos_enc True
 
 
 # {'dataset': 'ZINC',
