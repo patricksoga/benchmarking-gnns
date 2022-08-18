@@ -63,7 +63,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding adjacency matrix graph positional encoding.")
             dataset._add_adj_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
-        if net_params['rand_pos_enc']:
+        if net_params.get('rand_pos_enc', False):
             # try:
             #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
             #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
@@ -81,7 +81,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
         
     log_dir = os.path.join(root_log_dir, "RUN_" + str(0))
-    writer = SummaryWriter(log_dir=log_dir)
+    # writer = SummaryWriter(log_dir=log_dir)
 
     # setting seeds
     random.seed(params['seed'])
@@ -154,12 +154,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             epoch_train_accs.append(epoch_train_acc)
             epoch_val_accs.append(epoch_val_acc)
 
-            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-            writer.add_scalar('train/_acc', epoch_train_acc, epoch)
-            writer.add_scalar('val/_acc', epoch_val_acc, epoch)
-            writer.add_scalar('test/_acc', epoch_test_acc, epoch)
-            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+            # writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+            # writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+            # writer.add_scalar('train/_acc', epoch_train_acc, epoch)
+            # writer.add_scalar('val/_acc', epoch_val_acc, epoch)
+            # writer.add_scalar('test/_acc', epoch_test_acc, epoch)
+            # writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
             t = time.time() - start
             lr = optimizer.param_groups[0]['lr']
@@ -214,7 +214,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-start0))
     logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
-    writer.close()
+    # writer.close()
 
     """
         Write the results in out_dir/results folder

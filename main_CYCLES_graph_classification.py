@@ -52,7 +52,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         logger.info("[!] Adding adjacency matrix graph positional encoding.")
         dataset._add_adj_encodings(net_params['pos_enc_dim'])
 
-    if net_params['rand_pos_enc']:
+    if net_params.get('rand_pos_enc', False):
         # try:
         #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
         #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])

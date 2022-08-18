@@ -51,7 +51,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE: {time.time()-t0}')
-        if net_params['rand_pos_enc']:
+        if net_params.get('rand_pos_enc', False):
             # try:
             #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
             #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
