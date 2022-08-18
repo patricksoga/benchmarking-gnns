@@ -7,7 +7,7 @@ import time
 import random
 import glob
 import argparse, json
-
+import pickle
 import torch
 
 import torch.optim as optim
@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.automaton_encs import add_automaton_encodings, load_encodings
+from data.automaton_encs import add_automaton_encodings, add_rw_pos_encodings, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -31,194 +31,221 @@ from data.data import LoadData # import dataset
 """
     TRAINING CODE
 """
-def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
-    t0 = time.time()
-    per_epoch_time = []
+def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=None):
+    test_history = []
+    train_history = []
+    for seed in params['seed_array']:
+        t0 = time.time()
+        per_epoch_time = []
 
-    DATASET_NAME = dataset.name
+        DATASET_NAME = dataset.name
 
-    device = net_params['device']
-    model = gnn_model(MODEL_NAME, net_params)
-    model = model.to(device)
+        device = net_params['device']
+        model = gnn_model(MODEL_NAME, net_params)
+        model = model.to(device)
 
-    if MODEL_NAME in ['GCN', 'GAT']:
-        if net_params['self_loop']:
-            logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
-            dataset._add_self_loops()
+        if MODEL_NAME in ['GCN', 'GAT']:
+            if net_params['self_loop']:
+                logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
+                dataset._add_self_loops()
 
-    if MODEL_NAME in ['GatedGCN', 'GraphTransformer', 'GIN']:
-        if net_params['pos_enc']:
-            logger.info("[!] Adding Laplacian graph positional encoding.")
-            dataset._add_positional_encodings(net_params['pos_enc_dim'])
-            logger.info(f'Time PE: {time.time()-t0}')
-        if net_params.get('rand_pos_enc', False):
-            # try:
-            #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
-            #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
-            # except:
-            logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
-            dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
-            logger.info(f'Time PE:{time.time()-t0}')
+        if MODEL_NAME in ['GatedGCN', 'GraphTransformer', 'GIN']:
+            if net_params['pos_enc']:
+                logger.info("[!] Adding Laplacian graph positional encoding.")
+                dataset._add_positional_encodings(net_params['pos_enc_dim'])
+                logger.info(f'Time PE: {time.time()-t0}')
+            if net_params.get('rand_pos_enc', False):
+                # try:
+                #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
+                #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
+                # except:
+                logger.info(f"[!] Adding random automaton graph positional encoding ({net_params['pos_enc_dim']}).")
+                dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0])
+                logger.info(f'Time PE:{time.time()-t0}')
+            if net_params.get('rw_pos_enc', False):
+                logger.info(f"[!] Adding random walk graph positional encoding ({net_params['pos_enc_dim']}).")
+                dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'], 'full')
+                logger.info(f'Time PE:{time.time()-t0}')
+            elif net_params.get('partial_rw_pos_enc', False):
+                logger.info(f"[!] Adding partial random walk graph positional encoding ({net_params['pos_enc_dim']}).")
+                dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'])
+                logger.info(f'Time PE:{time.time()-t0}')
 
-    trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
-    root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
+        trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
-    # Write the network and optimization hyper-parameters in folder config/
-    with open(write_config_file + '.txt', 'w') as f:
-        f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
+        root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
 
-    log_dir = os.path.join(root_log_dir, "RUN_" + str(0))
-    writer = SummaryWriter(log_dir=log_dir)
+        # Write the network and optimization hyper-parameters in folder config/
+        with open(write_config_file + '.txt', 'w') as f:
+            f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
 
-    # setting seeds
-    random.seed(params['seed'])
-    np.random.seed(params['seed'])
-    torch.manual_seed(params['seed'])
-    if device.type == 'cuda':
-        torch.cuda.manual_seed(params['seed'])
-    
-    logger.info(f"Training Graphs: {len(trainset)}")
-    logger.info(f"Validation Graphs: {len(valset)}")
-    logger.info(f"Test Graphs: {len(testset)}")
+        log_dir = os.path.join(root_log_dir, "RUN_" + str(0))
+        writer = SummaryWriter(log_dir=log_dir)
 
-    optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                                     factor=params['lr_reduce_factor'],
-                                                     patience=params['lr_schedule_patience'],
-                                                     verbose=True)
-    
-    epoch_train_losses, epoch_val_losses = [], []
-    epoch_train_MAEs, epoch_val_MAEs = [], [] 
-    
-    # batching exception for Diffpool
-    drop_last = True if MODEL_NAME == 'DiffPool' else False
-    
-    if MODEL_NAME in ['RingGNN', '3WLGNN']:
-        # import train functions specific for WLGNNs
-        from train.train_molecules_graph_regression import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
-        from functools import partial # util function to pass edge_feat to collate function
-
-        train_loader = DataLoader(trainset, shuffle=True, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
-        val_loader = DataLoader(valset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
-        test_loader = DataLoader(testset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
+        # setting seeds
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if device.type == 'cuda':
+            torch.cuda.manual_seed(seed)
         
-    else:
-        # import train functions for all other GNNs
-        from train.train_molecules_graph_regression import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
+        logger.info(f"Training Graphs: {len(trainset)}")
+        logger.info(f"Validation Graphs: {len(valset)}")
+        logger.info(f"Test Graphs: {len(testset)}")
+
+        optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
+                                                        factor=params['lr_reduce_factor'],
+                                                        patience=params['lr_schedule_patience'],
+                                                        verbose=True)
         
-        train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
-        val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
-        test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
-    
-    # At any point you can hit Ctrl + C to break out of training early.
-    best_test_MAE = float('inf')
-    best_train_MAE = float('inf')
-    try:
-        # with tqdm(range(params['epochs'])) as t:
-        for epoch in range(params['epochs']):
+        epoch_train_losses, epoch_val_losses = [], []
+        epoch_train_MAEs, epoch_val_MAEs = [], [] 
+        
+        # batching exception for Diffpool
+        drop_last = True if MODEL_NAME == 'DiffPool' else False
+        
+        if MODEL_NAME in ['RingGNN', '3WLGNN']:
+            # import train functions specific for WLGNNs
+            from train.train_molecules_graph_regression import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
+            from functools import partial # util function to pass edge_feat to collate function
 
-            logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
-            start = time.time()
-
-            if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
-                epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-            else:   # for all other models common train function
-                epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                
-            epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
-            _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
-
-            if epoch_test_mae < best_test_MAE:
-                best_test_MAE = epoch_test_mae
-                best_train_MAE = epoch_train_mae
-                # model_dir = os.path.join(root_ckpt_dir, "MODELS_")
-                # if not os.path.exists(model_dir):
-                #     os.makedirs(model_dir)
-                # fname = f"/best_model{best_test_MAE:.4f}_{params['job_num']}.pt"
-                # torch.save(model.state_dict(), model_dir + fname)
-                logger.info(f'Best model with MAE {best_test_MAE}')
+            train_loader = DataLoader(trainset, shuffle=True, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
+            val_loader = DataLoader(valset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
+            test_loader = DataLoader(testset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
             
-            epoch_train_losses.append(epoch_train_loss)
-            epoch_val_losses.append(epoch_val_loss)
-            epoch_train_MAEs.append(epoch_train_mae)
-            epoch_val_MAEs.append(epoch_val_mae)
+        else:
+            # import train functions for all other GNNs
+            from train.train_molecules_graph_regression import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
+            
+            train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
+            val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+            test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+        
+        # At any point you can hit Ctrl + C to break out of training early.
+        best_test_MAE = float('inf')
+        best_train_MAE = float('inf')
+        try:
+            # with tqdm(range(params['epochs'])) as t:
+            for epoch in range(params['epochs']):
 
-            writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-            writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-            writer.add_scalar('train/_mae', epoch_train_mae, epoch)
-            writer.add_scalar('val/_mae', epoch_val_mae, epoch)
-            writer.add_scalar('test/_mae', epoch_test_mae, epoch)
-            writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+                logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
+                start = time.time()
 
+                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
+                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+                else:   # for all other models common train function
+                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
                     
-            t = time.time() - start
-            lr = optimizer.param_groups[0]['lr']
-            train_loss = epoch_train_loss
-            val_loss = epoch_val_loss
-            train_MAE = epoch_train_mae
-            val_MAE = epoch_val_mae
-            test_MAE = epoch_test_mae
+                epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
+                _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
 
-            logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train MAE: {train_MAE:.4f},
-                        Val Loss: {val_loss:.4f}, Val Acc: {val_MAE:.4f}, Test MAE: {test_MAE:.4f}""")
-
-
-            per_epoch_time.append(time.time()-start)
-
-            # Saving checkpoint
-            ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-            if not os.path.exists(ckpt_dir):
-                os.makedirs(ckpt_dir)
-            torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
-
-            files = glob.glob(ckpt_dir + '/*.pkl')
-            for file in files:
-                epoch_nb = file.split('_')[-1]
-                epoch_nb = int(epoch_nb.split('.')[0])
-                if epoch_nb < epoch-1:
-                    os.remove(file)
-
-            scheduler.step(epoch_val_loss)
-
-            if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                logger.info("\n!! LR EQUAL TO MIN LR SET.")
-                break
-            
-            # Stop training after params['max_time'] hours
-            if time.time()-t0 > params['max_time']*3600:
-                logger.info('-' * 89)
-                logger.info("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
-                break
+                if epoch_test_mae < best_test_MAE:
+                    best_test_MAE = epoch_test_mae
+                    best_train_MAE = epoch_train_mae
+                    # model_dir = os.path.join(root_ckpt_dir, "MODELS_")
+                    # if not os.path.exists(model_dir):
+                    #     os.makedirs(model_dir)
+                    # fname = f"/best_model{best_test_MAE:.4f}_{params['job_num']}.pt"
+                    # torch.save(model.state_dict(), model_dir + fname)
+                    logger.info(f'Best model with MAE {best_test_MAE}')
                 
-    except KeyboardInterrupt:
-        logger.info('-' * 89)
-        logger.info('Exiting from training early because of KeyboardInterrupt')
-    
-    _, test_mae = evaluate_network(model, device, test_loader, epoch)
-    _, train_mae = evaluate_network(model, device, train_loader, epoch)
-    logger.info("Test MAE: {:.4f}".format(test_mae))
-    logger.info("Best Test MAE: {:.4f}".format(best_test_MAE))
-    logger.info("Train MAE: {:.4f}".format(train_mae))
-    logger.info("Best Train MAE Corresponding to Best Test MAE: {:.4f}".format(best_train_MAE))
-    logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
-    logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
-    logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+                epoch_train_losses.append(epoch_train_loss)
+                epoch_val_losses.append(epoch_val_loss)
+                epoch_train_MAEs.append(epoch_train_mae)
+                epoch_val_MAEs.append(epoch_val_mae)
 
-    writer.close()
+                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+                writer.add_scalar('train/_mae', epoch_train_mae, epoch)
+                writer.add_scalar('val/_mae', epoch_val_mae, epoch)
+                writer.add_scalar('test/_mae', epoch_test_mae, epoch)
+                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
-    """
-        Write the results in out_dir/results folder
-    """
-    with open(write_file_name + '.txt', 'w') as f:
-        f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n{}\n\nTotal Parameters: {}\n\n
-    FINAL RESULTS\nTEST MAE: {:.4f}\nTRAIN MAE: {:.4f}\n\n
-    Convergence Time (Epochs): {:.4f}\nTotal Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n"""\
-          .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                  test_mae, train_mae, epoch, (time.time()-t0)/3600, np.mean(per_epoch_time)))
+                        
+                t = time.time() - start
+                lr = optimizer.param_groups[0]['lr']
+                train_loss = epoch_train_loss
+                val_loss = epoch_val_loss
+                train_MAE = epoch_train_mae
+                val_MAE = epoch_val_mae
+                test_MAE = epoch_test_mae
+
+                logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train MAE: {train_MAE:.4f},
+                            Val Loss: {val_loss:.4f}, Val Acc: {val_MAE:.4f}, Test MAE: {test_MAE:.4f}""")
+
+
+                per_epoch_time.append(time.time()-start)
+
+                # Saving checkpoint
+                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+                if not os.path.exists(ckpt_dir):
+                    os.makedirs(ckpt_dir)
+                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+
+                files = glob.glob(ckpt_dir + '/*.pkl')
+                for file in files:
+                    epoch_nb = file.split('_')[-1]
+                    epoch_nb = int(epoch_nb.split('.')[0])
+                    if epoch_nb < epoch-1:
+                        os.remove(file)
+
+                scheduler.step(epoch_val_loss)
+
+                if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                    logger.info("\n!! LR EQUAL TO MIN LR SET.")
+                    break
+                
+                # Stop training after params['max_time'] hours
+                if time.time()-t0 > params['max_time']*3600:
+                    logger.info('-' * 89)
+                    logger.info("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
+                    break
+                    
+        except KeyboardInterrupt:
+            logger.info('-' * 89)
+            logger.info('Exiting from training early because of KeyboardInterrupt')
         
+        _, test_mae = evaluate_network(model, device, test_loader, epoch)
+        _, train_mae = evaluate_network(model, device, train_loader, epoch)
 
+        test_history.append(test_mae)
+        train_history.append(train_mae)
 
+        logger.info("Test MAE: {:.4f}".format(test_mae))
+        logger.info("Best Test MAE: {:.4f}".format(best_test_MAE))
+        logger.info("Train MAE: {:.4f}".format(train_mae))
+        logger.info("Best Train MAE Corresponding to Best Test MAE: {:.4f}".format(best_train_MAE))
+        logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
+        logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
+        logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+
+        writer.close()
+
+        """
+            Write the results in out_dir/results folder
+        """
+        with open(write_file_name + '.txt', 'w') as f:
+            f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n{}\n\nTotal Parameters: {}\n\n
+        FINAL RESULTS\nTEST MAE: {:.4f}\nTRAIN MAE: {:.4f}\n\n
+        Convergence Time (Epochs): {:.4f}\nTotal Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n"""\
+            .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
+                    test_mae, train_mae, epoch, (time.time()-t0)/3600, np.mean(per_epoch_time)))
+            
+    with open(save_name, 'wb') as f:
+        information = {
+            "model_name": MODEL_NAME, 
+            "dataset_name": DATASET_NAME,
+            "params": params,
+            "net_params": net_params,
+            "train_history": train_history,
+            "test_history": test_history,
+            "best_metric": best_test_MAE,
+            "epochs": epoch,
+            "time_taken": (time.time()-t0)/3600
+        }
+        pickle.dump(information, f)
 
 
 def main():    
@@ -308,6 +335,6 @@ def main():
     dirs = setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config)
 
     net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
-    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, params['save_name'])
 
 main()    

@@ -112,6 +112,10 @@ def add_args(parser):
     parser.add_argument('--full_graph', help="Use full graph for graph transformer")
     parser.add_argument('--power_method', help="Use power method for graph transformer automata PE")
     parser.add_argument('--power_iters', help="Number of power method iterations for graph transformer automata PE")
+    parser.add_argument('--seed_array', help="Array of seeds to use for testing", nargs='+', type=int)
+    parser.add_argument('--save_name', help="Name of saved results file")
+    parser.add_argument('--rw_pos_enc', help="Use random walk PE for graph transformer")
+    parser.add_argument('--partial_rw_pos_enc', help="Use partial random walk PE for graph transformer")
     parser.add_argument('--pagerank')
     return parser
 
@@ -162,6 +166,12 @@ def get_parameters(config, args):
         params['max_time'] = float(args.max_time)
     if args.job_num is not None:
         params['job_num'] = int(args.job_num)
+    if args.seed_array is not None:
+        params['seed_array'] = args.seed_array
+    else:
+        params['seed_array'] = [41]
+    if args.save_name is not None:
+        params['save_name'] = args.save_name
 
     return params
 
@@ -207,6 +217,14 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['pos_enc'] = True if args.pos_enc =='True' else False
     else:
         net_params['pos_enc'] = False
+    if args.rw_pos_enc is not None:
+        net_params['rw_pos_enc'] = True if args.rw_pos_enc=='True' else False
+    else:
+        net_params['rw_pos_enc'] = False
+    if args.partial_rw_pos_enc is not None:
+        net_params['partial_rw_pos_enc'] = True if args.partial_rw_pos_enc=='True' else False
+    else:
+        net_params['partial_rw_pos_enc'] = False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:

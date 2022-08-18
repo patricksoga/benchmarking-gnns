@@ -31,6 +31,7 @@ class PELayer(nn.Module):
         self.pos_enc = net_params.get('pos_enc', False)
         self.learned_pos_enc = net_params.get('learned_pos_enc', False)
         self.rand_pos_enc = net_params.get('rand_pos_enc', False)
+        self.rw_pos_enc = net_params['rw_pos_enc'] or net_params['partial_rw_pos_enc']
         self.adj_enc = net_params['adj_enc']
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
@@ -131,7 +132,7 @@ class PELayer(nn.Module):
 
         pe = None
 
-        if self.pos_enc or self.adj_enc:
+        if self.pos_enc or self.adj_enc or self.rw_pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             mat = self.type_of_matrix(g, self.matrix_type)

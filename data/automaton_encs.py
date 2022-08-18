@@ -1,7 +1,41 @@
 import os
 import torch
+import dgl
 import scipy
 import pickle
+import scipy.sparse as sp
+
+def random_walk_encoding(g, pos_enc_dim, type='partial'):
+    """
+    Graph positional encoding w/ random walk
+    """
+
+    # Geometric diffusion features with Random Walk
+    A = g.adjacency_matrix(scipy_fmt="csr")
+    Dinv = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) # D^-1
+    RW = A * Dinv  
+    M = RW
+
+    nb_pos_enc = pos_enc_dim
+    PE = [torch.from_numpy(M.diagonal()).float()]
+    M_power = M
+    for _ in range(nb_pos_enc-1):
+        M_power = M_power * M
+        if type == 'partial':
+            PE.append(torch.from_numpy(M_power.diagonal()).float())
+        else:
+            PE.append(torch.from_numpy(M_power).float())
+    PE = torch.stack(PE,dim=-1)
+    g.ndata['pos_enc'] = PE  
+
+    return g
+
+
+def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
+    dataset.train.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
+    return dataset
 
 def automaton_encoding(g, transition_matrix, initial_vector):
     """
