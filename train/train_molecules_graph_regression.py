@@ -7,6 +7,7 @@ import torch.nn as nn
 import math
 
 from train.metrics import MAE
+from tqdm import tqdm
 """
     For GCNs
 """
@@ -16,18 +17,21 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     epoch_train_mae = 0
     nb_data = 0
     gpu_mem = 0
-    for iter, (batch_graphs, batch_targets) in enumerate(data_loader):
+    for iter, (batch_graphs, batch_targets) in tqdm(enumerate(data_loader)):
         batch_graphs = batch_graphs.to(device)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_targets = batch_targets.to(device)
         optimizer.zero_grad()
         try:
-            batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
-            sign_flip = torch.rand(batch_pos_enc.size(1)).to(device)
-            sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
-            batch_pos_enc = batch_pos_enc * sign_flip.unsqueeze(0)
-            batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
+            if model.pe_layer.pos_enc:
+                batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
+                sign_flip = torch.rand(batch_pos_enc.size(1)).to(device)
+                sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
+                batch_pos_enc = batch_pos_enc * sign_flip.unsqueeze(0)
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
+            else:
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'].to(device))
         except:
             batch_scores = model.forward(batch_graphs, batch_x, batch_e)
         loss = model.loss(batch_scores, batch_targets)
