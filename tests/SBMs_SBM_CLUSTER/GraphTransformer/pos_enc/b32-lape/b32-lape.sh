@@ -1,47 +1,48 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_CLUSTER_b2-lnorm-lape
+#$ -N GraphTransformer_SBM_CLUSTER_b32-lape
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 20)
-fname=$(pwd)/b2-lnorm-lape_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_dwivedi_DEBUG.log
+pos_enc_dim=(0 10)
+fname=$(pwd)/b32-lape_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --pos_enc True --batch_size 2 --L 10
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_CLUSTER_b32-lape.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'SBM_CLUSTER',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'GraphTransformer',
-#  'net_params': {'L': 6,
+#  'net_params': {'L': 10,
 #                 'adj_enc': False,
-#                 'batch_norm': False,
-#                 'batch_size': 2,
+#                 'batch_norm': True,
+#                 'batch_size': 32,
 #                 'dataset': 'SBM_CLUSTER',
 #                 'dropout': 0.0,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
-#                 'layer_norm': True,
+#                 'layer_norm': False,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'num_train_data': 7000,
 #                 'out_dim': 80,
+#                 'partial_rw_pos_enc': False,
 #                 'pos_enc': True,
-#                 'pos_enc_dim': 20,
+#                 'pos_enc_dim': 10,
 #                 'pow_of_mat': 1,
-#                 'readout': 'sum',
+#                 'readout': 'mean',
 #                 'residual': True,
+#                 'rw_pos_enc': False,
 #                 'self_loop': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/SBMs_node_classification_b2-lnorm-lape',
-#  'params': {'batch_size': 2,
+#  'out_dir': 'out/SBMs_node_classification_b32-lape',
+#  'params': {'batch_size': 32,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
@@ -49,6 +50,12 @@ python3 main_SBMs_node_classification.py --config configs/SBMs_node_clustering_G
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
+#             'save_name': 'b32-lape.pkl',
 #             'seed': 41,
+#             'seed_array': [41],
 #             'weight_decay': 0.0}}
 
+
+
+# Generated with command:
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-lape --pos_enc True --pos_enc_dim 10 --save_name b32-lape.pkl --param_values 10
