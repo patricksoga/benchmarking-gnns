@@ -5,7 +5,7 @@
 #$ -t 1-5:1
 
 pos_enc_dim=(0 1 1 1 1 1)
-random_seeds=(0 1 2 3 4 5)
+random_seeds=(0 41 95 22 35)
 fname=$(pwd)/b64_bnorm_edge_feat_baseline_${SGE_TASK_ID}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
