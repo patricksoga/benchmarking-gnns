@@ -1,12 +1,12 @@
 #!/bin/bash
-#$ -N GraphTransformer_ZINC_b64_bnorm_edge_feat_baseline
+#$ -N GraphTransformer_ZINC_b64_bnorm_edge_feat_baseline-22seed
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 1 1 1 1 1)
-random_seeds=(0 41 95 22 35 62)
-fname=$(pwd)/b64_bnorm_edge_feat_baseline_${SGE_TASK_ID}_DEBUG.log
+pos_enc_dim=(0 1)
+random_seeds=(0 22)
+fname=$(pwd)/b64_bnorm_edge_feat_baseline_${SGE_TASK_ID}_s22_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
