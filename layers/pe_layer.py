@@ -1,3 +1,4 @@
+from pprint import pprint
 import torch
 import torch.nn as nn
 import scipy as sp
@@ -90,7 +91,7 @@ class PELayer(nn.Module):
         if self.power_method:
             self.logger.info(f"Using power method with {self.power_method_iters} iterations")
 
-    def stack_strategy(self, g):
+    def stack_strategy(self, num_nodes):
         """
             Given more than one initial weight vector, define the stack strategy.
 
@@ -99,7 +100,6 @@ class PELayer(nn.Module):
                 and stack them together with final n-(n//k) weight vectors.
         """
         num_pos_initials = len(self.pos_initials)
-        num_nodes = g.num_nodes()
         if num_pos_initials == 1:
             return torch.cat([self.pos_initials[0] for _ in range(num_nodes)], dim=1)
 
@@ -135,7 +135,7 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             mat = self.type_of_matrix(g, self.matrix_type)
-            vec_init = self.stack_strategy(g)
+            vec_init = self.stack_strategy(g.num_nodes())
             vec_init = vec_init.transpose(1, 0).flatten()
             kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
 
@@ -155,7 +155,7 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(stacked_encs)
         elif self.rand_pos_enc:
             # device = torch.device("cpu")
-            # vec_init = self.stack_strategy(g)
+            # vec_init = self.stack_strategy(g.num_nodes())
             # mat = self.type_of_matrix(g, self.matrix_type)
 
             if self.power_method:
@@ -202,7 +202,7 @@ class PELayer(nn.Module):
         # #     return pe
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora"):
+        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
             return pe + h
         return pe
 
