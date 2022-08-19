@@ -238,9 +238,9 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['power_method'] = False
     if args.power_iters is not None:
         net_params['power_iters'] = int(args.power_iters)
-    if args.diag is not None and 'diag':
+    if args.diag is not None:
         net_params['diag'] = True if args.diag=='True' else False
-    elif 'diag' not in config:
+    elif 'diag' not in config and 'diag' not in net_params:
         net_params['diag'] = False
     
     if args.pow_of_mat is not None and 'pow_of_mat' not in net_params:
