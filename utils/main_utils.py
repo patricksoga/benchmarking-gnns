@@ -235,7 +235,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     if args.power_method is not None:
         net_params['power_method'] = True if args.power_method=='True' else False
     elif 'power_method' not in config:
-        net_params['power_method'] == False
+        net_params['power_method'] = False
     if args.power_iters is not None:
         net_params['power_iters'] = int(args.power_iters)
 
