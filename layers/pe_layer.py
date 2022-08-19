@@ -71,9 +71,9 @@ class PELayer(nn.Module):
                 nn.init.normal_(pos_initial)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
-            # self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
-            # for mat_pow in self.mat_pows:
-            #     nn.init.constant_(mat_pow, 1)
+            self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
+            for mat_pow in self.mat_pows:
+                nn.init.constant_(mat_pow, 1)
             # self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
 
         elif self.pagerank:
@@ -175,21 +175,25 @@ class PELayer(nn.Module):
                     pe = pe / norm
                     # encs = encs.clamp(min=-1, max=1)
                 pe = pe.reshape(self.pos_enc_dim, -1).transpose(1, 0).to(self.device)
-            else:
-                # transition_inv = torch.inverse(self.pos_transition).to(device)
+            elif self.pow_of_mat > 1:
+                device = torch.device("cpu")
+                vec_init = self.stack_strategy(g.num_nodes())
+                mat = self.type_of_matrix(g, self.matrix_type)
+                transition_inv = torch.inverse(self.pos_transition).to(device)
 
                 # AX + XB = Q
                 #  X = alpha
                 #  A = mu inverse
                 #  B = -A
                 #  Q = mu inverse + pi
-                # transition_inv = transition_inv.numpy()
-                # mat = mat.cpu().numpy()
-                # vec_init = vec_init.cpu().numpy()
-                # pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+                transition_inv = transition_inv.numpy()
+                mat = mat.cpu().numpy()
+                vec_init = vec_init.cpu().numpy()
+                pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
+                pe = torch.from_numpy(pe.T).to(self.device)
+            else:
                 pe = pos_enc
 
-                # pe = torch.from_numpy(pe.T).to(self.device)
             pe = self.embedding_pos_enc(pe)
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
