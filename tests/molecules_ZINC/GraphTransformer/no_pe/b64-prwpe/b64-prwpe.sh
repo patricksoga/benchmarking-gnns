@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_ZINC_b64-prwpe
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-1:1
+#$ -t 1-3:1
 
-pos_enc_dim=(0 1)
+pos_enc_dim=(0 8 10 20)
 fname=$(pwd)/b64-prwpe_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -18,25 +18,27 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 # {'dataset': 'ZINC',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'GraphTransformer',
-#  'net_params': {'L': 6,
+#  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
 #                 'batch_size': 64,
 #                 'dataset': 'ZINC',
+#                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': True,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
-#                 'hidden_dim': 80,
+#                 'hidden_dim': 64,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'out_dim': 80,
+#                 'out_dim': 64,
 #                 'partial_rw_pos_enc': True,
 #                 'pos_enc': False,
 #                 'pos_enc_dim': 8,
 #                 'pow_of_mat': 1,
+#                 'power_method': False,
 #                 'readout': 'mean',
 #                 'residual': True,
 #                 'rw_pos_enc': False,
@@ -51,7 +53,6 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
-#             'save_name': 'b64-prwpe.pkl',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -59,4 +60,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --partial_rw_pos_enc True --job_note b64-prwpe --batch_size 64 --L 6 --hidden_dim 80 --out_dim 80 --edge_feat True --save_name b64-prwpe.pkl --param_values 1
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --partial_rw_pos_enc True --param_values 8 10 20 --batch_size 64 --job_note b64-prwpe
