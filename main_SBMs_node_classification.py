@@ -50,16 +50,16 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     DATASET_NAME = dataset.name
     
     if MODEL_NAME in ['GCN', 'GAT']:
-        if net_params['self_loop']:
+        if net_params.get('self_loop', False):
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
     
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
-        if net_params['pos_enc']:
+        if net_params.get('pos_enc', False):
             logger.info("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
-        if net_params['adj_enc']:
+        if net_params.get('adj_enc', False):
             logger.info("[!] Adding adjacency matrix graph positional encoding.")
             dataset._add_adj_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
