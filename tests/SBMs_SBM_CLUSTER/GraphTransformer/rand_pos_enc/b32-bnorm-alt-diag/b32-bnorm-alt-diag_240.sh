@@ -2,7 +2,7 @@
 #$ -N GraphTransformer_SBM_CLUSTER_b32-bnorm-alt-diag-240
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-6:1
+#$ -t 1-1:1
 
 pos_enc_dim=(0 240)
 fname=$(pwd)/b32-bnorm-alt-diag_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
