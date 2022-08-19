@@ -110,8 +110,6 @@ def run_string(args, config_path):
 
 
 def main(args):
-    if len(args.param_values) > 5:
-        raise ValueError(f'Too many param values for {args.varying_param}. Max is 5.')
     if args.varying_param is None:
         raise ValueError('Must specify varying parameter')
     if args.varying_param and args.param_values is None:
@@ -207,7 +205,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--varying_param", type=str, help="Parameter to vary, only one allowed", default="pos_enc_dim")
-    parser.add_argument("--param_values", nargs='+', help="Values to vary, max 5 values")
+    parser.add_argument("--param_values", nargs='+', help="Values to vary")
     parser.add_argument("--job_note", type=str, help="Job note for job name and script header")
     parser = add_args(parser)
     main(parser.parse_args())
