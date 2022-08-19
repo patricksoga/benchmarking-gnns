@@ -187,7 +187,7 @@ class PELayer(nn.Module):
                 #  B = -A
                 #  Q = mu inverse + pi
                 transition_inv = transition_inv.numpy()
-                mat = mat.detach().numpy()
+                mat = mat.detach().cpu().numpy()
                 vec_init = vec_init.cpu().numpy()
                 pe = sp.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ vec_init)
                 pe = torch.from_numpy(pe.T).to(self.device)
