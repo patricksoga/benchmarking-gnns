@@ -238,15 +238,18 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['power_method'] = False
     if args.power_iters is not None:
         net_params['power_iters'] = int(args.power_iters)
-
     if args.diag is not None and 'diag':
         net_params['diag'] = True if args.diag=='True' else False
     elif 'diag' not in config:
         net_params['diag'] = False
+    if args.pow_of_mat is not None:
+        net_params['pow_of_mat'] = int(args.pow_of_mat)
+    elif 'pow_of_mat' not in config:
+        net_params['pow_of_mat'] = 1
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
     net_params['matrix_type'] = args.matrix_type
-    net_params['pow_of_mat'] = args.pow_of_mat
+    # net_params['pow_of_mat'] = args.pow_of_mat
 
     return net_params
