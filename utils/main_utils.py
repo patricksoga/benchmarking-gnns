@@ -116,6 +116,7 @@ def add_args(parser):
     parser.add_argument('--save_name', help="Name of saved results file")
     parser.add_argument('--rw_pos_enc', help="Use random walk PE for graph transformer")
     parser.add_argument('--partial_rw_pos_enc', help="Use partial random walk PE for graph transformer")
+    parser.add_argument('--diag', help="Use diagonal matrix for automaton PE")
     parser.add_argument('--pagerank')
     return parser
 
@@ -215,9 +216,11 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['rand_pos_enc'] = True if args.rand_pos_enc=='True' else False
     if args.pos_enc is not None:
         net_params['pos_enc'] = True if args.pos_enc =='True' else False
+    elif 'pos_enc' not in config:
+        net_params['pos_enc'] = False
     if args.rw_pos_enc is not None:
         net_params['rw_pos_enc'] = True if args.rw_pos_enc=='True' else False
-    else:
+    elif 'rw_pos_enc' not in config:
         net_params['rw_pos_enc'] = False
     if args.partial_rw_pos_enc is not None:
         net_params['partial_rw_pos_enc'] = True if args.partial_rw_pos_enc=='True' else False
@@ -231,10 +234,15 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['full_graph'] = True if args.full_graph=='True' else False
     if args.power_method is not None:
         net_params['power_method'] = True if args.power_method=='True' else False
-    else:
-        args.power_method == False
+    elif 'power_method' not in config:
+        net_params['power_method'] == False
     if args.power_iters is not None:
         net_params['power_iters'] = int(args.power_iters)
+
+    if args.diag is not None and 'diag':
+        net_params['diag'] = True if args.diag=='True' else False
+    elif 'diag' not in config:
+        net_params['diag'] = False
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
