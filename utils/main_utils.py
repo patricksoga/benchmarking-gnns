@@ -242,12 +242,11 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['diag'] = True if args.diag=='True' else False
     elif 'diag' not in config:
         net_params['diag'] = False
-    if args.pow_of_mat is not None:
+    
+    if args.pow_of_mat is not None and 'pow_of_mat' not in net_params:
         net_params['pow_of_mat'] = int(args.pow_of_mat)
     elif args.pow_of_mat in config:
-        net_params['pow_of_mat'] = config['pow_of_mat']
-    else:
-        net_params['pow_of_mat'] = 1
+        net_params['pow_of_mat'] = int(config['pow_of_mat'])
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
