@@ -31,7 +31,7 @@ class PELayer(nn.Module):
         self.pos_enc = net_params.get('pos_enc', False)
         self.learned_pos_enc = net_params.get('learned_pos_enc', False)
         self.rand_pos_enc = net_params.get('rand_pos_enc', False)
-        self.rw_pos_enc = net_params['rw_pos_enc'] or net_params['partial_rw_pos_enc']
+        self.rw_pos_enc = net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False)
         self.adj_enc = net_params['adj_enc']
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
         self.wl_pos_enc = net_params.get('wl_pos_enc', False)
