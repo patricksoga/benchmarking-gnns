@@ -59,10 +59,16 @@ class PELayer(nn.Module):
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
                 for _ in range(self.num_initials)
             )
-            self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+
+            if net_params['diag']:
+                self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+                nn.init.normal_(self.pos_transition)
+            else:
+                self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+                nn.init.orthogonal_(self.pos_transition)
+
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
-            nn.init.orthogonal_(self.pos_transition)
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             # self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
