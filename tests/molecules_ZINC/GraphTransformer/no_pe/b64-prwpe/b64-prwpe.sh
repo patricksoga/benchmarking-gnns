@@ -53,6 +53,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
+#             'save_name': 'b64-prwpe',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -60,4 +61,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --partial_rw_pos_enc True --param_values 8 10 20 --batch_size 64 --job_note b64-prwpe
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --partial_rw_pos_enc True --param_values 8 10 20 --batch_size 64 --job_note b64-prwpe --save_name b64-prwpe
