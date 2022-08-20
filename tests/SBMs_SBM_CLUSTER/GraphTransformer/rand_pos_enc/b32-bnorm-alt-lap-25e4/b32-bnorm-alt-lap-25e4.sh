@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_SBM_CLUSTER_b32-bnorm-alt-lap-25e4
-#$ -q gpu
+#$ -q gpu@@crc_gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
