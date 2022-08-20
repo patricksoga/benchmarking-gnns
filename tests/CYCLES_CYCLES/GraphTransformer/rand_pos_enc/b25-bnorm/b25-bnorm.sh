@@ -61,4 +61,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat False --hidden_dim 80 --out_dim 80 --L 6
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat False --hidden_dim 80 --out_dim 80 --L 6 --edge_feat False
