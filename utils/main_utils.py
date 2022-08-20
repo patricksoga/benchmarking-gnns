@@ -254,6 +254,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     net_params['dataset'] = DATASET_NAME
     if args.matrix_type is not None:
         net_params['matrix_type'] = args.matrix_type
+    else:
+        net_params['matrix_type'] = config['matrix_type']
     # net_params['pow_of_mat'] = args.pow_of_mat
 
     return net_params
