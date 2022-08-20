@@ -65,7 +65,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info(f'Time PE:{time.time()-start0}')
         elif net_params.get('partial_rw_pos_enc', False):
             logger.info("[!] Adding partial random walk graph positional encoding.")
-            dataset = add_rw_pos_encodings(net_params['pos_enc_dim'])
+            dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
         elif net_params.get('rand_pos_enc', False):
             # try:
