@@ -37,7 +37,7 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
     dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
     return dataset
 
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False):
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A'):
     """
     Graph positional encoding w/ automaton weights
     """
@@ -47,18 +47,26 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False):
         transition_matrix = torch.diag(transition_matrix)
 
     transition_inv = torch.inverse(transition_matrix).cpu().numpy()
-    matrix = g.adjacency_matrix().to_dense().cpu().numpy()
-    initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+    if matrix == 'A':
+        mat = g.adjacency_matrix().to_dense().cpu().numpy()
+    elif matrix == 'L':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - N * A * N
+        mat = L
+
+    initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     initial_vector = initial_vector.cpu().numpy()
-    pe = scipy.linalg.solve_sylvester(transition_inv, -matrix, transition_inv @ initial_vector)
+    pe = scipy.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ initial_vector)
     g.ndata['pos_enc'] = torch.from_numpy(pe.T).float()
     return g
 
-def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False):
+def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A'):
     # Graph positional encoding w/ pre-computed automaton encoding
-    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag) for g in dataset.train.graph_lists]
-    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag) for g in dataset.test.graph_lists]
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 

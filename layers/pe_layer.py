@@ -1,4 +1,3 @@
-from pprint import pprint
 import torch
 import torch.nn as nn
 import scipy as sp
@@ -13,6 +12,7 @@ def type_of_enc(net_params):
     pos_enc = net_params.get('pos_enc', False)
     adj_enc = net_params.get('adj_enc', False)
     rand_pos_enc = net_params.get('rand_pos_enc', False)
+    partial_rw_pos_enc = net_params.get('partial_rw_pos_enc', False)
     if learned_pos_enc:
         return 'learned_pos_enc'
     elif pos_enc:
@@ -21,6 +21,8 @@ def type_of_enc(net_params):
         return 'adj_enc'
     elif rand_pos_enc:
         return 'rand_pos_enc'
+    elif partial_rw_pos_enc:
+        return 'partial_rw_pos_enc'
     else:
         return 'no_pe'
 

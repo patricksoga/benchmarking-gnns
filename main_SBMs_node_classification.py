@@ -75,7 +75,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
             if net_params['diag']:
                 logger.info("[!] Using diagonal weight matrix.")
-            dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'])
+            dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
             logger.info(f'Time PE:{time.time()-start0}')
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
