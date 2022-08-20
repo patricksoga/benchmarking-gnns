@@ -1,0 +1,27 @@
+/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py:3719: DGLWarning: DGLGraph.adjacency_matrix_scipy is deprecated. Please replace it with:
+
+	DGLGraph.adjacency_matrix(transpose, scipy_fmt="csr").
+
+  dgl_warning('DGLGraph.adjacency_matrix_scipy is deprecated. '
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 10.5000s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 318, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 316, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 78, in train_val_pipeline
+    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 67, in add_automaton_encodings
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 67, in <listcomp>
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 61, in automaton_encoding
+    pe = scipy.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ initial_vector)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/scipy/linalg/_solvers.py", line 87, in solve_sylvester
+    s, v = schur(b.conj().transpose(), output='real')
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/scipy/linalg/_decomp_schur.py", line 123, in schur
+    raise ValueError('expected square matrix')
+ValueError: expected square matrix
