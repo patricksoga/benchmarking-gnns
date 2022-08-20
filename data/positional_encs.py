@@ -59,8 +59,13 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
-        L = A - N
-        mat = L.todense()
+        mat = (A - N).todense()
+    elif matrix == 'AD':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        mat = (A + N).todense()
+
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     initial_vector = initial_vector.cpu().numpy()
