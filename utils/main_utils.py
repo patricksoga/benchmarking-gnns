@@ -256,6 +256,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['matrix_type'] = args.matrix_type
     elif 'matrix_type' not in config and 'matrix_type' not in net_params:
         net_params['matrix_type'] = 'A'
+    elif 'matrix_type' in net_params:
+        net_params['matrix_type'] = net_params['matrix_type']
     else:
         net_params['matrix_type'] = config['matrix_type']
     # net_params['pow_of_mat'] = args.pow_of_mat

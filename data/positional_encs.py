@@ -55,6 +55,11 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
         L = sp.eye(n) - N * A * N
         mat = L.todense()
+    elif matrix == 'UL':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        L = A - N
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     initial_vector = initial_vector.cpu().numpy()
