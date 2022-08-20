@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 # from tensorboardX import SummaryWriter
-from data.automaton_encs import add_automaton_encodings, load_encodings
+from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -59,11 +59,15 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding Laplacian graph positional encoding.")
             dataset._add_positional_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
-        if net_params.get('adj_enc', False):
+        elif net_params.get('adj_enc', False):
             logger.info("[!] Adding adjacency matrix graph positional encoding.")
             dataset._add_adj_encodings(net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-start0}')
-        if net_params.get('rand_pos_enc', False):
+        elif net_params.get('partial_rw_pos_enc', False):
+            logger.info("[!] Adding partial random walk graph positional encoding.")
+            dataset = add_rw_pos_encodings(net_params['pos_enc_dim'])
+            logger.info(f'Time PE:{time.time()-start0}')
+        elif net_params.get('rand_pos_enc', False):
             # try:
             #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
             #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])

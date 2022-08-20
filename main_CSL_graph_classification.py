@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from data.automaton_encs import add_automaton_encodings_CSL
+from data.positional_encs import add_automaton_encodings_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None

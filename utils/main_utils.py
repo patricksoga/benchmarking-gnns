@@ -222,8 +222,10 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['rw_pos_enc'] = True if args.rw_pos_enc=='True' else False
     elif 'rw_pos_enc' not in config:
         net_params['rw_pos_enc'] = False
-    if args.partial_rw_pos_enc is not None:
+
+    if args.partial_rw_pos_enc is not None and 'partial_rw_pos_enc' not in net_params:
         net_params['partial_rw_pos_enc'] = True if args.partial_rw_pos_enc=='True' else False
+
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:
