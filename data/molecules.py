@@ -5,6 +5,7 @@ import time
 import os
 import numpy as np
 
+import random
 import csv
 
 import dgl
@@ -25,7 +26,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.data_dir = data_dir
         self.split = split
         self.num_graphs = num_graphs
-        
+
         with open(data_dir + "/%s.pickle" % self.split,"rb") as f:
             self.data = pickle.load(f)
 
@@ -36,7 +37,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
                 self.data = [ self.data[i] for i in data_idx[0] ]
 
             assert len(self.data)==num_graphs, "Sample num_graphs again; available idx: train/val/test => 10k/1k/1k"
-        
+
         """
         data is a list of Molecule dict objects with following attributes
         
@@ -46,15 +47,15 @@ class MoleculeDGL(torch.utils.data.Dataset):
         ; molecule['bond_type'] : tensor of size N x N, each element is a bond type, an integer between 0 and num_bond_type
         ; molecule['logP_SA_cycle_normalized'] : the chemical property to regress, a float variable
         """
-        
+
         self.graph_lists = []
         self.graph_labels = []
         self.n_samples = len(self.data)
         self._prepare()
-    
+
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
-        
+
         for molecule in self.data:
             node_features = molecule['atom_type'].long()
             
@@ -240,19 +241,76 @@ def positional_encoding(g, pos_enc_dim):
     return g
 
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield (i, i+n)
+
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name):
+    def __init__(self, name, fold=1):
         """
             Loading Moleccular datasets
         """
         start = time.time()
-        print("[I] Loading dataset %s..." % (name))
+        print(f"[I] Loading dataset {name}, fold {fold}...")
         self.name = name
         data_dir = 'data/molecules/'
+        # import pickle
+        # try:
+        #     fold_indices = pickle.load(open(data_dir + f'{name}_folds.pkl', 'rb'))
+
+        # except FileNotFoundError:
+        #     with open(data_dir+name+'.pkl',"rb") as f:
+        #         f = pickle.load(f)
+
+        #     all_data = f[0] + f[1] + f[2]
+
+        #     train_indices = []
+        #     val_indices = []
+        #     test_indices = []
+        #     ind_chunks = list(chunks(all_data, len(all_data)//12))
+        #     for _ in range(5):
+        #         random.shuffle(ind_chunks)
+        #         train_indices.append(ind_chunks[2:])
+        #         val_indices.append(ind_chunks[1])
+        #         test_indices.append(ind_chunks[0])
+
+        #     fold_indices = {"train_indices": train_indices, "val_indices": val_indices, "test_indices": test_indices}
+        #     pickle.dump(fold_indices, open(data_dir + f'{name}_folds.pkl', 'wb'))
+
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
+            # train_indices = fold_indices["train_indices"][fold-1]
+            # val_indices = fold_indices["val_indices"][fold-1]
+            # test_indices = fold_indices["test_indices"][fold-1]
+
+            # train = f[0]
+            # val = f[1]
+            # test = f[2]
+
+            # all_data = train.graph_lists + val.graph_lists + test.graph_lists
+            # ind_chunks = list(chunks(all_data, len(all_data)//12))
+            # all_labels = train.graph_labels + val.graph_labels + test.graph_labels
+
+            # train.graph_lists = []
+            # for i in train_indices:
+            #     train.graph_lists += all_data[i[0]:i[1]]
+            # val.graph_lists = all_data[val_indices[0]:val_indices[1]]
+            # test.graph_lists = all_data[test_indices[0]:test_indices[1]]
+
+            # train.graph_labels = []
+            # for i in train_indices:
+            #     train.graph_labels += all_labels[i[0]:i[1]]
+            # val.graph_labels = all_labels[val_indices[0]:val_indices[1]]
+            # test.graph_labels = all_labels[test_indices[0]:test_indices[1]]
+
+
+            # self.train = train
+            # self.val = val
+            # self.test = test
+
             self.train = f[0]
             self.val = f[1]
             self.test = f[2]

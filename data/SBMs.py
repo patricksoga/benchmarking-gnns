@@ -10,7 +10,7 @@ import torch
 from scipy import sparse as sp
 import numpy as np
 
-from data.automaton_encs import automaton_encoding, dump_encodings
+from data.positional_encs import automaton_encoding, dump_encodings
 
 
 class load_SBMsDataSetDGL(torch.utils.data.Dataset):
