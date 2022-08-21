@@ -1,0 +1,22 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:303: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:303: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+[I] Loading dataset CYCLES...
+train, test, val sizes : 9000 10000 1000
+[I] Finished loading.
+[I] Data load time: 13.5909s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 327, in <module>
+    main(args) 
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 319, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 61, in train_val_pipeline
+    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 78, in add_automaton_encodings
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 78, in <listcomp>
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 70, in automaton_encoding
+    initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+UnboundLocalError: local variable 'mat' referenced before assignment
