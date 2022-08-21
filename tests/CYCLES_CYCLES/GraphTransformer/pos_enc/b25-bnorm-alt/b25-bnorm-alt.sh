@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_CYCLES_b25-bnorm-alt
-#$ -q gpu
+#$ -q gpu@@crc_gpu
 #$ -l gpu_card=1
 #$ -t 1-4:1
 

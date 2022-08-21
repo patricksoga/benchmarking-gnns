@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -N GraphTransformer_SBM_CLUSTER_b32-bnorm-alt-lap-25e4_120
-#$ -q gpu
+#$ -q gpu@@crc_gpu
 #$ -l gpu_card=1
 
 fname=$(pwd)/120_DEBUG.log
