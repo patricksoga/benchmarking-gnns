@@ -294,7 +294,6 @@ def main(args):
 
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
-    net_params['matrix_type'] = args.matrix_type
     net_params['pow_of_mat'] = args.pow_of_mat
 
     # Superpixels
@@ -314,7 +313,6 @@ def main(args):
                                    log=torch.mean(torch.log(D + 1))) 
 
     dirs = setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config)
-
     net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
     train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
 
