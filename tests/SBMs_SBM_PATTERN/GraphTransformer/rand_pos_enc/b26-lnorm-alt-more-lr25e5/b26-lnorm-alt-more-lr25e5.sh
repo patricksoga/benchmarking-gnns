@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_SBM_PATTERN_b26-lnorm-alt-more-lr25e5
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-4:1
+#$ -t 1-5:1
 
-pos_enc_dim=(0 5 6 7 8)
+pos_enc_dim=(0 5 6 7 8 10)
 fname=$(pwd)/b26-lnorm-alt-more-lr25e5_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &

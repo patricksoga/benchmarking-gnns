@@ -4,6 +4,8 @@
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
+# actually dropout=0.25
+
 pos_enc_dim=(0 5 6 7 8 16)
 fname=$(pwd)/b26-lnorm-alt-d0.4_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
