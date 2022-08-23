@@ -216,8 +216,6 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['rand_pos_enc'] = True if args.rand_pos_enc=='True' else False
     if args.pos_enc is not None:
         net_params['pos_enc'] = True if args.pos_enc =='True' else False
-    elif 'pos_enc' not in config:
-        net_params['pos_enc'] = False
     if args.rw_pos_enc is not None:
         net_params['rw_pos_enc'] = True if args.rw_pos_enc=='True' else False
     elif 'rw_pos_enc' not in config:
