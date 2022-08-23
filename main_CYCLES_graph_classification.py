@@ -48,11 +48,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
 
-    if net_params['adj_enc']:
+    elif net_params['adj_enc']:
         logger.info("[!] Adding adjacency matrix graph positional encoding.")
         dataset._add_adj_encodings(net_params['pos_enc_dim'])
 
-    if net_params.get('rand_pos_enc', False):
+    elif net_params.get('rand_pos_enc', False):
         # try:
         #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
         #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
@@ -60,7 +60,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         logger.info(f"[!] Adding random automaton graph positional encoding ({net_params['pos_enc_dim']}).")
         dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
         logger.info(f'Time PE:{time.time()-t0}')
-    if net_params.get('partial_rw_pos_enc', False):
+    elif net_params.get('partial_rw_pos_enc', False):
         logger.info(f"[!] Adding partial random walk graph positional encoding ({net_params['pos_enc_dim']}).")
         if net_params['diag']:
             logger.info("[!] Using diagonal weight matrix.")
