@@ -156,6 +156,30 @@ def adj_encoding(g, pos_enc_dim):
     g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
     return g
 
+def make_full_graph(g):
+    """
+        Converting the given graph to fully connected
+        This function just makes full connections
+        removes available edge features 
+    """
+
+    full_g = dgl.from_networkx(nx.complete_graph(g.number_of_nodes()))
+    full_g.ndata['feat'] = g.ndata['feat']
+    full_g.edata['feat'] = torch.zeros(full_g.number_of_edges()).long()
+    
+    try:
+        full_g.ndata['lap_pos_enc'] = g.ndata['lap_pos_enc']
+    except:
+        pass
+
+    try:
+        full_g.ndata['wl_pos_enc'] = g.ndata['wl_pos_enc']
+    except:
+        pass    
+    
+    return full_g
+
+
 class SBMsDataset(torch.utils.data.Dataset):
 
     def __init__(self, name):
@@ -260,6 +284,14 @@ class SBMsDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.train.graph_lists]
         self.val.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
         self.test.graph_lists = [adj_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
+
+    def _make_full_graph(self):
+        
+        # function for converting graphs to full graphs
+        # this function will be called only if full_graph flag is True
+        self.train.graph_lists = [make_full_graph(g) for g in self.train.graph_lists]
+        self.val.graph_lists = [make_full_graph(g) for g in self.val.graph_lists]
+        self.test.graph_lists = [make_full_graph(g) for g in self.test.graph_lists]
 
     # def _add_automaton_encodings(self, transition_matrix, initial_vector):
     #     # Graph positional encoding w/ pre-computed automaton encoding

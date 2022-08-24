@@ -215,7 +215,7 @@ class PELayer(nn.Module):
         # #     return pe
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
+        if self.dataset in ("CYCLES", "ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
             return pe + h
         return pe
 
