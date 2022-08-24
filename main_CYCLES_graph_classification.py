@@ -44,7 +44,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
 
-    if net_params['full_graph']:
+    if net_params.get('full_graph', False):
         st = time.time()
         print("[!] Converting the given graphs to full graphs..")
         dataset._make_full_graph()
