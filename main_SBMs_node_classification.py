@@ -48,7 +48,13 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     per_epoch_time = []
     
     DATASET_NAME = dataset.name
-    
+
+    if net_params['full_graph']:
+        st = time.time()
+        print("[!] Converting the given graphs to full graphs..")
+        dataset._make_full_graph()
+        print('Time taken to convert to full graphs:',time.time()-st)    
+
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params.get('self_loop', False):
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")

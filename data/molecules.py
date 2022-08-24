@@ -7,6 +7,7 @@ import numpy as np
 
 import random
 import csv
+import networkx as nx
 
 import dgl
 
@@ -252,7 +253,7 @@ def make_full_graph(g):
     full_g.edata['feat'] = torch.zeros(full_g.number_of_edges()).long()
     
     try:
-        full_g.ndata['lap_pos_enc'] = g.ndata['lap_pos_enc']
+        full_g.ndata['pos_enc'] = g.ndata['pos_enc']
     except:
         pass
 

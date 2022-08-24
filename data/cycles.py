@@ -9,6 +9,7 @@ import networkx as nx
 import csv
 
 import dgl
+import networkx as nx
 
 from scipy import sparse as sp
 import numpy as np
@@ -141,7 +142,7 @@ def make_full_graph(g):
     full_g.edata['feat'] = torch.zeros(full_g.number_of_edges())
     
     try:
-        full_g.ndata['lap_pos_enc'] = g.ndata['lap_pos_enc']
+        full_g.ndata['pos_enc'] = g.ndata['pos_enc']
     except:
         pass
     

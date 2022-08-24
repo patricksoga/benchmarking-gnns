@@ -7,6 +7,7 @@ import os
 import numpy as np
 
 import dgl
+import networkx as nx
 
 from scipy import sparse as sp
 import numpy as np

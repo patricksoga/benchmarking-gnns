@@ -44,6 +44,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
 
+    if net_params['full_graph']:
+        st = time.time()
+        print("[!] Converting the given graphs to full graphs..")
+        dataset._make_full_graph()
+        print('Time taken to convert to full graphs:',time.time()-st)    
+
     if net_params['pos_enc']:
         logger.info("[!] Adding Laplacian graph positional encoding.")
         dataset._add_positional_encodings(net_params['pos_enc_dim'])
