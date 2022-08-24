@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_PATTERN_b26-lnorm-alt-lr2e4
+#$ -N GraphTransformer_SBM_PATTERN_b26-lnorm-alt-lr65e5
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-4:1
 
 pos_enc_dim=(0 8 16 32 64)
-fname=$(pwd)/b26-lnorm-alt-lr2e4_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b26-lnorm-alt-lr65e5_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_PATTERN_b26-lnorm-alt-lr2e4.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_PATTERN_b26-lnorm-alt-lr65e5.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'SBM_PATTERN',
@@ -41,10 +41,10 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'rw_pos_enc': False,
 #                 'self_loop': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/SBMs_node_classification_b26-lnorm-alt-lr2e4',
+#  'out_dir': 'out/SBMs_node_classification_b26-lnorm-alt-lr65e5',
 #  'params': {'batch_size': 26,
 #             'epochs': 1000,
-#             'init_lr': 0.0002,
+#             'init_lr': 0.00065,
 #             'lr_reduce_factor': 0.5,
 #             'lr_schedule_patience': 10,
 #             'max_time': 24,
@@ -57,4 +57,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-lnorm-alt-lr2e4 --param_values 8 16 32 64 --batch_size 26 --rand_pos_enc True --batch_norm False --layer_norm True --init_lr 0.0002
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-lnorm-alt-lr65e5 --param_values 8 16 32 64 --batch_size 26 --rand_pos_enc True --batch_norm False --layer_norm True --init_lr 0.00065
