@@ -55,6 +55,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
+#             'save_name': 'b128_bnorm_edge_feat_deep',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -62,4 +63,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config test-configs/GraphTransformer_molecules_b64_lnorm_edge_feat_rand.json --varying_param pos_enc_dim --param_values 4 8 16 32 64 --batch_size 128 --init_lr 0.001 --job_note b128_bnorm_edge_feat_deep --rand_pos_enc True --hidden_dim 48 --out_dim 48 --readout mean --L 16 --layer_norm False --batch_norm True
+#python3 configure_tests.py --config test-configs/GraphTransformer_molecules_b64_lnorm_edge_feat_rand.json --varying_param pos_enc_dim --param_values 4 8 16 32 64 --batch_size 128 --init_lr 0.001 --job_note b128_bnorm_edge_feat_deep --rand_pos_enc True --hidden_dim 48 --out_dim 48 --readout mean --L 16 --layer_norm False --batch_norm True --save_name b128_bnorm_edge_feat_deep
