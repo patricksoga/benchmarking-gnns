@@ -41,6 +41,7 @@ class PELayer(nn.Module):
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
         self.num_initials = net_params.get('num_initials', 1)
         self.pagerank = net_params.get('pagerank', False)
+        self.cat = net_params.get('cat', False)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -197,6 +198,8 @@ class PELayer(nn.Module):
                 pe = pos_enc
 
             pe = self.embedding_pos_enc(pe)
+            if self.cat:
+                return pe
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
             google_matrix = nx.google_matrix(graph).A

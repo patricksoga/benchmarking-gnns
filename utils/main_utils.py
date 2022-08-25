@@ -117,6 +117,8 @@ def add_args(parser):
     parser.add_argument('--rw_pos_enc', help="Use random walk PE for graph transformer")
     parser.add_argument('--partial_rw_pos_enc', help="Use partial random walk PE for graph transformer")
     parser.add_argument('--diag', help="Use diagonal matrix for automaton PE")
+    parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
+    parser.add_argument('--cat', help="Use concatenation for graph transformer GAPE")
     parser.add_argument('--pagerank')
     return parser
 
@@ -258,6 +260,25 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['matrix_type'] = net_params['matrix_type']
     else:
         net_params['matrix_type'] = config['matrix_type']
+    
+    if args.spectral_attn is not None:
+        net_params['spectral_attn'] = True if args.spectral_attn=='True' else False
+    elif 'spectral_attn' not in config and 'spectral_attn' not in net_params:
+        net_params['spectral_attn'] = False
+    elif 'spectral_attn' in net_params:
+        net_params['spectral_attn'] = net_params['spectral_attn']
+    else:
+        net_params['spectral_attn'] = config['spectral_attn']
+
+    if args.cat is not None:
+        net_params['cat'] = True if args.cat=='True' else False
+    elif 'cat' not in config and 'cat' not in net_params:
+        net_params['cat'] = False
+    elif 'cat' in net_params:
+        net_params['cat'] = net_params['cat']
+    else:
+        net_params['cat'] = config['cat']
+
     # net_params['pow_of_mat'] = args.pow_of_mat
 
     return net_params

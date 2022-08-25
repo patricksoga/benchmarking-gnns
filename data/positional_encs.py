@@ -4,6 +4,50 @@ import dgl
 import scipy
 import pickle
 import scipy.sparse as sp
+import numpy as np
+import torch.nn.functional as F
+
+def spectral_decomposition(g, pos_enc_dim):
+    # Laplacian
+    n = g.number_of_nodes()
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+    L = sp.eye(g.number_of_nodes()) - N * A * N
+
+    # Eigenvectors with numpy
+    EigVals, EigVecs = np.linalg.eigh(L.toarray())
+    EigVals, EigVecs = EigVals[: pos_enc_dim], EigVecs[:, :pos_enc_dim]  # Keep up to the maximum desired number of frequencies
+
+    # Normalize and pad EigenVectors
+    EigVecs = torch.from_numpy(EigVecs).float()
+    EigVecs = F.normalize(EigVecs, p=2, dim=1, eps=1e-12, out=None)
+    
+    if n<pos_enc_dim:
+        g.ndata['EigVecs'] = F.pad(EigVecs, (0, pos_enc_dim-n), value=float('nan'))
+    else:
+        g.ndata['EigVecs']= EigVecs
+        
+    
+    #Save eigenvales and pad
+    EigVals = torch.from_numpy(np.sort(np.abs(np.real(EigVals)))) #Abs value is taken because numpy sometimes computes the first eigenvalue approaching 0 from the negative
+    
+    if n<pos_enc_dim:
+        EigVals = F.pad(EigVals, (0, pos_enc_dim-n), value=float('nan')).unsqueeze(0)
+    else:
+        EigVals=EigVals.unsqueeze(0)
+        
+    
+    #Save EigVals node features
+    g.ndata['EigVals'] = EigVals.repeat(g.number_of_nodes(),1).unsqueeze(2)
+    
+    return g
+
+
+def add_spectral_decomposition(dataset, pos_enc_dim):
+    dataset.train.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.test.graph_lists]
+    return dataset
 
 def random_walk_encoding(g, pos_enc_dim, type='partial'):
     """
