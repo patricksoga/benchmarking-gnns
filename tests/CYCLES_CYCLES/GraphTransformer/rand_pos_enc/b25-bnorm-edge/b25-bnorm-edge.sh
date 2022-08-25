@@ -25,7 +25,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'dataset': 'CYCLES',
 #                 'diag': False,
 #                 'dropout': 0.0,
-#                 'edge_feat': False,
+#                 'edge_feat': True,
 #                 'full_graph': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
@@ -62,4 +62,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-edge --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat True --hidden_dim 80 --out_dim 80 --L 6 --edge_feat False --matrix_type A
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-edge --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat True --hidden_dim 80 --out_dim 80 --L 6 --matrix_type A
