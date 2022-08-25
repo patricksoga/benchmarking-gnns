@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_b25-bnorm
+#$ -N GraphTransformer_CYCLES_b25-bnorm-edge
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
 pos_enc_dim=(0 40 64 128 180 256)
-fname=$(pwd)/b25-bnorm_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-bnorm-edge_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-edge.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -46,7 +46,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'rw_pos_enc': False,
 #                 'self_loop': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-edge',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -62,4 +62,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat False --hidden_dim 80 --out_dim 80 --L 6 --edge_feat False
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-edge --rand_pos_enc True --param_values 40 64 128 180 256 --batch_norm True --layer_norm False --edge_feat True --hidden_dim 80 --out_dim 80 --L 6 --edge_feat False --matrix_type A
