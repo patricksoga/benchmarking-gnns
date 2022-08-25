@@ -31,7 +31,7 @@ class GraphTransformerNet(nn.Module):
         self.device = net_params['device']
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
-        self.cat = net_params['cat']
+        self.cat = net_params['cat_gape']
         self.n_classes = n_classes
 
         # if self.edge_feat:
