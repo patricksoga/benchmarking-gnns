@@ -52,13 +52,13 @@ class GraphTransformerNet(nn.Module):
             self.ll = nn.Linear(hidden_dim*2, hidden_dim)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
+        h = self.embedding_h(h)
         if self.cat:
             pe = self.pe_layer(g, h, pos_enc)
             h = torch.cat([h, pe], dim=1)
             h = self.ll(h)
             h = self.in_feat_dropout(h)
         else:
-            h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
             h = self.pe_layer(g, h, pos_enc)
         # h = self.in_feat_dropout(h)
