@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
-pos_enc_dim=(0 34 35 36 37 38)
+pos_enc_dim=(0 120 130 140 150 160)
 fname=$(pwd)/b26-lnorm-alt-cat_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
