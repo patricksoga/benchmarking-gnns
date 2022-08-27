@@ -38,8 +38,9 @@ class GraphTransformerNet(nn.Module):
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
         if self.cat:
-            hidden_dim -= net_params['pos_enc_dim']
-        self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
+            self.embedding_h = nn.Embedding(in_dim, hidden_dim - net_params['pos_enc_dim']) # node feat is an integer
+        else:
+            self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
         # self.embedding_e = nn.Linear(1, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
