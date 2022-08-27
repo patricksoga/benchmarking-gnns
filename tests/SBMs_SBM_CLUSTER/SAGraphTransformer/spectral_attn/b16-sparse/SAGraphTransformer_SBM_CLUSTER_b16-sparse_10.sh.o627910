@@ -1,0 +1,24 @@
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 28.4054s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 353, in main
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/utils/main_utils.py", line 51, in view_model_param
+    model = gnn_model(MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 67, in gnn_model
+    return models[MODEL_NAME](net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 50, in SAN_NodeLPE
+    return SAGraphTransformerNet(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/sa_graph_transformer.py", line 38, in __init__
+    self.spectral_attn = SpectralAttention(lpe_dim, lpe_n_heads, lpe_layers)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/spectral_attention.py", line 12, in __init__
+    encoder_layer = nn.TransformerEncoderLayer(lpe_dim, lpe_n_heads)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/transformer.py", line 363, in __init__
+    self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout, batch_first=batch_first,
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 956, in __init__
+    assert self.head_dim * num_heads == self.embed_dim, "embed_dim must be divisible by num_heads"
+AssertionError: embed_dim must be divisible by num_heads
