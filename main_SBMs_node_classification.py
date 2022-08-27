@@ -60,18 +60,18 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
 
-    # l = 100
-    # dataset.train.graph_lists = dataset.train.graph_lists[:l]
-    # dataset.val.graph_lists = dataset.val.graph_lists[:l]
-    # dataset.test.graph_lists = dataset.test.graph_lists[:l]
+    l = 1000
+    dataset.train.graph_lists = dataset.train.graph_lists[:l]
+    dataset.val.graph_lists = dataset.val.graph_lists[:l]
+    dataset.test.graph_lists = dataset.test.graph_lists[:l]
 
-    # dataset.train.node_labels = dataset.train.node_labels[:l]
-    # dataset.val.node_labels = dataset.val.node_labels[:l]
-    # dataset.test.node_labels = dataset.test.node_labels[:l]
+    dataset.train.node_labels = dataset.train.node_labels[:l]
+    dataset.val.node_labels = dataset.val.node_labels[:l]
+    dataset.test.node_labels = dataset.test.node_labels[:l]
 
-    # dataset.train.n_samples = len(dataset.train.graph_lists)
-    # dataset.val.n_samples = len(dataset.val.graph_lists)
-    # dataset.test.n_samples = len(dataset.test.graph_lists)
+    dataset.train.n_samples = len(dataset.train.graph_lists)
+    dataset.val.n_samples = len(dataset.val.graph_lists)
+    dataset.test.n_samples = len(dataset.test.graph_lists)
 
     # train_graphs = []
     # train_labels = []
@@ -249,8 +249,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         logger.info('Exiting from training early because of KeyboardInterrupt')
     
     
-    _, test_acc = evaluate_network(model, device, test_loader, epoch)
-    _, train_acc = evaluate_network(model, device, train_loader, epoch)
+    _, test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
+    _, train_acc = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)
     logger.info("Test Accuracy: {:.4f}".format(test_acc))
     logger.info("Best Test Accuracy: {:.4f}".format(best_test_acc))
     logger.info("Train Accuracy: {:.4f}".format(train_acc))
