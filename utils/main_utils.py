@@ -118,7 +118,11 @@ def add_args(parser):
     parser.add_argument('--partial_rw_pos_enc', help="Use partial random walk PE for graph transformer")
     parser.add_argument('--diag', help="Use diagonal matrix for automaton PE")
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
-    parser.add_argument('--cat_gape', help="Use concatenation for graph transformer GAPE")
+    parser.add_argument('--cat_gape', help="Use concatenation for graph transformer (GAPE)")
+    parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
+    parser.add_argument('--lpe_dim', help="Dimension of graph transformer PE (spectral attention)")
+    parser.add_argument('--lpe_n_heads', help="Number of heads for spectral attention PE (spectral attention)")
+
     parser.add_argument('--pagerank')
     return parser
 
@@ -271,13 +275,18 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['spectral_attn'] = config['spectral_attn']
 
     if args.cat is not None:
-        net_params['cat_gape'] = True if args.cat=='True' else False
+        net_params['cat_gape'] = True if args.cat_gape=='True' else False
     elif 'cat_gape' not in config and 'cat_gape' not in net_params:
         net_params['cat_gape'] = False
     elif 'cat_gape' in net_params:
         net_params['cat_gape'] = net_params['cat_gape']
     else:
         net_params['cat_gape'] = config['cat_gape']
+
+    if args.lpe_layers is not None:
+        net_params['lpe_layers'] = int(args.lpe_layers)
+    if args.lpe_n_heads is not None:
+        net_params['lpe_n_heads'] = int(args.lpe_n_heads)
 
     # net_params['pow_of_mat'] = args.pow_of_mat
 

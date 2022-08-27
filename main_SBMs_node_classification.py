@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 # from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, load_encodings
+from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -59,7 +59,33 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         if net_params.get('self_loop', False):
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
-    
+
+    # dataset.train.graph_lists = dataset.train.graph_lists[:10]
+    # dataset.val.graph_lists = dataset.val.graph_lists[:10]
+    # dataset.test.graph_lists = dataset.test.graph_lists[:10]
+
+    # dataset.train.node_labels = dataset.train.node_labels[:10]
+    # dataset.val.node_labels = dataset.val.node_labels[:10]
+    # dataset.test.node_labels = dataset.test.node_labels[:10]
+
+    # dataset.train.n_samples = len(dataset.train.graph_lists)
+    # dataset.val.n_samples = len(dataset.val.graph_lists)
+    # dataset.test.n_samples = len(dataset.test.graph_lists)
+
+    # train_graphs = []
+    # train_labels = []
+
+    # for i, graph_tuple in enumerate(dataset.train):
+    #     graph, labels = graph_tuple
+    #     train_graphs.append(graph)
+    #     train_labels.append(labels)
+    #     if i == 10:
+    #         break
+
+    # dataset.train.graph_lists = train_graphs
+    # dataset.train.node_labels = train_labels
+    # dataset.train.n_samples = len(train_graphs)
+
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
         if net_params.get('pos_enc', False):
             logger.info("[!] Adding Laplacian graph positional encoding.")
@@ -83,6 +109,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 logger.info("[!] Using diagonal weight matrix.")
             dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
             logger.info(f'Time PE:{time.time()-start0}')
+
+    if MODEL_NAME in ['SAGraphTransformer']:
+        logger.info("[!] Adding Laplacian decompositions for spectral attention.")
+        dataset = add_spectral_decomposition(dataset, net_params['pos_enc_dim'])
+        logger.info(f'Time PE:{time.time()-start0}')
+
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
@@ -146,10 +178,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
                 epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
             else:   # for all other models common train function
-                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, MODEL_NAME, epoch)
                 
-            epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
-            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)        
+            epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
+            _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)        
 
             if epoch_test_acc > best_test_acc:
                 best_test_acc = epoch_test_acc

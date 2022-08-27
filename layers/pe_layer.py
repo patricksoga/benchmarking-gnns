@@ -13,6 +13,7 @@ def type_of_enc(net_params):
     adj_enc = net_params.get('adj_enc', False)
     rand_pos_enc = net_params.get('rand_pos_enc', False)
     partial_rw_pos_enc = net_params.get('partial_rw_pos_enc', False)
+    spectral_attn = net_params.get('spectral_attn', False)
     if learned_pos_enc:
         return 'learned_pos_enc'
     elif pos_enc:
@@ -23,6 +24,8 @@ def type_of_enc(net_params):
         return 'rand_pos_enc'
     elif partial_rw_pos_enc:
         return 'partial_rw_pos_enc'
+    elif spectral_attn:
+        return 'spectral_attn'
     else:
         return 'no_pe'
 
