@@ -200,9 +200,10 @@ class PELayer(nn.Module):
             else:
                 pe = pos_enc
 
-            pe = self.embedding_pos_enc(pe)
             if self.cat:
                 return pe
+            pe = self.embedding_pos_enc(pe)
+
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())
             google_matrix = nx.google_matrix(graph).A
