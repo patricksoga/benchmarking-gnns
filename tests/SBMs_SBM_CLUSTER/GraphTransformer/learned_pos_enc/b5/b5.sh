@@ -35,6 +35,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
 #                 'out_dim': 80,
+#                 'pos_enc': False,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
 #                 'rand_pos_enc': False,
@@ -60,4 +61,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --batch_size 5 --learned_pos_enc True --rand_pos_enc False --param_values 8 10 12 14 16 --job_note b5 --batch_norm False --layer_norm True
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --batch_size 5 --learned_pos_enc True --rand_pos_enc False --param_values 8 10 12 14 16 --job_note b5 --batch_norm False --layer_norm True --pos_enc False
