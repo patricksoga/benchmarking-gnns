@@ -26,6 +26,10 @@ def scaled_exp(field, scale_constant):
 
     return func
 
+def add_pe(g, field):
+    def func(nodes):
+        return {field: nodes.data[field] + g.ndata['pos_enc']}
+    return func
 
 """
     Single Attention Head
@@ -50,11 +54,13 @@ class MultiHeadAttentionLayer(nn.Module):
     
     def propagate_attention(self, g):
         # Compute attention score
+        g.apply_nodes(add_pe(g, 'K_h'))
         g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score')) #, edges)
         g.apply_edges(scaled_exp('score', np.sqrt(self.out_dim)))
 
         # Send weighted values to target nodes
         eids = g.edges()
+        g.apply_nodes(add_pe(g, 'V_h'))
         g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score', 'V_h'), fn.sum('V_h', 'wV'))
         g.send_and_recv(eids, fn.copy_edge('score', 'score'), fn.sum('score', 'z'))
     
@@ -69,6 +75,7 @@ class MultiHeadAttentionLayer(nn.Module):
         g.ndata['Q_h'] = Q_h.view(-1, self.num_heads, self.out_dim)
         g.ndata['K_h'] = K_h.view(-1, self.num_heads, self.out_dim)
         g.ndata['V_h'] = V_h.view(-1, self.num_heads, self.out_dim)
+        g.ndata['pos_enc'] = g.ndata['pos_enc'].view(-1, self.num_heads, self.out_dim)
         
         self.propagate_attention(g)
         

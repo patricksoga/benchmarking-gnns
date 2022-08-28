@@ -203,6 +203,7 @@ class PELayer(nn.Module):
             if self.cat:
                 return pe
             pe = self.embedding_pos_enc(pe)
+            return pe
 
         elif self.pagerank:
             graph = dgl.to_networkx(g.cpu())

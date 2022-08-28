@@ -66,7 +66,10 @@ class GraphTransformerNet(nn.Module):
             h = self.in_feat_dropout(h)
         else:
             h = self.in_feat_dropout(h)
-            h = self.pe_layer(g, h, pos_enc)
+            # h = self.pe_layer(g, h, pos_enc)
+            pe = self.pe_layer(g, h, pos_enc)
+            g.ndata['pos_enc'] = pe
+            h = h + pe
         # h = self.in_feat_dropout(h)
         # if not self.edge_feat: # edge feature set to 1
         # e = torch.ones(e.size(0),1).to(self.device)
