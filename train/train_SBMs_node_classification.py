@@ -36,10 +36,12 @@ def train_epoch_sparse(model, optimizer, device, data_loader, model_name, epoch)
                 sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
                 batch_pos_enc = batch_pos_enc * sign_flip.unsqueeze(0)
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
-            # else:
-            #     batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'])
             elif model.pe_layer.learned_pos_enc:
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+            elif model.pe_layer.n_gape > 1:
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+            else:
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'])
         except Exception as e:
             raise e
             batch_scores = model.forward(batch_graphs, batch_x, batch_e)

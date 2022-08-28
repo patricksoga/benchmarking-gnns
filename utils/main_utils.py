@@ -122,6 +122,7 @@ def add_args(parser):
     parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
     parser.add_argument('--lpe_dim', help="Dimension of graph transformer PE (spectral attention)")
     parser.add_argument('--lpe_n_heads', help="Number of heads for spectral attention PE (spectral attention)")
+    parser.add_argument('--n_gape', help="Use multiple GAPE encodings for graph transformer")
 
     parser.add_argument('--pagerank')
     return parser
@@ -287,6 +288,9 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['lpe_layers'] = int(args.lpe_layers)
     if args.lpe_n_heads is not None:
         net_params['lpe_n_heads'] = int(args.lpe_n_heads)
+    
+    if args.n_gape is not None:
+        net_params['n_gape'] = int(args.n_gape)
 
     # net_params['pow_of_mat'] = args.pow_of_mat
 

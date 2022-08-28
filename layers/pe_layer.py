@@ -14,6 +14,7 @@ def type_of_enc(net_params):
     rand_pos_enc = net_params.get('rand_pos_enc', False)
     partial_rw_pos_enc = net_params.get('partial_rw_pos_enc', False)
     spectral_attn = net_params.get('spectral_attn', False)
+    n_gape = net_params.get('n_gape', 1)
     if learned_pos_enc:
         return 'learned_pos_enc'
     elif pos_enc:
@@ -21,7 +22,7 @@ def type_of_enc(net_params):
     elif adj_enc:
         return 'adj_enc'
     elif rand_pos_enc:
-        return 'rand_pos_enc'
+        return f'rand_pos_enc, using {str(n_gape)} automata/automaton'
     elif partial_rw_pos_enc:
         return 'partial_rw_pos_enc'
     elif spectral_attn:
@@ -45,6 +46,7 @@ class PELayer(nn.Module):
         self.num_initials = net_params.get('num_initials', 1)
         self.pagerank = net_params.get('pagerank', False)
         self.cat = net_params.get('cat_gape', False)
+        self.n_gape = net_params.get('n_gape', 1)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -61,20 +63,39 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc:
+
+            # if net_params['diag']:
+            #     self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+            #     nn.init.normal_(self.pos_transition)
+            # else:
+            #     self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+            #     nn.init.orthogonal_(self.pos_transition)
+
+            # init initial vectors
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
                 for _ in range(self.num_initials)
             )
-
-            if net_params['diag']:
-                self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
-                nn.init.normal_(self.pos_transition)
-            else:
-                self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
-                nn.init.orthogonal_(self.pos_transition)
-
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
+
+            self.pos_initials = nn.ParameterList(
+                nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
+                for _ in range(self.n_gape)
+            )
+            for pos_initial in self.pos_initials:
+                nn.init.normal_(pos_initial)
+
+            # init transition weights
+            self.pos_transitions = nn.ParameterList(
+                nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+                for _ in range(self.n_gape)
+            )
+            for pos_transition in self.pos_transitions:
+                nn.init.orthogonal_(pos_transition)
+
+            # init linear layers for reshaping to hidden dim
+            # self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
@@ -202,7 +223,16 @@ class PELayer(nn.Module):
 
             if self.cat:
                 return pe
-            pe = self.embedding_pos_enc(pe)
+
+            if self.n_gape > 1:
+                pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
+                pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
+                pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
+                pos_enc_block = torch.mean(pos_enc_block, dim=0) # (n_nodes, hidden_dim)
+                pe = pos_enc_block
+            else:
+                pe = self.embedding_pos_enc(pe)
+
             return pe
 
         elif self.pagerank:

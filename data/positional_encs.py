@@ -81,7 +81,25 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
     dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
     return dataset
 
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A'):
+
+def multiple_automaton_encodings(g: dgl.DGLGraph, transition_matrix, initial_vector, diag=False, matrix='A', idx=0):
+    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True)
+    key = f'pos_enc_{idx}'
+    if 'pos_enc' not in g.ndata:
+        g.ndata[key] = pe
+    return g
+
+def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vectors, diag=False, matrix='A'):
+    for i, (transition_matrix, initial_vector) in enumerate(zip(transition_matrices, initial_vectors)):
+        dataset.train.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i) for g in dataset.train.graph_lists]
+        dataset.val.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i) for g in dataset.val.graph_lists]
+        dataset.test.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i) for g in dataset.test.graph_lists]
+
+    # dump_encodings(dataset, transition_matrix.shape[0])
+    return dataset
+
+
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False):
     """
     Graph positional encoding w/ automaton weights
     """
@@ -132,7 +150,12 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         initial_vector = initial_vector.cpu().numpy()
         mat_product = transition_inv @ initial_vector
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
-    g.ndata['pos_enc'] = torch.from_numpy(pe.T).float()
+    pe = torch.from_numpy(pe.T).float()
+
+    if ret_pe:
+        return pe
+
+    g.ndata['pos_enc'] = pe
     return g
 
 def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A'):
