@@ -87,10 +87,17 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     """
     # transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
 
-    if diag:
-        transition_matrix = torch.diag(transition_matrix)
+    # if diag:
+    #     transition_matrix = torch.diag(transition_matrix)
+        # torch.einsum('ij, kj -> ij', a, b) for matrix
+        # torch.einsum('ij, j->ij', a, b) for vector
+        # torch.einsum('ij, i->ij', a, b), a is a matrix, b is a vector
 
-    transition_inv = torch.inverse(transition_matrix).cpu().numpy()
+    if diag:
+        transition_inv = transition_matrix**-1
+    else:
+        transition_inv = torch.inverse(transition_matrix).cpu().numpy()
+
     if matrix == 'A':
         mat = g.adjacency_matrix().to_dense().cpu().numpy()
     elif matrix == 'L':
@@ -118,8 +125,13 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
-    initial_vector = initial_vector.cpu().numpy()
-    pe = scipy.linalg.solve_sylvester(transition_inv, -mat, transition_inv @ initial_vector)
+    if diag:
+        mat_product = torch.einsum('ij, i->ij', initial_vector, transition_inv).cpu().numpy()
+        transition_inv = torch.diag(transition_inv).cpu().numpy()
+    else:
+        initial_vector = initial_vector.cpu().numpy()
+        mat_product = transition_inv @ initial_vector
+    pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     g.ndata['pos_enc'] = torch.from_numpy(pe.T).float()
     return g
 
