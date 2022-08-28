@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, load_encodings
+from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -77,6 +77,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'])
                 logger.info(f'Time PE:{time.time()-t0}')
 
+        if MODEL_NAME in ['SAGraphTransformer']:
+            logger.info("[!] Adding Laplacian decompositions for spectral attention.")
+            dataset = add_spectral_decomposition(dataset, net_params['pos_enc_dim'])
+            logger.info(f'Time PE:{time.time()-t0}')
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
@@ -142,10 +146,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
                     epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
                 else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
                     
-                epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
-                _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
+                epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
+                _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
 
                 if epoch_test_mae < best_test_MAE:
                     best_test_MAE = epoch_test_mae
@@ -213,8 +217,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             logger.info('-' * 89)
             logger.info('Exiting from training early because of KeyboardInterrupt')
         
-        _, test_mae = evaluate_network(model, device, test_loader, epoch)
-        _, train_mae = evaluate_network(model, device, train_loader, epoch)
+        _, test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
+        _, train_mae = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)
 
         test_history.append(test_mae)
         train_history.append(train_mae)
