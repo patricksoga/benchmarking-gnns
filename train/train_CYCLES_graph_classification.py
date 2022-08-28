@@ -11,7 +11,7 @@ from train.metrics import accuracy_TU as accuracy
 """
     For GCNs
 """
-def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
+def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name):
     model.train()
     epoch_loss = 0
     epoch_train_acc = 0
@@ -24,7 +24,11 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         batch_labels = batch_labels.to(device)
         optimizer.zero_grad()
         try:
-            if model.pe_layer.pos_enc:
+            if model_name == 'SAGraphTransformer':
+                eigvals = batch_graphs.ndata['EigVals'].to(device)
+                eigvecs = batch_graphs.ndata['EigVecs'].to(device)
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+            elif model.pe_layer.pos_enc:
                 batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
                 sign_flip = torch.rand(batch_pos_enc.size(1)).to(device)
                 sign_flip[sign_flip>=0.5] = 1.0; sign_flip[sign_flip<0.5] = -1.0
@@ -45,7 +49,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     
     return epoch_loss, epoch_train_acc, optimizer
 
-def evaluate_network_sparse(model, device, data_loader, epoch):
+def evaluate_network_sparse(model, device, data_loader, epoch, model_name):
     model.eval()
     epoch_test_loss = 0
     epoch_test_acc = 0
@@ -57,8 +61,13 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             batch_e = batch_graphs.edata['feat'].to(device)
             batch_labels = batch_labels.to(device)
             try:
-                batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
-                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
+                if model_name == 'SAGraphTransformer':
+                    eigvals = batch_graphs.ndata['EigVals'].to(device)
+                    eigvecs = batch_graphs.ndata['EigVecs'].to(device)
+                    batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+                else:
+                    batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
+                    batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
             except:
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e)
             loss = model.loss(batch_scores, batch_labels) 
