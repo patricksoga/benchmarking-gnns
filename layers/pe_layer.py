@@ -22,7 +22,8 @@ def type_of_enc(net_params):
     elif adj_enc:
         return 'adj_enc'
     elif rand_pos_enc:
-        return f'rand_pos_enc, using {str(n_gape)} automata/automaton'
+        print(f'using {str(n_gape)} automata/automaton')
+        return f'rand_pos_enc'
     elif partial_rw_pos_enc:
         return 'partial_rw_pos_enc'
     elif spectral_attn:
@@ -93,7 +94,6 @@ class PELayer(nn.Module):
             )
             for pos_transition in self.pos_transitions:
                 nn.init.orthogonal_(pos_transition)
-
             # init linear layers for reshaping to hidden dim
             # self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)

@@ -11,8 +11,6 @@ import networkx as nx
 from scipy import sparse as sp
 import numpy as np
 
-from data.positional_encs import automaton_encoding, dump_encodings
-
 
 class load_SBMsDataSetDGL(torch.utils.data.Dataset):
 
