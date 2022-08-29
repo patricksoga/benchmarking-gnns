@@ -187,7 +187,8 @@ class PELayer(nn.Module):
 
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
             stacked_encs = stacked_encs.transpose(1, 0)
-            pe = self.embedding_pos_enc(stacked_encs)
+            pe = self.embedding_pos_encs[0](stacked_encs)
+            return pe
         elif self.rand_pos_enc:
             # device = torch.device("cpu")
             # vec_init = self.stack_strategy(g.num_nodes())
