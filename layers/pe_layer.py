@@ -48,6 +48,7 @@ class PELayer(nn.Module):
         self.pagerank = net_params.get('pagerank', False)
         self.cat = net_params.get('cat_gape', False)
         self.n_gape = net_params.get('n_gape', 1)
+        self.gape_pooling = net_params.get('gape_pooling', 'mean')
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -221,16 +222,23 @@ class PELayer(nn.Module):
             else:
                 pe = pos_enc
 
-            if self.cat:
-                return pe
+            # if self.cat:
+            #     return pe
 
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
-                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
+                if not self.cat:
+                    pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
                 pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
                 # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
                 # count how many nans are in pos_enc_block
-                pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
+                if self.gape_pooling == "mean":
+                    pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
+                elif self.gape_pooling == 'sum':
+                    pos_enc_block = torch.sum(pos_enc_block, 0, keepdim=False)
+                elif self.gape_pooling == 'max':
+                    pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
+
                 pe = pos_enc_block
             else:
                 pe = self.embedding_pos_encs[0](pe)
