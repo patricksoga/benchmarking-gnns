@@ -31,6 +31,7 @@ class GraphTransformerNet(nn.Module):
         self.device = net_params['device']
         self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
+        self.cat = net_params.get('cat_gape', False)
 
         self.use_pos_enc = net_params.get('pos_enc', False) or net_params.get('wl_pos_enc', False) or net_params.get('learned_pos_enc', False) or net_params.get('rand_pos_enc', False) or net_params.get('adj_enc', False)
         # if self.edge_feat:
