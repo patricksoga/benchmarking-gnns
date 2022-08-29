@@ -10,4 +10,4 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt.json --job_num 13 --pos_enc_dim 13 --log_file $fname --n_gape False --cat_gape False
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt.json --job_num 13 --pos_enc_dim 13 --log_file $fname --n_gape 1 --cat_gape False
