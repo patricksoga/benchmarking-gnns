@@ -28,6 +28,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'full_graph': False,
+#                 'gape_pooling': 'sum',
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
