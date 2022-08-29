@@ -172,7 +172,7 @@ class PELayer(nn.Module):
             mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g.num_nodes())
             vec_init = vec_init.transpose(1, 0).flatten()
-            kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
+            kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transitions[0]).to(self.device)
 
             if self.power_method:
                 encs = vec_init
