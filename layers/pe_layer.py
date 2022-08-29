@@ -95,8 +95,8 @@ class PELayer(nn.Module):
             for pos_transition in self.pos_transitions:
                 nn.init.orthogonal_(pos_transition)
             # init linear layers for reshaping to hidden dim
-            # self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
-            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
+            self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
+            # self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             for mat_pow in self.mat_pows:
@@ -226,12 +226,14 @@ class PELayer(nn.Module):
 
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
+                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
                 pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
-                pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
-                pos_enc_block = torch.mean(pos_enc_block, dim=0) # (n_nodes, hidden_dim)
+                # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
+                # count how many nans are in pos_enc_block
+                pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
                 pe = pos_enc_block
             else:
-                pe = self.embedding_pos_enc(pe)
+                pe = self.embedding_pos_encs[0](pe)
 
             return pe
 
