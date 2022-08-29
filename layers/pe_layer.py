@@ -93,7 +93,7 @@ class PELayer(nn.Module):
                 for _ in range(self.n_gape)
             )
             for pos_transition in self.pos_transitions:
-                nn.init.orthogonal_(pos_transition)
+                nn.init.normal_(pos_transition)
             # init linear layers for reshaping to hidden dim
             self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
             # self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)

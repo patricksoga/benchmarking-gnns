@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
 from db import store_results
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
@@ -63,9 +63,15 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         #     logger.info(f"[!] Loading random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
         #     dataset = load_encodings(dataset, net_params['pos_enc_dim'])
         # except:
-        logger.info(f"[!] Adding random automaton graph positional encoding ({net_params['pos_enc_dim']}).")
-        dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transition, model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
-        logger.info(f'Time PE:{time.time()-t0}')
+            logger.info(f"[!] Adding random automaton graph positional encoding ({model.pe_layer.pos_enc_dim}).")
+            if net_params['diag']:
+                logger.info("[!] Using diagonal weight matrix.")
+            if net_params.get('n_gape', 1) > 1:
+                logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
+                dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
+            else:
+                dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+            logger.info(f'Time PE:{time.time()-t0}')
     elif net_params.get('partial_rw_pos_enc', False):
         logger.info(f"[!] Adding partial random walk graph positional encoding ({net_params['pos_enc_dim']}).")
         if net_params['diag']:
