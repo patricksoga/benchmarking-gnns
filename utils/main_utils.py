@@ -117,12 +117,18 @@ def add_args(parser):
     parser.add_argument('--rw_pos_enc', help="Use random walk PE for graph transformer")
     parser.add_argument('--partial_rw_pos_enc', help="Use partial random walk PE for graph transformer")
     parser.add_argument('--diag', help="Use diagonal matrix for automaton PE")
-    parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
     parser.add_argument('--cat_gape', help="Use concatenation for graph transformer (GAPE)")
+    parser.add_argument('--n_gape', help="Use multiple GAPE encodings for graph transformer")
+    parser.add_argument('--gape_pooling', help="Type of pooling for GAPE for graph transformer (GAPE)")
+
+    parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
     parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
     parser.add_argument('--lpe_dim', help="Dimension of graph transformer PE (spectral attention)")
     parser.add_argument('--lpe_n_heads', help="Number of heads for spectral attention PE (spectral attention)")
-    parser.add_argument('--n_gape', help="Use multiple GAPE encodings for graph transformer")
+
+    parser.add_argument('--in_deg_centrality', help="Max in-degree centrality PE for graph transformer (Graphormer)")
+    parser.add_argument('--out_deg_centrality', help="Max out-degree centrality PE for graph transformer (Graphormer)")
+    parser.add_argument('--spd_len', help="Max shortest path distance for use as spatial PE for graph transformer (Graphormer)")
 
     parser.add_argument('--pagerank')
     return parser
@@ -288,9 +294,21 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['lpe_layers'] = int(args.lpe_layers)
     if args.lpe_n_heads is not None:
         net_params['lpe_n_heads'] = int(args.lpe_n_heads)
-    
+
     if args.n_gape is not None:
         net_params['n_gape'] = int(args.n_gape)
+
+    if args.spd_len is not None:
+        net_params['spd_len'] = int(args.spd_len)
+
+    if args.in_deg_centrality is not None:
+        net_params['in_deg_centrality'] = int(args.in_deg_centrality)
+
+    if args.out_deg_centrality is not None:
+        net_params['out_deg_centrality'] = int(args.out_deg_centrality)
+    
+    if args.gape_pooling is not None:
+        net_params['gape_pooling'] = args.gape_pooling
 
     # net_params['pow_of_mat'] = args.pow_of_mat
 
