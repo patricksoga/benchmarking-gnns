@@ -27,6 +27,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'full_graph': False,
+#                 'gape_pooling': 'sum',
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
