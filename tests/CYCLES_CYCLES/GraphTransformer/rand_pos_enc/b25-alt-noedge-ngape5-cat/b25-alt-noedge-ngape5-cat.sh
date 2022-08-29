@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_CYCLES_b25-alt-noedge-ngape5-cat
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-4:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 8 16 32 64)
+pos_enc_dim=(0 128)
 fname=$(pwd)/b25-alt-noedge-ngape5-cat_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -65,4 +65,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config /home/psoga/Documents/projects/benchmarking-gnns/configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --job_note b25-alt-noedge-ngape5-cat --param_values 8 16 32 64 --batch_size 25 --pos_enc False --rand_pos_enc True --edge_feat False --n_gape 5 --cat_gape True
+#python3 configure_tests.py --config /home/psoga/Documents/projects/benchmarking-gnns/configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --job_note b25-alt-noedge-ngape5-cat --param_values 128 --batch_size 25 --pos_enc False --rand_pos_enc True --edge_feat False --n_gape 5 --cat_gape True
