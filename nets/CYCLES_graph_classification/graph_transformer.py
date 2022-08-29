@@ -51,15 +51,23 @@ class GraphTransformerNet(nn.Module):
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
         # self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
         self.MLP_layer = MLPReadout(out_dim, n_classes)
+
+        if self.cat:
+            self.ll = nn.Linear(hidden_dim - net_params['pos_enc_dim'], hidden_dim,)
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
-        if not self.use_pos_enc:
-            h = self.embedding_h(h)
+        h = self.embedding_h(h)
+        if self.cat:
+            pe = self.pe_layer(g, h, pos_enc)
+            h = torch.cat((h, pe), dim=1)
+            h = self.ll(h)
+            h = self.in_feat_dropout(h)
         else:
         # h = self.embedding_h(h)
-        # h = self.in_feat_dropout(h)
-            h = self.pe_layer(g, h, pos_enc)
-        h = self.in_feat_dropout(h)
+            h = self.in_feat_dropout(h)
+            pe = self.pe_layer(g, h, pos_enc)
+            h = h + pe
+
         # if not self.edge_feat: # edge feature set to 1
         if self.edge_feat:
             e = torch.ones(e.size(0),1).to(self.device)
