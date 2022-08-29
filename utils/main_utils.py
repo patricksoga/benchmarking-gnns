@@ -281,7 +281,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     else:
         net_params['spectral_attn'] = config['spectral_attn']
 
-    if args.cat is not None:
+    if args.cat_gape is not None:
         net_params['cat_gape'] = True if args.cat_gape=='True' else False
     elif 'cat_gape' not in config and 'cat_gape' not in net_params:
         net_params['cat_gape'] = False
