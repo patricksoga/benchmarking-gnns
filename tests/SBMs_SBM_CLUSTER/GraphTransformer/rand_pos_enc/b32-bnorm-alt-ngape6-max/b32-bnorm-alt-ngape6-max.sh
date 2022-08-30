@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_SBM_CLUSTER_b32-bnorm-alt-ngape6-max
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-3:1
+#$ -t 1-6:1
 
-pos_enc_dim=(0 8 16 32)
+pos_enc_dim=(0 6 8 16 32 88 120)
 fname=$(pwd)/b32-bnorm-alt-ngape6-max_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -27,6 +27,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'full_graph': False,
+#                 'gape_pooling': 'max',
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
@@ -60,4 +61,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-ngape6-max --param_values 8 16 32 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --n_gape 6 --gape_pooling max
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-ngape6-max --param_values 6 8 16 32 88 120 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --n_gape 6 --gape_pooling max
