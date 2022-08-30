@@ -67,7 +67,8 @@ class GraphTransformerNet(nn.Module):
         # h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
             pe = self.pe_layer(g, h, pos_enc)
-            h = h + pe
+            # h = h + pe
+            h = pe
 
         # if not self.edge_feat: # edge feature set to 1
         if self.edge_feat:
