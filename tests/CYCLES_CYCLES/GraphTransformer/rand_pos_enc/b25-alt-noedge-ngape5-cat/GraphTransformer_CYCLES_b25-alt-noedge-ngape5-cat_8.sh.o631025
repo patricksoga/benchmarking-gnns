@@ -1,0 +1,28 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:319: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:319: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+[I] Loading dataset CYCLES...
+train, test, val sizes : 9000 10000 1000
+[I] Finished loading.
+[I] Data load time: 14.0941s
+using 5 automata/automaton
+using 5 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 342, in <module>
+    main(args) 
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 334, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 141, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_CYCLES_graph_classification.py", line 42, in train_epoch_sparse
+    raise e
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_CYCLES_graph_classification.py", line 38, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/CYCLES_graph_classification/graph_transformer.py", line 64, in forward
+    h = self.ll(h)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (1247x88 and 72x80)
