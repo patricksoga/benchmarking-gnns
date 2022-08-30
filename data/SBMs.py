@@ -217,7 +217,8 @@ class SBMsDataset(torch.utils.data.Dataset):
         #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
         #snorm_e = torch.cat(tab_snorm_e).sqrt()
         batched_graph = dgl.batch(graphs)
-        batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+        if spatial_pos_biases is not None:
+            batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
 
         return batched_graph, labels, batched_spatial_pos_biases
     
