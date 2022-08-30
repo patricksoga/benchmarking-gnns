@@ -14,6 +14,7 @@ from nets.SBMs_node_classification.ring_gnn_net import RingGNNNet
 from nets.SBMs_node_classification.three_wl_gnn_net import ThreeWLGNNNet
 from nets.SBMs_node_classification.graph_transformer import GraphTransformerNet
 from nets.SBMs_node_classification.sa_graph_transformer import SAGraphTransformerNet
+from nets.SBMs_node_classification.pseudo_graphormer import PseudoGraphormerNet
 
 
 def GatedGCN(net_params):
@@ -49,6 +50,9 @@ def GraphTransformer(net_params):
 def SAN_NodeLPE(net_params):
     return SAGraphTransformerNet(net_params)
 
+def PseudoGraphormer(net_params):
+    return PseudoGraphormerNet(net_params)
+
 def gnn_model(MODEL_NAME, net_params):
     models = {
         'GatedGCN': GatedGCN,
@@ -61,7 +65,8 @@ def gnn_model(MODEL_NAME, net_params):
         'RingGNN': RingGNN,
         '3WLGNN': ThreeWLGNN,
         'GraphTransformer': GraphTransformer,
-        'SAGraphTransformer': SAN_NodeLPE
+        'SAGraphTransformer': SAN_NodeLPE,
+        'PseudoGraphormer': PseudoGraphormer
     }
         
     return models[MODEL_NAME](net_params)

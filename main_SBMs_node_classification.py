@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 # from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spd_encodings, add_spectral_decomposition, load_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -60,7 +60,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
             dataset._add_self_loops()
 
-    # l = 100
+    # l = 10
     # dataset.train.graph_lists = dataset.train.graph_lists[:l]
     # dataset.val.graph_lists = dataset.val.graph_lists[:l]
     # dataset.test.graph_lists = dataset.test.graph_lists[:l]
@@ -72,20 +72,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     # dataset.train.n_samples = l
     # dataset.val.n_samples = l
     # dataset.test.n_samples = l
-
-    # train_graphs = []
-    # train_labels = []
-
-    # for i, graph_tuple in enumerate(dataset.train):
-    #     graph, labels = graph_tuple
-    #     train_graphs.append(graph)
-    #     train_labels.append(labels)
-    #     if i == 10:
-    #         break
-
-    # dataset.train.graph_lists = train_graphs
-    # dataset.train.node_labels = train_labels
-    # dataset.train.n_samples = len(train_graphs)
 
     if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
         if net_params.get('pos_enc', False):
@@ -118,6 +104,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if MODEL_NAME in ['SAGraphTransformer']:
         logger.info("[!] Adding Laplacian decompositions for spectral attention.")
         dataset = add_spectral_decomposition(dataset, net_params['pos_enc_dim'])
+        logger.info(f'Time PE:{time.time()-start0}')
+    
+    if MODEL_NAME in ['PseudoGraphormer']:
+        logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
+        dataset = add_spd_encodings(dataset)
         logger.info(f'Time PE:{time.time()-start0}')
 
 
@@ -343,6 +334,10 @@ def main():
         net_params['self_loop'] = True if args.self_loop=='True' else False
 
     # SBM
+    dataset.train.spatial_pos_lists = []
+    dataset.val.spatial_pos_lists = []
+    dataset.test.spatial_pos_lists = []
+
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
 

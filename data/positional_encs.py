@@ -6,6 +6,24 @@ import pickle
 import scipy.sparse as sp
 import numpy as np
 import torch.nn.functional as F
+import random
+import pyximport
+
+pyximport.install(setup_args={"include_dirs": np.get_include()})
+from . import algos
+
+def spd_encoding(g: dgl.DGLGraph):
+    shortest_path_result, _ = algos.floyd_warshall(g.adj().to_dense().numpy().astype(int))
+    spatial_pos = torch.from_numpy((shortest_path_result)).long()
+    
+    # g.ndata['spatial_pos_bias'] = spatial_pos
+    return spatial_pos
+
+def add_spd_encodings(dataset):
+    dataset.train.spatial_pos_lists = [spd_encoding(g) for g in dataset.train.graph_lists]
+    dataset.val.spatial_pos_lists = [spd_encoding(g) for g in dataset.val.graph_lists]
+    dataset.test.spatial_pos_lists = [spd_encoding(g) for g in dataset.test.graph_lists]
+    return dataset
 
 def spectral_decomposition(g, pos_enc_dim):
     # Laplacian
@@ -83,10 +101,10 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
 
 
 def multiple_automaton_encodings(g: dgl.DGLGraph, transition_matrix, initial_vector, diag=False, matrix='A', idx=0):
-    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True)
+    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True, idx=idx)
     key = f'pos_enc_{idx}'
-    if 'pos_enc' not in g.ndata:
-        g.ndata[key] = pe
+    # if 'pos_enc' not in g.ndata:
+    g.ndata[key] = pe
     return g
 
 def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vectors, diag=False, matrix='A'):
@@ -99,7 +117,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
     return dataset
 
 
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False):
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, idx=0):
     """
     Graph positional encoding w/ automaton weights
     """
@@ -141,14 +159,21 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
         mat = (A + N).todense()
 
+    if idx == 0:
+        initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+    else:
+        pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
+        index = random.randint(0, g.number_of_nodes()-1)
+        pi[:, index] = initial_vector.squeeze(1)
+        initial_vector = pi
 
-    initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     if diag:
         mat_product = torch.einsum('ij, i->ij', initial_vector, transition_inv).cpu().numpy()
         transition_inv = torch.diag(transition_inv).cpu().numpy()
     else:
         initial_vector = initial_vector.cpu().numpy()
         mat_product = transition_inv @ initial_vector
+
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 

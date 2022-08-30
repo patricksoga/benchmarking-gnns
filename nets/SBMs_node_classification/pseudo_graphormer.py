@@ -39,10 +39,7 @@ class PseudoGraphormerNet(nn.Module):
         )
         self.spatial_pos_encoder = nn.Embedding(spd_len, num_heads, padding_idx=0)
 
-        if self.cat:
-            self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
-        else:
-            self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
+        self.embedding_h = nn.Embedding(in_dim, hidden_dim) # node feat is an integer
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
@@ -51,16 +48,19 @@ class PseudoGraphormerNet(nn.Module):
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, n_classes)
 
-    def forward(self, g: dgl.DGLGraph, h, e, spatial_pos):
+    def forward(self, g, h, e, spatial_pos_bias):
         h = self.embedding_h(h)
         h = h + self.in_degree_encoder(g.in_degrees()) + self.out_degree_encoder(g.out_degrees())
-        spatial_pos_bias = self.spatial_pos_encoder(spatial_pos)
-        g.ndata['spatial_pos_bias'] = spatial_pos_bias
+
+        # spatial_pos = g.ndata['spatial_pos_bias']
+        spatial_pos_bias = self.spatial_pos_encoder(spatial_pos_bias)
+        # g.ndata['spatial_pos_bias'] = spatial_pos_bias.permute(2, 0, 1) # (num_heads, V, V)
+        # spatial_pos_bias = spatial_pos_bias.permute(2, 0, 1) # (num_heads, V, V)
 
         # convnets
         for conv in self.layers:
             # h, e = conv(g, h, e)
-            h = conv(g, h)
+            h = conv(g, h, spatial_pos_bias=spatial_pos_bias)
 
         out = self.MLP_layer(h)
         return out
