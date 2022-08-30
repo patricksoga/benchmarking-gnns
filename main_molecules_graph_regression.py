@@ -56,7 +56,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 dataset._add_self_loops()
 
         if MODEL_NAME in ['GatedGCN', 'GraphTransformer', 'GIN']:
-            if net_params['pos_enc']:
+            if net_params.get('pos_enc', False):
                 logger.info("[!] Adding Laplacian graph positional encoding.")
                 dataset._add_positional_encodings(net_params['pos_enc_dim'])
                 logger.info(f'Time PE: {time.time()-t0}')
