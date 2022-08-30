@@ -63,7 +63,7 @@ class SAGraphTransformerNet(nn.Module):
 
         if self.edge_feat:
         # if not self.edge_feat: # edge feature set to 1
-            e = torch.ones(e.size(0),1).to(self.device)
+            # e = torch.ones(e.size(0),1).to(self.device)
             e = self.embedding_e(e)   
         
         # convnets
