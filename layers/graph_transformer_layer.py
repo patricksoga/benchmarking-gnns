@@ -1,3 +1,4 @@
+from re import U
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -23,6 +24,16 @@ def scaled_exp(field, scale_constant):
     def func(edges):
         # clamp for softmax numerical stability
         return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5))}
+
+    return func
+
+def scaled_exp_with_bias(field, scale_constant, bias):
+    def func(edges):
+        src, dest = edges.edges()[0], edges.edges()[1]
+        bias_weights = bias[src, dest].unsqueeze(-1)
+
+        # clamp for softmax numerical stability
+        return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5) + bias_weights)}
 
     return func
 
@@ -52,11 +63,14 @@ class MultiHeadAttentionLayer(nn.Module):
             self.V = nn.Linear(in_dim, out_dim * num_heads, bias=False)
         
     
-    def propagate_attention(self, g):
+    def propagate_attention(self, g, spatial_pos_bias=None):
         # Compute attention score
         # g.apply_nodes(add_pe(g, 'K_h'))
         g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score')) #, edges)
-        g.apply_edges(scaled_exp('score', np.sqrt(self.out_dim)))
+        if spatial_pos_bias is not None:
+            g.apply_edges(scaled_exp_with_bias('score', np.sqrt(self.out_dim), spatial_pos_bias))
+        else:
+            g.apply_edges(scaled_exp('score', np.sqrt(self.out_dim)))
 
         # Send weighted values to target nodes
         eids = g.edges()
@@ -64,12 +78,12 @@ class MultiHeadAttentionLayer(nn.Module):
         g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score', 'V_h'), fn.sum('V_h', 'wV'))
         g.send_and_recv(eids, fn.copy_edge('score', 'score'), fn.sum('score', 'z'))
     
-    def forward(self, g, h):
+    def forward(self, g, h, spatial_pos_bias=None):
         
         Q_h = self.Q(h)
         K_h = self.K(h)
         V_h = self.V(h)
-        
+
         # Reshaping into [num_nodes, num_heads, feat_dim] to 
         # get projections for multi-head attention
         g.ndata['Q_h'] = Q_h.view(-1, self.num_heads, self.out_dim)
@@ -77,7 +91,7 @@ class MultiHeadAttentionLayer(nn.Module):
         g.ndata['V_h'] = V_h.view(-1, self.num_heads, self.out_dim)
         # g.ndata['pos_enc'] = g.ndata['pos_enc'].view(-1, self.num_heads, self.out_dim)
         
-        self.propagate_attention(g)
+        self.propagate_attention(g, spatial_pos_bias)
         
         head_out = g.ndata['wV']/g.ndata['z']
         
@@ -119,11 +133,11 @@ class GraphTransformerLayer(nn.Module):
         if self.batch_norm:
             self.batch_norm2 = nn.BatchNorm1d(out_dim)
         
-    def forward(self, g, h):
+    def forward(self, g, h, spatial_pos_bias=None):
         h_in1 = h # for first residual connection
         
         # multi-head attention out
-        attn_out = self.attention(g, h)
+        attn_out = self.attention(g, h, spatial_pos_bias=spatial_pos_bias)
         h = attn_out.view(-1, self.out_channels)
         
         h = F.dropout(h, self.dropout, training=self.training)
