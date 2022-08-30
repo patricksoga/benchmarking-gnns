@@ -8,7 +8,6 @@ from layers.pe_layer import PELayer
     Graph Transformer with edge features
     
 """
-from layers.graph_transformer_edge_layer import GraphTransformerLayer
 from layers.mlp_readout_layer import MLPReadout
 
 class GraphTransformerNet(nn.Module):
@@ -34,17 +33,22 @@ class GraphTransformerNet(nn.Module):
         self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
-        else:
-            self.embedding_e = nn.Linear(1, hidden_dim)
+        # else:
+        #     self.embedding_e = nn.Linear(1, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
+        if not self.edge_feat:
+            from layers.graph_transformer_layer import GraphTransformerLayer
+        else:
+            from layers.graph_transformer_edge_layer import GraphTransformerLayer
+
         self.layers = nn.ModuleList([ GraphTransformerLayer(hidden_dim, hidden_dim, num_heads, dropout,
                                                     self.layer_norm, self.batch_norm, self.residual) for _ in range(n_layers-1) ]) 
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
         self.ll = nn.Linear(hidden_dim*2, hidden_dim)
-        
+
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
         h = self.embedding_h(h)
         # h = self.in_feat_dropout(h)
@@ -53,13 +57,18 @@ class GraphTransformerNet(nn.Module):
         # print(h.shape)
         h = self.ll(h)
         h = self.in_feat_dropout(h)
-        if not self.edge_feat: # edge feature set to 1
+
+        if self.edge_feat:
+        # if not self.edge_feat: # edge feature set to 1
             e = torch.ones(e.size(0),1).to(self.device)
-        e = self.embedding_e(e)   
+            e = self.embedding_e(e)   
         
         # convnets
         for conv in self.layers:
-            h, e = conv(g, h, e)
+            if self.edge_feat:
+                h, e = conv(g, h, e)
+            else:
+                h = conv(g, h)
         g.ndata['h'] = h
         
         if self.readout == "sum":
