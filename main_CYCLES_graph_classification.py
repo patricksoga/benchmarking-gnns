@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spd_encodings, add_spectral_decomposition, load_encodings
 from db import store_results
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
@@ -84,12 +84,16 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         dataset = add_spectral_decomposition(dataset, net_params['pos_enc_dim'])
         logger.info(f'Time PE:{time.time()-t0}')
 
+    if MODEL_NAME in ['PseudoGraphormer']:
+        logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
+        dataset = add_spd_encodings(dataset)
+        logger.info(f'Time PE:{time.time()-t0}')
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
     if net_params['num_train_data'] is not None:
         # net_params['num_train_data'] is the number of train samples to use
         from data.cycles import DGLFormDataset
-        trainset = DGLFormDataset(trainset[:net_params['num_train_data']][0], trainset[:net_params['num_train_data']][1])
+        trainset = DGLFormDataset(trainset[:net_params['num_train_data']][0], trainset[:net_params['num_train_data']][1], trainset[:net_params['num_train_data']][2])
 
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
 
@@ -312,6 +316,10 @@ def main(args):
     net_params['adj_enc'] = args.adj_enc
     net_params['dataset'] = DATASET_NAME
     net_params['pow_of_mat'] = args.pow_of_mat
+
+    dataset.train.spatial_pos_lists = []
+    dataset.val.spatial_pos_lists = []
+    dataset.test.spatial_pos_lists = []
 
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
