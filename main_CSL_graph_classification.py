@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from data.positional_encs import add_automaton_encodings_CSL
+from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -82,9 +82,15 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
             model = model.to(device)
 
             if net_params.get('rand_pos_enc', False):
-                trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
-                valset.lists = add_automaton_encodings_CSL(valset.lists, model)
-                testset.lists = add_automaton_encodings_CSL(testset.lists, model)
+                if net_params.get('n_gape', 1) > 1:
+                    logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
+                    trainset.lists = add_multiple_automaton_encodings_CSL(trainset.lists, model)
+                    valset.lists = add_multiple_automaton_encodings_CSL(valset.lists, model)
+                    testset.lists = add_multiple_automaton_encodings_CSL(testset.lists, model)
+                else:
+                    trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
+                    valset.lists = add_automaton_encodings_CSL(valset.lists, model)
+                    testset.lists = add_automaton_encodings_CSL(testset.lists, model)
 
             logger.info(f"Training Graphs: {len(trainset)}")
             logger.info(f"Validation Graphs: {len(valset)}")
