@@ -236,7 +236,7 @@ class PELayer(nn.Module):
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
                 # if not self.cat:
-                # pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
+                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
                 pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
                 pos_enc_block = pos_enc_block.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
 
@@ -250,7 +250,7 @@ class PELayer(nn.Module):
                 #     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
                 pos_enc_block = pos_enc_block @ self.gape_pool_vec
                 pos_enc_block = pos_enc_block.squeeze(2)
-                pos_enc_block = self.embedding_pos_encs[0](pos_enc_block)
+                # pos_enc_block = self.embedding_pos_encs[0](pos_enc_block)
 
                 pe = pos_enc_block
                 # pe = torch.softmax(pe, dim=1)
