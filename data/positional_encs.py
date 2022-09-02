@@ -101,7 +101,7 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
 
 
 def multiple_automaton_encodings(g: dgl.DGLGraph, transition_matrix, initial_vector, diag=False, matrix='A', idx=0):
-    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True, idx=idx)
+    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True)
     key = f'pos_enc_{idx}'
     # if 'pos_enc' not in g.ndata:  
     g.ndata[key] = pe
@@ -126,8 +126,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
-
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, idx=0):
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False):
     # g = random_orientation(g)
     """
     Graph positional encoding w/ automaton weights
@@ -146,38 +145,50 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         transition_inv = torch.inverse(transition_matrix).cpu().numpy()
 
     if matrix == 'A':
+        # Adjacency matrix
         mat = g.adjacency_matrix().to_dense().cpu().numpy()
     elif matrix == 'L':
+        # Normalized Laplacian
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-        L = sp.eye(n) - N * A * N
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - D * A * D
         mat = L.todense()
     elif matrix == 'SL':
+        # Normalized unsigned Laplacian
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-        L = sp.eye(n) + N * A * N
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) + D * A * D
         mat = L.todense()
     elif matrix == 'UL':
+        # Unnormalized Laplacian
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
-        mat = (A - N).todense()
-    elif matrix == 'AD':
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        mat = (A - D).todense()
+    elif matrix == 'USL':
+        # Unnormalized unsigned Laplacian
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
-        mat = (A + N).todense()
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        mat = (A + D).todense()
     elif matrix == 'E':
-        # get eigenvector matrix
+        # Laplacian eigenvector matrix
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-        L = sp.eye(n) - N * A * N
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - D * A * D
         EigVal, EigVec = np.linalg.eig(L.todense())
         EigVec = EigVec[:, EigVal.argsort()] # increasing order
         mat = EigVec
+    elif matrix == 'R':
+        # Random walk matrix (1st power)
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        mat = A * D
+
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     # if idx == 0:
