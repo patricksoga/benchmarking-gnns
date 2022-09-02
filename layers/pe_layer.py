@@ -249,6 +249,7 @@ class PELayer(nn.Module):
                 # elif self.gape_pooling == 'max':
                 #     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
                 pos_enc_block = pos_enc_block @ self.gape_pool_vec
+                pos_enc_block = torch.softmax(pos_enc_block, dim=1)
                 pos_enc_block = pos_enc_block.squeeze(2)
                 # pos_enc_block = self.embedding_pos_encs[0](pos_enc_block)
 
