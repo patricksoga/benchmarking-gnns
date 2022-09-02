@@ -49,11 +49,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     DATASET_NAME = dataset.name
 
-    if net_params.get('full_graph', False):
-        st = time.time()
-        logger.info("[!] Converting the given graphs to full graphs..")
-        dataset._make_full_graph()
-        logger.info('Time taken to convert to full graphs:',time.time()-st)    
 
     if MODEL_NAME in ['GCN', 'GAT']:
         if net_params.get('self_loop', False):
@@ -111,6 +106,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         dataset = add_spd_encodings(dataset)
         logger.info(f'Time PE:{time.time()-start0}')
 
+    if net_params.get('full_graph', False):
+        st = time.time()
+        logger.info("[!] Converting the given graphs to full graphs..")
+        dataset._make_full_graph()
+        logger.info('Time taken to convert to full graphs:',time.time()-st)    
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
 

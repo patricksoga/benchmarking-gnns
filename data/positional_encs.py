@@ -103,8 +103,18 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
 def multiple_automaton_encodings(g: dgl.DGLGraph, transition_matrix, initial_vector, diag=False, matrix='A', idx=0):
     pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True, idx=idx)
     key = f'pos_enc_{idx}'
-    # if 'pos_enc' not in g.ndata:
+    # if 'pos_enc' not in g.ndata:  
     g.ndata[key] = pe
+    return g
+
+def random_orientation(g: dgl.DGLGraph):
+    edges = g.edges()
+    src_tensor, dst_tensor = edges[0], edges[1]
+    for i, (src, dst) in enumerate(zip(src_tensor, dst_tensor)):
+        if (dst, src) in g.edges():
+            p = np.random.rand()
+            if p > 0.5:
+                g.remove_edge(i)
     return g
 
 def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vectors, diag=False, matrix='A'):
@@ -118,6 +128,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
 
 
 def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, idx=0):
+    g = random_orientation(g)
     """
     Graph positional encoding w/ automaton weights
     """
@@ -158,14 +169,24 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
         mat = (A + N).todense()
+    elif matrix == 'E':
+        # get eigenvector matrix
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - N * A * N
+        EigVal, EigVec = np.linalg.eig(L.todense())
+        EigVec = EigVec[:, EigVal.argsort()] # increasing order
+        mat = EigVec
 
-    if idx == 0:
-        initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
-    else:
-        pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
-        index = random.randint(0, g.number_of_nodes()-1)
-        pi[:, index] = initial_vector.squeeze(1)
-        initial_vector = pi
+    initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+    # if idx == 0:
+    #     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+    # else:
+    #     pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
+    #     index = random.randint(0, g.number_of_nodes()-1)
+    #     pi[:, index] = initial_vector.squeeze(1)
+    #     initial_vector = pi
 
     if diag:
         mat_product = torch.einsum('ij, i->ij', initial_vector, transition_inv).cpu().numpy()
@@ -192,16 +213,40 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     return dataset
 
 
-def automaton_encoding_CSL(g, transition_matrix, initial_vector):
+def multiple_automaton_encodings_CSL(g, transition_matrix, initial_vector, idx=0):
+    pe = automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=True)
+    key = f'pos_enc_{idx}'
+    # if 'pos_enc' not in g.ndata:
+    g.ndata[key] = pe
+    return g
+
+def add_multiple_automaton_encodings_CSL(splits, model):
+    transition_matrices = model.pe_layer.pos_transitions
+    initial_vectors = model.pe_layer.pos_initials
+    for i, (transition_matrix, initial_vector) in enumerate(zip(transition_matrices, initial_vectors)):
+        graphs = []
+        for split in splits[0]:
+            initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
+            graphs.append(multiple_automaton_encodings_CSL(split, transition_matrix, initial_vector, idx=i))
+        new_split = (graphs, splits[1])
+    # dump_encodings(dataset, transition_matrix.shape[0])
+    return new_split
+
+def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False):
     transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
     matrix = g.adjacency_matrix().to_dense().cpu().numpy()
     initial_vector = initial_vector.cpu().numpy()
     pe = scipy.linalg.solve_sylvester(transition_inv, -matrix, transition_inv @ initial_vector)
-    g.ndata['pos_enc'] = torch.from_numpy(pe.T).float()
+    pe = torch.from_numpy(pe.T).float()
+
+    if ret_pe:
+        return pe
+
+    g.ndata['pos_enc'] = pe
     return g
 
 def add_automaton_encodings_CSL(splits, model):
-    transition_matrix = model.pe_layer.pos_transition
+    transition_matrix = model.pe_layer.pos_transitions[0]
     graphs = []
     for split in splits[0]:
         initial_vector = model.pe_layer.stack_strategy(split.num_nodes())

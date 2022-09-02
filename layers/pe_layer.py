@@ -59,6 +59,9 @@ class PELayer(nn.Module):
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
+        encoder_layer = nn.TransformerEncoderLayer(d_model=self.pos_enc_dim, nhead=2, dim_feedforward=32)
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+
         self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -228,11 +231,12 @@ class PELayer(nn.Module):
 
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
-                if not self.cat:
-                    pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
+                # if not self.cat:
+                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
                 pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
                 # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
                 # count how many nans are in pos_enc_block
+                # pos_enc_block = self.encoder(pos_enc_block)
                 if self.gape_pooling == "mean":
                     pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
                 elif self.gape_pooling == 'sum':
@@ -241,6 +245,8 @@ class PELayer(nn.Module):
                     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
 
                 pe = pos_enc_block
+                # pe = torch.softmax(pe, dim=1)
+                # pe = self.embedding_pos_encs[0](pe)
             else:
                 pe = self.embedding_pos_encs[0](pe)
 

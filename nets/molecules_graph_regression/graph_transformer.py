@@ -30,6 +30,7 @@ class GraphTransformerNet(nn.Module):
         self.edge_feat = net_params['edge_feat']
         self.pe_layer = PELayer(net_params)
 
+        # self.embedding_h = nn.Embedding(num_atom_type, hidden_dim - net_params['pos_enc_dim'])
         self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
@@ -47,15 +48,15 @@ class GraphTransformerNet(nn.Module):
                                                     self.layer_norm, self.batch_norm, self.residual) for _ in range(n_layers-1) ]) 
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)   # 1 out dim since regression problem        
-        self.ll = nn.Linear(hidden_dim*2, hidden_dim)
 
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
         h = self.embedding_h(h)
         # h = self.in_feat_dropout(h)
         pe = self.pe_layer(g, h, pos_enc)
-        h = torch.cat([h, pe], dim=1)
+        h = h + pe
+        # h = torch.cat([h, pe], dim=1)
         # print(h.shape)
-        h = self.ll(h)
+        # h = self.ll(h)
         h = self.in_feat_dropout(h)
 
         if self.edge_feat:
