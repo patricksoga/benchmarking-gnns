@@ -102,6 +102,10 @@ class PELayer(nn.Module):
             self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
             # self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
+            if self.n_gape > 1:
+                self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1, device=self.device), requires_grad=True)
+                nn.init.normal_(self.gape_pool_vec)
+
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             for mat_pow in self.mat_pows:
                 nn.init.constant_(mat_pow, 1)
@@ -232,17 +236,21 @@ class PELayer(nn.Module):
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
                 # if not self.cat:
-                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
+                # pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
                 pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
+                pos_enc_block = pos_enc_block.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
+
                 # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
-                # count how many nans are in pos_enc_block
-                # pos_enc_block = self.encoder(pos_enc_block)
-                if self.gape_pooling == "mean":
-                    pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
-                elif self.gape_pooling == 'sum':
-                    pos_enc_block = torch.sum(pos_enc_block, 0, keepdim=False)
-                elif self.gape_pooling == 'max':
-                    pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
+
+                # if self.gape_pooling == "mean":
+                #     pos_enc_block = torch.mean(pos_enc_block, 0, keepdim=False) # (n_nodes, hidden_dim)
+                # elif self.gape_pooling == 'sum':
+                #     pos_enc_block = torch.sum(pos_enc_block, 0, keepdim=False)
+                # elif self.gape_pooling == 'max':
+                #     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
+                pos_enc_block = pos_enc_block @ self.gape_pool_vec
+                pos_enc_block = pos_enc_block.squeeze(2)
+                pos_enc_block = self.embedding_pos_encs[0](pos_enc_block)
 
                 pe = pos_enc_block
                 # pe = torch.softmax(pe, dim=1)
