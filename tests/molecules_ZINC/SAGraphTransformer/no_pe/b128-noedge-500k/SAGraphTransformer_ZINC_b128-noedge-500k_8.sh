@@ -3,7 +3,7 @@
 #$ -q gpu
 #$ -l gpu_card=1
 
-fname=$(pwd)/8_DEBUG.log
+fname=$(pwd)/8_DEBUG_3lpe.log
 touch $fname
 fsync -d 10 $fname &
 
