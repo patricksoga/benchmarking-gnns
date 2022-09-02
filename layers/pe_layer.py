@@ -103,7 +103,7 @@ class PELayer(nn.Module):
             # self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             if self.n_gape > 1:
-                self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1, device=self.device, device=self.device), requires_grad=True)
+                self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1), requires_grad=True)
                 nn.init.normal_(self.gape_pool_vec)
 
             self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
