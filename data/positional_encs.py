@@ -206,9 +206,6 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         initial_vector = initial_vector.cpu().numpy()
         mat_product = transition_inv @ initial_vector
 
-    print(transition_inv.shape)
-    print(mat.shape)
-    print(mat_product.shape)
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
