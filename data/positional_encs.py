@@ -128,7 +128,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
 
 
 def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, idx=0):
-    g = random_orientation(g)
+    # g = random_orientation(g)
     """
     Graph positional encoding w/ automaton weights
     """
