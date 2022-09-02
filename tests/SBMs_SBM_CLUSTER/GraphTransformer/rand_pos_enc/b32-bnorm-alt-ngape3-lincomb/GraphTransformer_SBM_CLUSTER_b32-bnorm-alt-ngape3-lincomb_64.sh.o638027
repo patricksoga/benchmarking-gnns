@@ -1,0 +1,21 @@
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 15.6691s
+using 3 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 353, in main
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/utils/main_utils.py", line 51, in view_model_param
+    model = gnn_model(MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 72, in gnn_model
+    return models[MODEL_NAME](net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/load_net.py", line 48, in GraphTransformer
+    return GraphTransformerNet(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/graph_transformer.py", line 33, in __init__
+    self.pe_layer = PELayer(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 106, in __init__
+    self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1, device=self.device), requires_grad=True)
+RuntimeError: legacy constructor expects device type: cpu but device type: cuda was passed
