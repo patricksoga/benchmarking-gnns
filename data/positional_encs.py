@@ -187,7 +187,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
         D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
-        mat = A * D
+        mat = (A * D).todense()
 
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
@@ -206,6 +206,9 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         initial_vector = initial_vector.cpu().numpy()
         mat_product = transition_inv @ initial_vector
 
+    print(transition_inv.shape)
+    print(mat.shape)
+    print(mat_product.shape)
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
