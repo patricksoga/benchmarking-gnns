@@ -186,7 +186,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # Random walk matrix (1st power)
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
         mat = A * D
 
 
