@@ -14,6 +14,7 @@ from nets.molecules_graph_regression.ring_gnn_net import RingGNNNet
 from nets.molecules_graph_regression.three_wl_gnn_net import ThreeWLGNNNet
 from nets.molecules_graph_regression.graph_transformer import GraphTransformerNet
 from nets.molecules_graph_regression.sa_graph_transformer import SAGraphTransformerNet 
+from nets.molecules_graph_regression.pseudo_graphormer import PseudoGraphormerNet
 
 def GatedGCN(net_params):
     return GatedGCNNet(net_params)
@@ -48,6 +49,9 @@ def GraphTransformer(net_params):
 def SAGraphTransformer(net_params):
     return SAGraphTransformerNet(net_params)
 
+def PseudoGraphormer(net_params):
+    return PseudoGraphormerNet(net_params)
+
 def gnn_model(MODEL_NAME, net_params):
     models = {
         'GatedGCN': GatedGCN,
@@ -60,7 +64,8 @@ def gnn_model(MODEL_NAME, net_params):
         'RingGNN': RingGNN,
         '3WLGNN': ThreeWLGNN,
         'GraphTransformer': GraphTransformer,
-        'SAGraphTransformer': SAGraphTransformer
+        'SAGraphTransformer': SAGraphTransformer,
+        'PseudoGraphormer': PseudoGraphormer
     }
         
     return models[MODEL_NAME](net_params)

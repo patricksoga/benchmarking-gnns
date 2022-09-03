@@ -51,6 +51,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
         self.graph_lists = []
         self.graph_labels = []
+        self.spatial_pos_lists = []
         self.n_samples = len(self.data)
         self._prepare()
 
@@ -95,7 +96,12 @@ class MoleculeDGL(torch.utils.data.Dataset):
                 DGLGraph with node feature stored in `feat` field
                 And its label.
         """
-        return self.graph_lists[idx], self.graph_labels[idx]
+        try:
+            spatial_pos_list = self.spatial_pos_lists[idx]
+        except IndexError:
+            spatial_pos_list = None
+
+        return self.graph_lists[idx], self.graph_labels[idx], spatial_pos_list
     
     
 class MoleculeAqSolDGL(torch.utils.data.Dataset):
@@ -348,7 +354,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
-        graphs, labels = map(list, zip(*samples))
+        graphs, labels, spatial_pos_biases = map(list, zip(*samples))
         # labels = torch.tensor(np.array(labels)).unsqueeze(1)
         labels = torch.tensor(labels).unsqueeze(1)
         #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
@@ -357,9 +363,14 @@ class MoleculeDataset(torch.utils.data.Dataset):
         #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
         #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
         #snorm_e = torch.cat(tab_snorm_e).sqrt()
-        batched_graph = dgl.batch(graphs)       
-        
-        return batched_graph, labels
+        batched_graph = dgl.batch(graphs)
+        # if all(bool(x) for x in spatial_pos_biases):
+        if all([x is not None for x in spatial_pos_biases]):
+            batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+        else:
+            batched_spatial_pos_biases = None
+
+        return batched_graph, labels, batched_spatial_pos_biases
     
     # prepare dense tensors for GNNs using them; such as RingGNN, 3WLGNN
     def collate_dense_gnn(self, samples, edge_feat):
