@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_PATTERN_b26-lnorm-alt-R
+#$ -N GraphTransformer_SBM_PATTERN_b26-lnorm-alt-R-ngape3
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-5:1
 
 pos_enc_dim=(0 2 4 8 32 64)
-fname=$(pwd)/b26-lnorm-alt-R_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b26-lnorm-alt-R-ngape3_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_PATTERN_b26-lnorm-alt-R.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_PATTERN_b26-lnorm-alt-R-ngape3.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'SBM_PATTERN',
@@ -32,6 +32,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
 #                 'matrix_type': 'R',
+#                 'n_gape': 3,
 #                 'n_heads': 8,
 #                 'out_dim': 80,
 #                 'pow_of_mat': 1,
@@ -43,7 +44,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/SBMs_node_classification_b26-lnorm-alt-R',
+#  'out_dir': 'out/SBMs_node_classification_b26-lnorm-alt-R-ngape3',
 #  'params': {'batch_size': 26,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -59,4 +60,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-lnorm-alt-R --param_values 2 4 8 32 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --matrix_type R
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-lnorm-alt-R-ngape3 --param_values 2 4 8 32 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --matrix_type R --n_gape 3
