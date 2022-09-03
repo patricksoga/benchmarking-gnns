@@ -50,7 +50,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name)
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e)
             else:
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'])
-        except:
+        except Exception as e:
+            raise e
             batch_scores = model.forward(batch_graphs, batch_x, batch_e)
         loss = model.loss(batch_scores, batch_targets)
         loss.backward()

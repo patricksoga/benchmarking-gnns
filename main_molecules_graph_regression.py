@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, load_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, add_spd_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -86,6 +86,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             dataset = add_spectral_decomposition(dataset, net_params['pos_enc_dim'])
             logger.info(f'Time PE:{time.time()-t0}')
 
+        if MODEL_NAME in ['PseudoGraphormer']:
+            logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
+            dataset = add_spd_encodings(dataset)
+            logger.info(f'Time PE:{time.time()-t0}')
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
         root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
