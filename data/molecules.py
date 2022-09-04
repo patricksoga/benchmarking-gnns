@@ -366,6 +366,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         batched_graph = dgl.batch(graphs)
         # if all(bool(x) for x in spatial_pos_biases):
         if all([x is not None for x in spatial_pos_biases]):
+            for idx, spatial_pos_bias in enumerate(spatial_pos_biases):
+                spatial_pos_bias[idx >= 20] = float("inf")
             batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
         else:
             batched_spatial_pos_biases = None
