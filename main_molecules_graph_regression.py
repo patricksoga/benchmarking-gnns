@@ -44,12 +44,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
         model = gnn_model(MODEL_NAME, net_params)
         model = model.to(device)
 
-        if net_params.get('full_graph', False):
-            st = time.time()
-            print("[!] Converting the given graphs to full graphs..")
-            dataset._make_full_graph()
-            print('Time taken to convert to full graphs:',time.time()-st)    
-
         if MODEL_NAME in ['GCN', 'GAT']:
             if net_params['self_loop']:
                 logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
@@ -90,6 +84,13 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
             dataset = add_spd_encodings(dataset)
             logger.info(f'Time PE:{time.time()-t0}')
+
+        if net_params.get('full_graph', False):
+            st = time.time()
+            print("[!] Converting the given graphs to full graphs..")
+            dataset._make_full_graph()
+            print('Time taken to convert to full graphs:',time.time()-st)    
+
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
         root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
