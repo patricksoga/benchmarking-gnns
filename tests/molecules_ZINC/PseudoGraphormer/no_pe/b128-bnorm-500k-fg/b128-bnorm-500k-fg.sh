@@ -12,7 +12,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGraphormer_molecules_ZINC_b128-bnorm-500k-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --save_name save
+python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGraphormer_molecules_ZINC_b128-bnorm-500k-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'ZINC',
@@ -55,6 +55,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGra
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
+#             'save_name': 'save',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -62,4 +63,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_PseudoGraphormer_ZINC_500k.json --job_note b128-bnorm-500k-fg --param_values 1 --full_graph True
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_PseudoGraphormer_ZINC_500k.json --job_note b128-bnorm-500k-fg --param_values 1 --full_graph True --save_name save
