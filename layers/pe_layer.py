@@ -49,6 +49,9 @@ class PELayer(nn.Module):
         self.cat = net_params.get('cat_gape', False)
         self.n_gape = net_params.get('n_gape', 1)
         self.gape_pooling = net_params.get('gape_pooling', 'mean')
+        self.gape_softmax_after = net_params.get('gape_softmax_after', False)
+        self.gape_softmax_before = net_params.get('gape_softmax_before', False)
+        self.gape_individual = net_params.get('gape_individual', False)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -99,7 +102,10 @@ class PELayer(nn.Module):
             for pos_transition in self.pos_transitions:
                 nn.init.orthogonal_(pos_transition)
             # init linear layers for reshaping to hidden dim
-            self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
+            if self.gape_individual:
+                self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
+            else:
+                self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(1))
             # self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
             if self.n_gape > 1:
@@ -197,10 +203,6 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_encs[0](stacked_encs)
             return pe
         elif self.rand_pos_enc:
-            # device = torch.device("cpu")
-            # vec_init = self.stack_strategy(g.num_nodes())
-            # mat = self.type_of_matrix(g, self.matrix_type)
-
             if self.power_method:
                 vec_init = vec_init.transpose(1, 0).flatten().to(self.device)
                 kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
@@ -236,9 +238,22 @@ class PELayer(nn.Module):
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
                 # if not self.cat:
-                pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
-                pos_enc_block = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
-                pos_enc_block = pos_enc_block.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
+                
+                if self.gape_individual:
+                    print('individual')
+                    pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
+
+                if self.gape_softmax_before:
+                    print('softmax before')
+                    normalized_pos_encs = []
+                    for pos_enc in pos_encs:
+                        normalized_pos_enc = torch.softmax(pos_enc, dim=1)
+                        normalized_pos_encs.append(normalized_pos_enc)
+                    pos_encs = normalized_pos_encs
+
+                pe = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
+
+                pe = pe.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
 
                 # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
 
@@ -248,14 +263,20 @@ class PELayer(nn.Module):
                 #     pos_enc_block = torch.sum(pos_enc_block, 0, keepdim=False)
                 # elif self.gape_pooling == 'max':
                 #     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
-                pos_enc_block = pos_enc_block @ self.gape_pool_vec
-                pos_enc_block = torch.softmax(pos_enc_block, dim=1)
-                pos_enc_block = pos_enc_block.squeeze(2)
-                # pos_enc_block = self.embedding_pos_encs[0](pos_enc_block)
 
-                pe = pos_enc_block
+                pe = pe @ self.gape_pool_vec
+
+                if self.gape_softmax_after:
+                    print('softmax after')
+                    pe = torch.softmax(pe, dim=1)
+
+                pe = pe.squeeze(2)
+                
+                if not self.gape_individual:
+                    print('not individual')
+                    pe = self.embedding_pos_encs[0](pe)
+
                 # pe = torch.softmax(pe, dim=1)
-                # pe = self.embedding_pos_encs[0](pe)
             else:
                 pe = self.embedding_pos_encs[0](pe)
 

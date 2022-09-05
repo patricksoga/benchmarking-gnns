@@ -120,6 +120,9 @@ def add_args(parser):
     parser.add_argument('--cat_gape', help="Use concatenation for graph transformer (GAPE)")
     parser.add_argument('--n_gape', help="Use multiple GAPE encodings for graph transformer")
     parser.add_argument('--gape_pooling', help="Type of pooling for GAPE for graph transformer (GAPE)")
+    parser.add_argument('--gape_softmax_after', help="Use softmax after GAPE pooling")
+    parser.add_argument('--gape_softmax_before', help="Use softmax before GAPE pooling")
+    parser.add_argument('--gape_individual', help="Use individual linear layers for each GAPE automaton")
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
     parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
@@ -309,6 +312,14 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     
     if args.gape_pooling is not None:
         net_params['gape_pooling'] = args.gape_pooling
+
+    if args.gape_softmax_after is not None:
+        net_params['gape_softmax_after'] = True if args.gape_softmax_after == 'True' else False
+    if args.gape_softmax_before is not None:
+        net_params['gape_softmax_before'] = True if args.gape_softmax_before == 'True' else False
+    if args.gape_individual is not None:
+        net_params['gape_individual'] = True if args.gape_individual == 'True' else False
+    
 
     # net_params['pow_of_mat'] = args.pow_of_mat
 
