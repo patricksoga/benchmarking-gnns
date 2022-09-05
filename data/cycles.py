@@ -79,7 +79,7 @@ class CyclesDGL(torch.utils.data.Dataset):
         """
         try:
             spatial_pos_list = self.spatial_pos_lists[idx]
-        except IndexError:
+        except:
             spatial_pos_list = None
 
         return self.graph_lists[idx], self.graph_labels[idx], spatial_pos_list
@@ -192,17 +192,23 @@ class CyclesDataset(torch.utils.data.Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         # graphs, labels = map(list, zip(*samples))
-        graphs, labels, spatial_pos_biases = map(list, zip(*samples))
-        # print(labels)
-        # labels = torch.tensor(np.array(labels))
-        labels = torch.tensor(labels)
-        batched_graph = dgl.batch(graphs)
-        if all(x is not None for x in spatial_pos_biases):
-            batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
-        else:
-            batched_spatial_pos_biases = None
+        try:
+            graphs, labels, spatial_pos_biases = map(list, zip(*samples))
+            labels = torch.tensor(labels)
+            batched_graph = dgl.batch(graphs)
+            if all(x is not None for x in spatial_pos_biases):
+                batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+            else:
+                batched_spatial_pos_biases = None
 
-        return batched_graph, labels, batched_spatial_pos_biases
+            return batched_graph, labels, batched_spatial_pos_biases
+
+        except:
+            graphs, labels = map(list, zip(*samples))
+            labels = torch.tensor(labels)
+            batched_graph = dgl.batch(graphs)
+
+            return batched_graph, labels
 
     def _add_positional_encodings(self, pos_enc_dim):
         
@@ -232,14 +238,19 @@ class DGLFormDataset(torch.utils.data.Dataset):
         *lists (list): lists of 'graphs' and 'labels' with same len().
     """
     def __init__(self, *lists):
-        if lists[2] is not None:
+        if lists[2] is not None and lists[2] != []:
             assert len(lists[0]) == len(lists[1])
         else:
+            lists = [lists[0], lists[1]]
             assert all(len(lists[0]) == len(li) for li in lists)
         self.lists = lists
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
-        self.spatial_pos_lists = lists[2]
+
+        try:
+            self.spatial_pos_lists = lists[2]
+        except:
+            self.spatial_pos_lists = [None]
 
     def __getitem__(self, index):
         return tuple(li[index] for li in self.lists)
