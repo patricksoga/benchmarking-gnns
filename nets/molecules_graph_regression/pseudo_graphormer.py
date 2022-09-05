@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 import dgl
@@ -34,9 +33,7 @@ class PseudoGraphormerNet(nn.Module):
         spd_len = net_params['spd_len']
 
         self.in_degree_encoder = nn.Embedding(in_deg_centrality, hidden_dim, padding_idx=0)
-        self.out_degree_encoder = nn.Embedding(
-            out_deg_centrality, hidden_dim, padding_idx=0
-        )
+        self.out_degree_encoder = nn.Embedding(out_deg_centrality, hidden_dim, padding_idx=0)
         self.spatial_pos_encoder = nn.Embedding(spd_len, num_heads, padding_idx=0)
 
         self.embedding_h = nn.Embedding(num_atom_type, hidden_dim) # node feat is an integer

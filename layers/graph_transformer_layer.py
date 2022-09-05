@@ -17,30 +17,54 @@ import numpy as np
 """
 def src_dot_dst(src_field, dst_field, out_field):
     def func(edges):
-        return {out_field: (edges.src[src_field] * edges.dst[dst_field]).sum(-1, keepdim=True)}
+        return {out_field: (edges.src[src_field] * edges.dst[dst_field])}
     return func
 
-def scaled_exp(field, scale_constant):
+def scaling(field, scale_constant):
     def func(edges):
-        # clamp for softmax numerical stability
-        return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5))}
-
+        return {field: ((edges.data[field]) / scale_constant)}
     return func
 
-def scaled_exp_with_bias(field, scale_constant, bias):
+def add_bias(field, bias):
     def func(edges):
         src, dest = edges.edges()[0], edges.edges()[1]
         bias_weights = bias[src, dest].unsqueeze(-1)
+        return {field: edges.data[field] + bias_weights}
+    return func
 
+def exp(field):
+    def func(edges):
         # clamp for softmax numerical stability
-        return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5) + bias_weights)}
-
+        return {'score_soft': torch.exp((edges.data[field].sum(-1, keepdim=True)).clamp(-5, 5))}
     return func
 
-def add_pe(g, field):
-    def func(nodes):
-        return {field: nodes.data[field] + g.ndata['pos_enc']}
-    return func
+
+# def src_dot_dst(src_field, dst_field, out_field):
+#     def func(edges):
+#         return {out_field: (edges.src[src_field] * edges.dst[dst_field]).sum(-1, keepdim=True)}
+#     return func
+
+# def scaled_exp(field, scale_constant):
+#     def func(edges):
+#         # clamp for softmax numerical stability
+#         return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5))}
+
+#     return func
+
+# def scaled_exp_with_bias(field, scale_constant, bias):
+#     def func(edges):
+#         src, dest = edges.edges()[0], edges.edges()[1]
+#         bias_weights = bias[src, dest].unsqueeze(-1)
+
+#         # clamp for softmax numerical stability
+#         return {field: torch.exp((edges.data[field] / scale_constant).clamp(-5, 5) + bias_weights)}
+
+#     return func
+
+# def add_pe(g, field):
+#     def func(nodes):
+#         return {field: nodes.data[field] + g.ndata['pos_enc']}
+#     return func
 
 """
     Single Attention Head
@@ -62,21 +86,33 @@ class MultiHeadAttentionLayer(nn.Module):
             self.K = nn.Linear(in_dim, out_dim * num_heads, bias=False)
             self.V = nn.Linear(in_dim, out_dim * num_heads, bias=False)
         
-    
     def propagate_attention(self, g, spatial_pos_bias=None):
-        # Compute attention score
-        # g.apply_nodes(add_pe(g, 'K_h'))
-        g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score')) #, edges)
-        if spatial_pos_bias is not None:
-            g.apply_edges(scaled_exp_with_bias('score', np.sqrt(self.out_dim), spatial_pos_bias))
-        else:
-            g.apply_edges(scaled_exp('score', np.sqrt(self.out_dim)))
+        g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score'))
+        g.apply_edges(scaling('score', np.sqrt(self.out_dim)))
 
-        # Send weighted values to target nodes
+        if spatial_pos_bias is not None:
+            g.apply_edges(add_bias('score', spatial_pos_bias))
+
+        g.apply_edges(exp('score'))
+
         eids = g.edges()
-        # g.apply_nodes(add_pe(g, 'V_h'))
-        g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score', 'V_h'), fn.sum('V_h', 'wV'))
-        g.send_and_recv(eids, fn.copy_edge('score', 'score'), fn.sum('score', 'z'))
+        g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score_soft', 'V_h'), fn.sum('V_h', 'wV'))
+        g.send_and_recv(eids, fn.copy_edge('score_soft', 'score_soft'), fn.sum('score_soft', 'z'))
+
+    # def propagate_attention(self, g, spatial_pos_bias=None):
+    #     # Compute attention score
+    #     # g.apply_nodes(add_pe(g, 'K_h'))
+    #     g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score')) #, edges)
+    #     if spatial_pos_bias is not None:
+    #         g.apply_edges(scaled_exp_with_bias('score', np.sqrt(self.out_dim), spatial_pos_bias))
+    #     else:
+    #         g.apply_edges(scaled_exp('score', np.sqrt(self.out_dim)))
+
+    #     # Send weighted values to target nodes
+    #     eids = g.edges()
+    #     # g.apply_nodes(add_pe(g, 'V_h'))
+    #     g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score', 'V_h'), fn.sum('V_h', 'wV'))
+    #     g.send_and_recv(eids, fn.copy_edge('score', 'score'), fn.sum('score', 'z'))
     
     def forward(self, g, h, spatial_pos_bias=None):
         
