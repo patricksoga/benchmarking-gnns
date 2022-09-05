@@ -87,9 +87,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
 
         if net_params.get('full_graph', False):
             st = time.time()
-            print("[!] Converting the given graphs to full graphs..")
+            logger.info("[!] Converting the given graphs to full graphs..")
             dataset._make_full_graph()
-            print('Time taken to convert to full graphs:',time.time()-st)    
+            logger.info(f'Time taken to convert to full graphs: {time.time()-st}')    
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 

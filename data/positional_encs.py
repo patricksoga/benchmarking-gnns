@@ -6,17 +6,29 @@ import pickle
 import scipy.sparse as sp
 import numpy as np
 import torch.nn.functional as F
-import random
 import pyximport
+import networkx as nx
 
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
 
 def spd_encoding(g: dgl.DGLGraph):
-    shortest_path_result, _ = algos.floyd_warshall(g.adj().to_dense().numpy().astype(int))
-    spatial_pos = torch.from_numpy((shortest_path_result)).long()
+    # shortest_path_result, _ = algos.floyd_warshall(g.adj().to_dense().numpy().astype(int))
+    # spatial_pos = torch.from_numpy((shortest_path_result)).long()
     
-    # g.ndata['spatial_pos_bias'] = spatial_pos
+    g = dgl.to_networkx(g)
+    shortest_paths = nx.floyd_warshall(g)
+    spatial_pos = [[-1]*g.number_of_nodes() for _ in range(g.number_of_nodes())]
+
+    for src, trg_dict in shortest_paths.items():
+        for trg, distance in trg_dict.items():
+            spatial_pos[src][trg] = distance
+            spatial_pos[trg][src] = distance
+
+    spatial_pos = torch.from_numpy(np.array(spatial_pos))
+    # spatial_pos[spatial_pos == float('inf')] = 512
+    spatial_pos = spatial_pos.type(torch.long)
+
     return spatial_pos
 
 def add_spd_encodings(dataset):
@@ -223,6 +235,13 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
+
+def add_spd_encoding_CSL(splits):
+    graphs = []
+    for split in splits[0]:
+        graphs.append(spd_encoding(split))
+    new_split = (graphs, splits[1])
+    return new_split
 
 def multiple_automaton_encodings_CSL(g, transition_matrix, initial_vector, idx=0):
     pe = automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=True)
