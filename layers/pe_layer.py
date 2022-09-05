@@ -240,11 +240,9 @@ class PELayer(nn.Module):
                 # if not self.cat:
                 
                 if self.gape_individual:
-                    print('individual')
                     pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
 
                 if self.gape_softmax_before:
-                    print('softmax before')
                     normalized_pos_encs = []
                     for pos_enc in pos_encs:
                         normalized_pos_enc = torch.softmax(pos_enc, dim=1)
@@ -267,13 +265,11 @@ class PELayer(nn.Module):
                 pe = pe @ self.gape_pool_vec
 
                 if self.gape_softmax_after:
-                    print('softmax after')
                     pe = torch.softmax(pe, dim=1)
 
                 pe = pe.squeeze(2)
                 
                 if not self.gape_individual:
-                    print('not individual')
                     pe = self.embedding_pos_encs[0](pe)
 
                 # pe = torch.softmax(pe, dim=1)
