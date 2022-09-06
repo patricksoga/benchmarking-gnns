@@ -1,41 +1,42 @@
 #!/bin/bash
-#$ -N GraphTransformer_ZINC_b128-bnorm-alt-noedge
+#$ -N GraphTransformer_SBM_CLUSTER_b10-bnorm-alt-fg
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-6:1
 
-pos_enc_dim=(4 8 16 32 64 128)
-fname=$(pwd)/b128-bnorm-alt-noedge_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+pos_enc_dim=(0 4 8 16 32 64 128)
+fname=$(pwd)/b10-bnorm-alt-fg_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_ZINC_b128-bnorm-alt-noedge.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_CLUSTER_b10-bnorm-alt-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
-# {'dataset': 'ZINC',
+# {'dataset': 'SBM_CLUSTER',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'GraphTransformer',
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 128,
+#                 'batch_size': 10,
 #                 'cat_gape': False,
-#                 'dataset': 'ZINC',
+#                 'dataset': 'SBM_CLUSTER',
 #                 'diag': False,
 #                 'dropout': 0.0,
-#                 'edge_feat': False,
-#                 'full_graph': False,
+#                 'full_graph': True,
+#                 'gape_individual': False,
+#                 'gape_softmax_after': False,
+#                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
-#                 'hidden_dim': 64,
+#                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'out_dim': 64,
-#                 'pos_enc_dim': 8,
+#                 'out_dim': 80,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
 #                 'rand_pos_enc': True,
@@ -45,16 +46,15 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/molecules_graph_regression_b128-bnorm-alt-noedge',
-#  'params': {'batch_size': 128,
+#  'out_dir': 'out/SBMs_node_classification_b10-bnorm-alt-fg',
+#  'params': {'batch_size': 10,
 #             'epochs': 1000,
-#             'init_lr': 0.0007,
+#             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
-#             'lr_schedule_patience': 15,
+#             'lr_schedule_patience': 10,
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
-#             'save_name': 'b128-bnorm-alt-noedge',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -62,4 +62,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge --batch_norm True --layer_norm False --rand_pos_enc True --param_values 4 8 16 32 64 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b10-bnorm-alt-fg --param_values 4 8 16 32 64 128 --batch_size 10 --rand_pos_enc True --batch_norm True --layer_norm False --full_graph True
