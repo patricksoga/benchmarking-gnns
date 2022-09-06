@@ -44,11 +44,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
     model = gnn_model(MODEL_NAME, net_params)
     model = model.to(device)
 
-    if net_params.get('full_graph', False):
-        st = time.time()
-        print("[!] Converting the given graphs to full graphs..")
-        dataset._make_full_graph()
-        print('Time taken to convert to full graphs:',time.time()-st)    
+    # if net_params.get('full_graph', False):
+    #     st = time.time()
+    #     print("[!] Converting the given graphs to full graphs..")
+    #     dataset._make_full_graph()
+    #     print('Time taken to convert to full graphs:',time.time()-st)    
 
     if net_params['pos_enc']:
         logger.info("[!] Adding Laplacian graph positional encoding.")
@@ -89,6 +89,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         dataset = add_spd_encodings(dataset)
         logger.info(f'Time PE:{time.time()-t0}')
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
+
+    if net_params.get('full_graph', False):
+        st = time.time()
+        logger.info("[!] Converting the given graphs to full graphs..")
+        dataset._make_full_graph()
+        logger.info('Time taken to convert to full graphs:',time.time()-st)    
 
     if net_params['num_train_data'] is not None:
         # net_params['num_train_data'] is the number of train samples to use
