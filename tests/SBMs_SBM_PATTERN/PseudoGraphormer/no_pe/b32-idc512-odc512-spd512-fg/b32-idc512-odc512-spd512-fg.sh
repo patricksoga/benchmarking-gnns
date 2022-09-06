@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N PseudoGraphormer_SBM_PATTERN_b32-idc512-odc512-spd512-fg
+#$ -N PseudoGraphormer_SBM_PATTERN_b10-idc512-odc512-spd512-fg
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
@@ -12,7 +12,7 @@ fsync -d 10 $fname &
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/PseudoGraphormer_SBMs_SBM_PATTERN_b32-idc512-odc512-spd512-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/PseudoGraphormer_SBMs_SBM_PATTERN_b32-idc512-odc512-spd512-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname --batch_size 10
 
 
 # {'dataset': 'SBM_PATTERN',
