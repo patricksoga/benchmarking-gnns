@@ -1,0 +1,86 @@
+/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py:3719: DGLWarning: DGLGraph.adjacency_matrix_scipy is deprecated. Please replace it with:
+
+	DGLGraph.adjacency_matrix(transpose, scipy_fmt="csr").
+
+  dgl_warning('DGLGraph.adjacency_matrix_scipy is deprecated. '
+--- Logging error ---
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 1100, in emit
+    msg = self.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 943, in format
+    return fmt.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 678, in format
+    record.message = record.getMessage()
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 368, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 113, in train_val_pipeline
+    logger.info('Time taken to convert to full graphs:',time.time()-st)
+Message: 'Time taken to convert to full graphs:'
+Arguments: (843.9697949886322,)
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 14.2248s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 177, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, MODEL_NAME, epoch)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 58, in train_epoch_sparse
+    raise e
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 42, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/sa_graph_transformer.py", line 61, in forward
+    h = conv(g, h)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 176, in forward
+    attn_out = self.attention(g, h, spatial_pos_bias=spatial_pos_bias)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 130, in forward
+    self.propagate_attention(g, spatial_pos_bias)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 100, in propagate_attention
+    g.send_and_recv(eids, fn.copy_edge('score_soft', 'score_soft'), fn.sum('score_soft', 'z'))
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py", line 4606, in send_and_recv
+    ndata = core.message_passing(
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/core.py", line 357, in message_passing
+    ndata = invoke_gspmm(g, mfunc, rfunc)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/core.py", line 332, in invoke_gspmm
+    z = op(graph, x)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/ops/spmm.py", line 191, in func
+    return gspmm(g, 'copy_rhs', reduce_op, None, x)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/ops/spmm.py", line 75, in gspmm
+    ret = gspmm_internal(g._graph, op,
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/backend/pytorch/sparse.py", line 757, in gspmm
+    return GSpMM.apply(gidx, op, reduce_op, lhs_data, rhs_data)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/cuda/amp/autocast_mode.py", line 118, in decorate_fwd
+    return fwd(*args, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/backend/pytorch/sparse.py", line 126, in forward
+    out, (argX, argY) = _gspmm(gidx, op, reduce_op, X, Y)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/sparse.py", line 228, in _gspmm
+    _CAPI_DGLKernelSpMM(gidx, op, reduce_op,
+  File "dgl/_ffi/_cython/./function.pxi", line 287, in dgl._ffi._cy3.core.FunctionBase.__call__
+  File "dgl/_ffi/_cython/./function.pxi", line 232, in dgl._ffi._cy3.core.FuncCall
+  File "dgl/_ffi/_cython/./base.pxi", line 155, in dgl._ffi._cy3.core.CALL
+dgl._ffi.base.DGLError: [08:32:56] /opt/dgl/src/runtime/cuda/cuda_device_api.cc:97: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: out of memory
+Stack trace:
+  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x150251e295ff]
+  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::CUDADeviceAPI::AllocDataSpace(DLContext, unsigned long, unsigned long, DLDataType)+0x108) [0x1502522f8c28]
+  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray::Empty(std::vector<long, std::allocator<long> >, DLDataType, DLContext)+0x351) [0x1502521707f1]
+  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::NewIdArray(long, DLContext, unsigned char)+0x6d) [0x150251dfaafd]
+  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(std::pair<dgl::runtime::NDArray, dgl::runtime::NDArray> dgl::aten::impl::Sort<(DLDeviceType)2, long>(dgl::runtime::NDArray, int)+0x68) [0x1502523218a8]
+  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::Sort(dgl::runtime::NDArray, int)+0x21a) [0x150251e0d74a]
+  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(void dgl::aten::impl::COOSort_<(DLDeviceType)2, long>(dgl::aten::COOMatrix*, bool)+0x5b) [0x15025232c00b]
+  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOSort_(dgl::aten::COOMatrix*, bool)+0x344) [0x150251e09144]
+  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOSort(dgl::aten::COOMatrix, bool)+0x48c) [0x150251e52f0c]
+
+
