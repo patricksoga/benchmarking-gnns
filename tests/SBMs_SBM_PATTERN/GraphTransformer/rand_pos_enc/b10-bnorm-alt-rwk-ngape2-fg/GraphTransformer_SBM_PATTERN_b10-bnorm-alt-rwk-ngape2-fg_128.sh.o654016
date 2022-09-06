@@ -1,0 +1,34 @@
+--- Logging error ---
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 1100, in emit
+    msg = self.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 943, in format
+    return fmt.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 678, in format
+    record.message = record.getMessage()
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 368, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 113, in train_val_pipeline
+    logger.info('Time taken to convert to full graphs:',time.time()-st)
+Message: 'Time taken to convert to full graphs:'
+Arguments: (976.4725954532623,)
+[I] Loading dataset SBM_PATTERN...
+train, test, val sizes : 10000 2000 2000
+[I] Finished loading.
+[I] Data load time: 16.1279s
+using 2 automata/automaton
+using 2 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 120, in train_val_pipeline
+    with open(write_config_file + '.txt', 'w') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'out/SBMs_node_classification_b10-bnorm-alt-rwk-ngape2-fgconfigs/config_GraphTransformer_SBM_PATTERN_GPU0_128_128_13h58m37s_on_Sep_06_2022.txt'
