@@ -28,6 +28,9 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'full_graph': False,
+#                 'gape_individual': False,
+#                 'gape_softmax_after': False,
+#                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 56,
 #                 'in_feat_dropout': 0.0,
@@ -55,7 +58,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
-#             'save_name': 'b128-noedge',
+#             'save_name': 'b128-noedge-fg',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -63,4 +66,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge --param_values 8 16 32 --save_name b128-noedge --batch_size 128 --edge_feat False --out_dim 56 --hidden_dim 56
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge --param_values 8 16 32 --save_name b128-noedge-fg --batch_size 128 --edge_feat False --out_dim 56 --hidden_dim 56 --full_graph False

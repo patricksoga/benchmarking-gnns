@@ -151,7 +151,21 @@ def make_full_graph(g):
         full_g.ndata['pos_enc'] = g.ndata['pos_enc']
     except:
         pass
-    
+
+    try:
+        count = 0
+        while True:
+            full_g.ndata[f'pos_enc_{count}'] = g.ndata[f'pos_enc_{count}']
+            count += 1
+    except:
+        pass
+
+    try:
+        full_g.ndata['EigVals'] = g.ndata['EigVals']
+        full_g.ndata['EigVecs'] = g.ndata['EigVecs']
+    except:
+        pass
+
     try:
         full_g.ndata['wl_pos_enc'] = g.ndata['wl_pos_enc']
     except:

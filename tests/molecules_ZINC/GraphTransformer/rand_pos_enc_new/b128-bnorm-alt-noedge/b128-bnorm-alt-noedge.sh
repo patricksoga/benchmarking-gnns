@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_ZINC_b128-bnorm-alt-noedge
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-9:1
+#$ -t 1-5:1
 
-pos_enc_dim=(66 68 70 72 74 78 80 88 120)
+pos_enc_dim=(4 8 16 32 64 128)
 fname=$(pwd)/b128-bnorm-alt-noedge_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &

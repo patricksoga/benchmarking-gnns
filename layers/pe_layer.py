@@ -62,9 +62,6 @@ class PELayer(nn.Module):
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
-        encoder_layer = nn.TransformerEncoderLayer(d_model=self.pos_enc_dim, nhead=2, dim_feedforward=32)
-        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
-
         self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)

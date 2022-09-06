@@ -74,7 +74,7 @@ class load_SBMsDataSetDGL(torch.utils.data.Dataset):
         """
         try:
             spatial_pos_list = self.spatial_pos_lists[idx]
-        except IndexError:
+        except:
             spatial_pos_list = None
 
         return self.graph_lists[idx], self.node_labels[idx], spatial_pos_list
@@ -174,6 +174,20 @@ def make_full_graph(g):
     
     try:
         full_g.ndata['pos_enc'] = g.ndata['pos_enc']
+    except:
+        pass
+
+    try:
+        count = 0
+        while True:
+            full_g.ndata[f'pos_enc_{count}'] = g.ndata[f'pos_enc_{count}']
+            count += 1
+    except:
+        pass
+
+    try:
+        full_g.ndata['EigVals'] = g.ndata['EigVals']
+        full_g.ndata['EigVecs'] = g.ndata['EigVecs']
     except:
         pass
 

@@ -204,6 +204,7 @@ def self_loop(g):
     new_g = dgl.DGLGraph()
     new_g.add_nodes(g.number_of_nodes())
     new_g.ndata['feat'] = g.ndata['feat']
+    new_g.ndata['pos_enc'] = g.ndata['pos_enc']
     
     src, dst = g.all_edges(order="eid")
     src = dgl.backend.zerocopy_to_numpy(src)
@@ -263,6 +264,20 @@ def make_full_graph(g):
     except:
         pass
 
+    try:
+        count = 0
+        while True:
+            full_g.ndata[f'pos_enc_{count}'] = g.ndata[f'pos_enc_{count}']
+            count += 1
+    except:
+        pass
+
+    try:
+        full_g.ndata['EigVals'] = g.ndata['EigVals']
+        full_g.ndata['EigVecs'] = g.ndata['EigVecs']
+    except:
+        pass
+    
     try:
         full_g.ndata['wl_pos_enc'] = g.ndata['wl_pos_enc']
     except:
