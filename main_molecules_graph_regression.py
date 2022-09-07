@@ -37,6 +37,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
     train_history = []
 
     for seed in params['seed_array']:
+        logger.info(f"[!] Starting seed: {seed} in {params['seed_array']}...")
         t0 = time.time()
         per_epoch_time = []
 

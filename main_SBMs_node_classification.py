@@ -45,7 +45,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     train_history = []
 
     for seed in params['seed_array']:
-        logger.info(f"[!] Starting with seed {seed}...")
+        logger.info(f"[!] Starting seed: {seed} in {params['seed_array']}...")
         device = net_params['device']
         model = gnn_model(MODEL_NAME, net_params)
         model = model.to(device)
