@@ -1,0 +1,43 @@
+--- Logging error ---
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 1100, in emit
+    msg = self.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 943, in format
+    return fmt.format(record)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 678, in format
+    record.message = record.getMessage()
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/logging/__init__.py", line 368, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 113, in train_val_pipeline
+    logger.info('Time taken to convert to full graphs:',time.time()-st)
+Message: 'Time taken to convert to full graphs:'
+Arguments: (922.0258955955505,)
+[I] Loading dataset SBM_PATTERN...
+train, test, val sizes : 10000 2000 2000
+[I] Finished loading.
+[I] Data load time: 16.6283s
+using 1 automata/automaton
+using 1 automata/automaton
+Epoch 00019: reducing learning rate of group 0 to 2.5000e-04.
+Epoch 00032: reducing learning rate of group 0 to 1.2500e-04.
+Epoch 00043: reducing learning rate of group 0 to 6.2500e-05.
+Epoch 00054: reducing learning rate of group 0 to 3.1250e-05.
+Epoch 00065: reducing learning rate of group 0 to 1.5625e-05.
+Epoch 00087: reducing learning rate of group 0 to 7.8125e-06.
+Epoch 00098: reducing learning rate of group 0 to 3.9063e-06.
+Epoch 00109: reducing learning rate of group 0 to 1.9531e-06.
+Epoch 00120: reducing learning rate of group 0 to 9.7656e-07.
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 356, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 354, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 262, in train_val_pipeline
+    with open(write_file_name + '.txt', 'w') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'out/SBMs_node_classification_b10-bnorm-alt-fgresults/result_GraphTransformer_SBM_PATTERN_GPU0_8_8_13h58m34s_on_Sep_06_2022.txt'
