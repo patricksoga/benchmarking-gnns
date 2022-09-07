@@ -33,7 +33,9 @@ from data.data import LoadData # import dataset
 """
 def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=None):
     test_history = []
+    val_history = []
     train_history = []
+
     for seed in params['seed_array']:
         t0 = time.time()
         per_epoch_time = []
@@ -90,6 +92,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             logger.info("[!] Converting the given graphs to full graphs..")
             dataset._make_full_graph()
             logger.info(f'Time taken to convert to full graphs: {time.time()-st}')    
+
+        if net_params['self_loop']:
+            logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
+            dataset._add_self_loops()
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
@@ -230,6 +236,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
         _, train_mae = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)
 
         test_history.append(test_mae)
+        val_history.append(val_MAE)
         train_history.append(train_mae)
 
         logger.info("Test MAE: {:.4f}".format(test_mae))
@@ -242,6 +249,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
 
         writer.close()
 
+        logger.info(params)
+        logger.info(f"train history: {train_history}")
+        logger.info(f"test history: {test_history}")
+        logger.info(f"val history: {val_history}")
         """
             Write the results in out_dir/results folder
         """
