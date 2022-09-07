@@ -6,6 +6,7 @@
 """
     IMPORTING LIBS
 """
+from cgi import print_arguments
 import numpy as np
 import os
 import time
@@ -44,6 +45,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     train_history = []
 
     for seed in params['seed_array']:
+        logger.info(f"[!] Starting with seed {seed}...")
         device = net_params['device']
         model = gnn_model(MODEL_NAME, net_params)
         model = model.to(device)
@@ -59,7 +61,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
                 dataset._add_self_loops()
 
-        # l = 100
+        # l = 10
         # dataset.train.graph_lists = dataset.train.graph_lists[:l]
         # dataset.val.graph_lists = dataset.val.graph_lists[:l]
         # dataset.test.graph_lists = dataset.test.graph_lists[:l]
@@ -124,11 +126,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         # writer = SummaryWriter(log_dir=log_dir)
 
         # setting seeds
-        random.seed(params['seed'])
-        np.random.seed(params['seed'])
-        torch.manual_seed(params['seed'])
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
         if device.type == 'cuda':
-            torch.cuda.manual_seed(params['seed'])
+            torch.cuda.manual_seed(seed)
         
         logger.info(f"Training Graphs: {len(trainset)}")
         logger.info(f"Validation Graphs: {len(valset)}")

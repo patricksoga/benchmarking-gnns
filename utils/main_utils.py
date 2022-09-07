@@ -185,6 +185,8 @@ def get_parameters(config, args):
         params['job_num'] = int(args.job_num)
     if args.seed_array is not None:
         params['seed_array'] = args.seed_array
+    elif 'seed_array' in params:
+        pass
     else:
         params['seed_array'] = [41]
     if args.save_name is not None:
