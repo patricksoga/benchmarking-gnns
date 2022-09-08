@@ -272,6 +272,9 @@ class PELayer(nn.Module):
                 # pe = torch.softmax(pe, dim=1)
             else:
                 pe = self.embedding_pos_encs[0](pe)
+                if self.gape_softmax_after:
+                    # pe = torch.softmax(pe, dim=0)
+                    pe = torch.relu(pe)
 
             return pe
 
