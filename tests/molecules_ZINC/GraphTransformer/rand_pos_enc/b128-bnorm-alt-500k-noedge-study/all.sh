@@ -1,4 +1,5 @@
-pos_enc_dim=(2 4 8 16 32 64 128 256)
+# pos_enc_dim=(2 4 8 16 32 64 128 256)
+pos_enc_dim=(8)
 curr_dir=$(pwd)
 
 for i in ${pos_enc_dim[@]}; 
