@@ -317,16 +317,22 @@ def get_net_params(config, args, device, params, DATASET_NAME):
 
     if args.gape_softmax_after is not None:
         net_params['gape_softmax_after'] = True if args.gape_softmax_after == 'True' else False
+    elif 'gape_softmax_after' in net_params:
+        pass
     else:
         net_params['gape_softmax_after'] = False
 
     if args.gape_softmax_before is not None:
         net_params['gape_softmax_before'] = True if args.gape_softmax_before == 'True' else False
+    elif 'gape_softmax_before' in net_params:
+        pass
     else:
         net_params['gape_softmax_before'] = False
 
     if args.gape_individual is not None:
         net_params['gape_individual'] = True if args.gape_individual == 'True' else False
+    elif 'gape_individual' in net_params:
+        pass
     else:
         net_params['gape_individual'] = False
 
