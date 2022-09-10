@@ -129,6 +129,12 @@ def random_orientation(g: dgl.DGLGraph):
                 g.remove_edge(i)
     return g
 
+def add_random_orientation(dataset):
+    dataset.train.graph_lists = [random_orientation(g) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [random_orientation(g) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [random_orientation(g) for g in dataset.test.graph_lists]
+    return dataset
+
 def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vectors, diag=False, matrix='A'):
     for i, (transition_matrix, initial_vector) in enumerate(zip(transition_matrices, initial_vectors)):
         dataset.train.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i) for g in dataset.train.graph_lists]
@@ -209,7 +215,6 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # p_steps = int(0.7*n)
         # p_steps = int(0.3*n)
         gamma = 1
-        # gamma = 0.3
 
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
         I = sp.eye(n)

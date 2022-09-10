@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spd_encodings, add_spectral_decomposition, load_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_random_orientation, add_rw_pos_encodings, add_spd_encodings, add_spectral_decomposition, load_encodings
 from db import store_results
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
@@ -55,6 +55,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
         #     print("[!] Converting the given graphs to full graphs..")
         #     dataset._make_full_graph()
         #     print('Time taken to convert to full graphs:',time.time()-st)    
+
+        if net_params['random_orientation']:
+            logger.info("[!] Adding random orientation to the graphs.")
+            dataset = add_random_orientation(dataset)
 
         if net_params['pos_enc']:
             logger.info("[!] Adding Laplacian graph positional encoding.")
