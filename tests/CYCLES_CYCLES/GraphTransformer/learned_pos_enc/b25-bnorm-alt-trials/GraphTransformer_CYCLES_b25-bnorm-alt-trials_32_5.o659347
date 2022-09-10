@@ -1,0 +1,26 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:346: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:346: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+[I] Loading dataset CYCLES...
+train, test, val sizes : 9000 10000 1000
+[I] Finished loading.
+[I] Data load time: 14.5890s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 369, in <module>
+    main(args) 
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 361, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 157, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_CYCLES_graph_classification.py", line 55, in train_epoch_sparse
+    raise e
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_CYCLES_graph_classification.py", line 49, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/CYCLES_graph_classification/graph_transformer.py", line 69, in forward
+    pe = self.pe_layer(g, h, pos_enc)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 185, in forward
+    kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transitions[0]).to(self.device)
+RuntimeError: CUDA out of memory. Tried to allocate 2.32 GiB (GPU 0; 10.92 GiB total capacity; 8.47 MiB already allocated; 256.44 MiB free; 24.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
