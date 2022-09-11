@@ -113,7 +113,7 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
 
 
 def multiple_automaton_encodings(g: dgl.DGLGraph, transition_matrix, initial_vector, diag=False, matrix='A', idx=0):
-    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True)
+    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True, storage=None, idx=idx)
     key = f'pos_enc_{idx}'
     # if 'pos_enc' not in g.ndata:  
     g.ndata[key] = pe
@@ -144,7 +144,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, storage=None):
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, storage=None, idx=0):
     # g = random_orientation(g)
     """
     Graph positional encoding w/ automaton weights
@@ -247,12 +247,13 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
-    if storage is not None:
-        storage['mins'].append(torch.min(pe))
-        storage['maxs'].append(torch.max(pe))
-        storage['all'].extend(torch.flatten(pe).tolist())
-        return storage
-    pe = torch.clamp(pe, -5, 5)
+    # if storage is not None:
+    #     storage['mins'].append(torch.min(pe))
+    #     storage['maxs'].append(torch.max(pe))
+    #     storage['all'].extend(torch.flatten(pe).tolist())
+    #     return storage
+    # pe = torch.clamp(pe, -5, 5)
+    pe = torch.tanh(pe)
 
     if ret_pe:
         return pe
@@ -286,9 +287,9 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
 
     # plt.show()
 
-    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
-    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.test.graph_lists]
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
@@ -319,9 +320,19 @@ def add_multiple_automaton_encodings_CSL(splits, model):
     # dump_encodings(dataset, transition_matrix.shape[0])
     return new_split
 
-def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False):
+def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, idx=0):
     transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
     matrix = g.adjacency_matrix().to_dense().cpu().numpy()
+
+    if idx == 0:
+        initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+    else:
+        import random
+        pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
+        index = random.randint(0, g.number_of_nodes()-1)
+        pi[:, index] = initial_vector.squeeze(1)
+        initial_vector = pi
+
     initial_vector = initial_vector.cpu().numpy()
     pe = scipy.linalg.solve_sylvester(transition_inv, -matrix, transition_inv @ initial_vector)
     pe = torch.from_numpy(pe.T).float()
@@ -335,9 +346,10 @@ def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False):
 def add_automaton_encodings_CSL(splits, model):
     transition_matrix = model.pe_layer.pos_transitions[0]
     graphs = []
-    for split in splits[0]:
-        initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
-        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector))
+    for i, split in enumerate(splits[0]):
+        # initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
+        initial_vector = model.pe_layer.pos_initials[0]
+        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i))
 
     new_split = (graphs, splits[1])
     return new_split
