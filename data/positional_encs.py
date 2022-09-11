@@ -252,8 +252,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     #     storage['maxs'].append(torch.max(pe))
     #     storage['all'].extend(torch.flatten(pe).tolist())
     #     return storage
-    # pe = torch.clamp(pe, -5, 5)
-    pe = torch.tanh(pe)
+    pe = torch.clamp(pe, -5, 5)
+    # pe = torch.tanh(pe)
 
     if ret_pe:
         return pe
