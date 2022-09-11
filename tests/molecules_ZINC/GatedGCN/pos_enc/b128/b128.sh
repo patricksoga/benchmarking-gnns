@@ -36,7 +36,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GatedGCN_
 #                 'layer_norm': False,
 #                 'matrix_type': 'A',
 #                 'out_dim': 78,
-#                 'pos_enc': False,
+#                 'pos_enc': True,
 #                 'pos_enc_dim': 8,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
@@ -63,4 +63,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GatedGCN_
 
 
 # Generated with command:
-#python3 configure_tests.py --config test-configs/GatedGCN_molecules_b128_edge_feat_d128.json --rand_pos_enc True --job_note b128 --param_values 8 16 32 64 --save_name gatedgcn --self_loop False --pos_enc False
+#python3 configure_tests.py --config test-configs/GatedGCN_molecules_b128_edge_feat_d128.json --rand_pos_enc True --job_note b128 --param_values 8 16 32 64 --save_name gatedgcn --self_loop False
