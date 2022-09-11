@@ -204,7 +204,11 @@ def self_loop(g):
     new_g = dgl.DGLGraph()
     new_g.add_nodes(g.number_of_nodes())
     new_g.ndata['feat'] = g.ndata['feat']
-    new_g.ndata['pos_enc'] = g.ndata['pos_enc']
+
+    try:
+        new_g.ndata['pos_enc'] = g.ndata['pos_enc']
+    except:
+        pass
     
     src, dst = g.all_edges(order="eid")
     src = dgl.backend.zerocopy_to_numpy(src)

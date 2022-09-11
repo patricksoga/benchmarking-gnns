@@ -14,6 +14,11 @@ random.seed(42)
 
 from scipy import sparse as sp
 
+import pyximport
+
+pyximport.install(setup_args={"include_dirs": np.get_include()})
+from . import algos
+
 
 class DGLFormDataset(torch.utils.data.Dataset):
     """
@@ -252,9 +257,17 @@ class CSLDataset(torch.utils.data.Dataset):
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
+        # graphs, labels, spatial_pos_biases = map(list, zip(*samples))
         graphs, labels = map(list, zip(*samples))
         labels = torch.tensor(np.array(labels))
         batched_graph = dgl.batch(graphs)
+
+        # if all([x is not None for x in spatial_pos_biases]):
+        #     batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+        # else:
+        #     batched_spatial_pos_biases = None
+
+        # return batched_graph, labels, batched_spatial_pos_biases
         return batched_graph, labels
     
 

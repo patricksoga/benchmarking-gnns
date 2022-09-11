@@ -27,9 +27,19 @@ def scaling(field, scale_constant):
 
 def add_bias(field, bias):
     def func(edges):
+        print(edges.src)
+        print(edges.dst)
+        exit()
         src, dest = edges.edges()[0], edges.edges()[1]
         bias_weights = bias[src, dest].unsqueeze(-1)
         return {field: edges.data[field] + bias_weights}
+    return func
+
+def add_node_bias(field, bias):
+    def func(nodes):
+        return {
+            field: nodes.data[field] + bias
+        }
     return func
 
 def exp(field):
@@ -86,7 +96,7 @@ class MultiHeadAttentionLayer(nn.Module):
             self.K = nn.Linear(in_dim, out_dim * num_heads, bias=False)
             self.V = nn.Linear(in_dim, out_dim * num_heads, bias=False)
         
-    def propagate_attention(self, g, spatial_pos_bias=None):
+    def propagate_attention(self, g: dgl.DGLGraph, spatial_pos_bias=None):
         g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score'))
         g.apply_edges(scaling('score', np.sqrt(self.out_dim)))
 
@@ -173,6 +183,9 @@ class GraphTransformerLayer(nn.Module):
         h_in1 = h # for first residual connection
         
         # multi-head attention out
+        if self.layer_norm:
+            h = self.layer_norm1(h)
+
         attn_out = self.attention(g, h, spatial_pos_bias=spatial_pos_bias)
         h = attn_out.view(-1, self.out_channels)
         
@@ -183,8 +196,8 @@ class GraphTransformerLayer(nn.Module):
         if self.residual:
             h = h_in1 + h # residual connection
         
-        if self.layer_norm:
-            h = self.layer_norm1(h)
+        # if self.layer_norm:
+        #     h = self.layer_norm1(h)
             
         if self.batch_norm:
             h = self.batch_norm1(h)
@@ -200,8 +213,8 @@ class GraphTransformerLayer(nn.Module):
         if self.residual:
             h = h_in2 + h # residual connection
         
-        if self.layer_norm:
-            h = self.layer_norm2(h)
+        # if self.layer_norm:
+        #     h = self.layer_norm2(h)
             
         if self.batch_norm:
             h = self.batch_norm2(h)       

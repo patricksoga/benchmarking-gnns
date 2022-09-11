@@ -17,7 +17,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name)
     epoch_train_acc = 0
     nb_data = 0
     gpu_mem = 0
-    for iter, data in enumerate(data_loader):
+    import tqdm
+    for iter, data in tqdm.tqdm(enumerate(data_loader)):
         batch_graphs = data[0].to(device)
         batch_labels = data[1].to(device)
 

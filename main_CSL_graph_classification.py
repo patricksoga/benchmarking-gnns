@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL
+from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL, add_spd_encoding_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -91,6 +91,13 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                     trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
                     valset.lists = add_automaton_encodings_CSL(valset.lists, model)
                     testset.lists = add_automaton_encodings_CSL(testset.lists, model)
+            
+            if MODEL_NAME in ['PseudoGraphormer']:
+                logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
+                trainset.lists = add_spd_encoding_CSL(trainset.lists)
+                valset.lists = add_spd_encoding_CSL(valset.lists)
+                testset.lists = add_spd_encoding_CSL(testset.lists)
+
 
             logger.info(f"Training Graphs: {len(trainset)}")
             logger.info(f"Validation Graphs: {len(valset)}")
@@ -140,12 +147,12 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                 if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
                     epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
                 else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
 
                 #epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
+                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
 
-                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch)
+                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
 
                 if epoch_test_acc > best_test_acc:
                     best_test_acc = epoch_test_acc
@@ -204,8 +211,8 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                     logger.info(f"Max_time for one train-val-test split experiment elapsed {params['max_time']/10:.3f} hours, so stopping")
                     break
 
-            _, test_acc = evaluate_network(model, device, test_loader, epoch)   
-            _, train_acc = evaluate_network(model, device, train_loader, epoch)    
+            _, test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)   
+            _, train_acc = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)    
             avg_test_acc.append(test_acc)   
             avg_train_acc.append(train_acc)
             avg_epochs.append(epoch)

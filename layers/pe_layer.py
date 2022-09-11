@@ -186,11 +186,14 @@ class PELayer(nn.Module):
 
             if self.power_method:
                 encs = vec_init
+                lam = 0.25
                 for _ in range(self.power_method_iters):
-                    encs = (kron_prod @ encs) + vec_init
-                    norm = torch.norm(encs, p=2, dim=0)
-                    encs = encs / norm
+                    encs = ((lam*kron_prod) @ encs) + vec_init
+                    # print(self.power_method_iters)
+                    # norm = torch.norm(encs, p=2, dim=0)
+                    # encs = encs / norm
                     # encs = encs.clamp(min=-1, max=1)
+                    # print(encs)
             else:
                 B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
                 encs = torch.linalg.solve(B, vec_init)
@@ -201,13 +204,17 @@ class PELayer(nn.Module):
             return pe
         elif self.rand_pos_enc:
             if self.power_method:
+                mat = self.type_of_matrix(g, self.matrix_type)
+                vec_init = self.stack_strategy(g.num_nodes())
                 vec_init = vec_init.transpose(1, 0).flatten().to(self.device)
-                kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transition).to(self.device)
+                kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), self.pos_transitions[0]).to(self.device)
                 pe = vec_init
+                lam = 0.25
                 for _ in range(self.power_method_iters):
-                    pe = (kron_prod @ pe) + vec_init
-                    norm = torch.norm(pe, p=2, dim=0)
-                    pe = pe / norm
+                    pe = ((lam*kron_prod) @ pe) + vec_init
+                    # norm = torch.norm(pe, p=2, dim=0)
+                    # pe = pe / norm
+
                     # encs = encs.clamp(min=-1, max=1)
                 pe = pe.reshape(self.pos_enc_dim, -1).transpose(1, 0).to(self.device)
             elif self.pow_of_mat > 1:
