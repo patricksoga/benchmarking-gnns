@@ -262,11 +262,11 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
 def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A'):
     # Graph positional encoding w/ pre-computed automaton encoding
-    # storage = {
-    #     'mins': [],
-    #     'maxs': [],
-    #     'all': []
-    # }
+    storage = {
+        'mins': [],
+        'maxs': [],
+        'all': []
+    }
     # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
     for g in dataset.train.graph_lists:
         storage = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, storage)
