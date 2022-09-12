@@ -1,13 +1,13 @@
 import os
 import argparse
 
-def get_script_text(job_name, v, command):
+def get_script_text(job_name, v, command, idx=""):
     text = f"""#!/bin/bash
-#$ -N {job_name}_{v}
+#$ -N {job_name}_{v}_{idx}
 #$ -q gpu
 #$ -l gpu_card=1
 
-fname=$(pwd)/{v}_DEBUG.log
+fname=$(pwd)/{v}_DEBUG_{idx}.log
 touch $fname
 fsync -d 10 $fname &
 
@@ -33,15 +33,16 @@ def main(args):
     job_num_idx = [i for i, x in enumerate(command) if 'job_num' in x][0] + 1
     pos_enc_dim_idx = [i for i, x in enumerate(command) if 'pos_enc_dim' in x][0] + 1
 
-    for value in values:
+    for idx, value in enumerate(values):
         command[job_num_idx] = f'{value}'
         command[pos_enc_dim_idx] = f'{value}'
 
         with open(f'{dir}/{job_name}_{value}.sh', 'w') as f:
-            f.write(get_script_text(job_name, value, ' '.join(command)))
+            f.write(get_script_text(job_name, value, ' '.join(command), idx=idx if args.trials else ""))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--file", type=str, help="Path to script to split")
+    parser.add_argument("--trials", action="store_true", help="Try the same config n times")
     main(parser.parse_args())
