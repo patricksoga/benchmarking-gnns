@@ -61,10 +61,10 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #             'print_epoch_interval': 5,
 #             'save_name': 'b128-noedge',
 #             'seed': 41,
-#             'seed_array': [41],
+#             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
 
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge-500k-trials --param_values 8 --save_name b128-noedge --batch_size 128 --edge_feat False --out_dim 72 --hidden_dim 72 --lpe_layers 3
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge-500k-trials --param_values 8 --save_name b128-noedge --batch_size 128 --edge_feat False --out_dim 72 --hidden_dim 72 --lpe_layers 3 --seed_array 41 95 22 35
