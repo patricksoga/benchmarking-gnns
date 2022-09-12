@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-6:1
 
-pos_enc_dim=(0 8 16 32 64 128 256)
+pos_enc_dim=(0 20 40 60 80 512 1024)
 fname=$(pwd)/b25-bnorm-alt-clamped_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -68,4 +68,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-clamped --rand_pos_enc True --param_values 8 16 32 64 128 256 --batch_norm True --layer_norm False --edge_feat False
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-clamped --rand_pos_enc True --param_values 20 40 60 80 512 1024 --batch_norm True --layer_norm False --edge_feat False
