@@ -2,9 +2,9 @@
 #$ -N SAGraphTransformer_SBM_PATTERN_b16-sparse
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 8 10 16 20 32)
+pos_enc_dim=(0 10)
 fname=$(pwd)/b16-sparse_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -34,6 +34,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
+#                 'lpe_dim': 16,
 #                 'lpe_layers': 3,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
@@ -67,4 +68,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b16-sparse --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 8 10 16 20 32 --full_graph True --L 4 --full_graph False
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b16-sparse --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 10 --full_graph True --L 4 --lpe_dim 16 --full_graph False
