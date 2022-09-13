@@ -26,7 +26,7 @@ class SAGraphTransformerNet(nn.Module):
 
         # SAN specific
         lpe_layers = net_params['lpe_layers']
-        lpe_dim = net_params['pos_enc_dim']
+        lpe_dim = net_params['lpe_dim']
         lpe_n_heads = net_params['lpe_n_heads']
 
         self.readout = net_params['readout']
