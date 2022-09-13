@@ -213,13 +213,27 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
         mat = (A * D).todense()**2
     elif matrix == 'R20':
-        # Random walk matrix (2nd power)
+        # Random walk matrix (20th power)
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
         D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
         rw = (A*D).todense()
         m_power = rw
         for _ in range(20):
+            m_power = m_power * rw
+        mat = m_power
+    elif matrix == 'RV':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+        rw = (A*D).todense()
+        m_power = rw
+        # if idx > 0:
+        #     l = idx * 2
+        # else:
+        #     l = 1
+
+        for _ in range(idx+1):
             m_power = m_power * rw
         mat = m_power
 
