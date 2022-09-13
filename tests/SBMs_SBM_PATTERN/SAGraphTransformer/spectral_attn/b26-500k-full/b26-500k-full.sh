@@ -1,11 +1,11 @@
 #!/bin/bash
-#$ -N SAGraphTransformer_SBM_PATTERN_b26-500k-sparse
+#$ -N SAGraphTransformer_SBM_PATTERN_b26-500k-full
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 8 10 16 20 32)
-fname=$(pwd)/b26-500k-sparse_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+pos_enc_dim=(0 10)
+fname=$(pwd)/b26-500k-full_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
@@ -26,7 +26,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'dataset': 'SBM_PATTERN',
 #                 'diag': False,
 #                 'dropout': 0.0,
-#                 'full_graph': False,
+#                 'full_graph': True,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -34,6 +34,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
+#                 'lpe_dim': 16,
 #                 'lpe_layers': 3,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
@@ -51,7 +52,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'self_loop': False,
 #                 'spectral_attn': True,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/SBMs_node_classification_b26-500k-sparse',
+#  'out_dir': 'out/SBMs_node_classification_b26-500k-full',
 #  'params': {'batch_size': 26,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -67,4 +68,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b26-500k-sparse --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 8 10 16 20 32 --full_graph True --L 4 --full_graph False --batch_size 26
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b26-500k-full --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 10 --full_graph True --L 4 --full_graph True --batch_size 26 --lpe_dim 16
