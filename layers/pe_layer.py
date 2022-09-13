@@ -119,6 +119,9 @@ class PELayer(nn.Module):
         elif self.pagerank:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
+        if self.rw_pos_enc:
+            self.rw_embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim) 
+
         in_dim = 1
         if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
             in_dim = net_params['in_dim']
@@ -126,7 +129,7 @@ class PELayer(nn.Module):
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc
+        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
@@ -175,6 +178,10 @@ class PELayer(nn.Module):
 
         if not self.use_pos_enc:
             return self.embedding_h(h)
+
+        if self.rw_pos_enc:
+            pe = self.rw_embedding_pos_enc(pos_enc)
+            return pe
 
         pe = None
 
