@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N SAGraphTransformer_CYCLES_b25-noedge
+#$ -N SAGraphTransformer_CYCLES_b25-noedge-fg
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-3:1
 
 pos_enc_dim=(0 8 10 12)
-fname=$(pwd)/b25-noedge_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-noedge-fg_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphTransformer_CYCLES_CYCLES_b25-noedge.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphTransformer_CYCLES_CYCLES_b25-noedge-fg.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -27,7 +27,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
-#                 'full_graph': False,
+#                 'full_graph': True,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -53,7 +53,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-noedge',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-noedge-fg',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -69,4 +69,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge --param_values 8 10 12 --edge_feat False --lpe_dim 16
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge-fg --param_values 8 10 12 --edge_feat False --lpe_dim 16 --full_graph True
