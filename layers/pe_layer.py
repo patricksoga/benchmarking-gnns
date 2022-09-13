@@ -77,12 +77,13 @@ class PELayer(nn.Module):
             #     nn.init.orthogonal_(self.pos_transition)
 
             # init initial vectors
-            self.pos_initials = nn.ParameterList(
-                nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
-                for _ in range(self.num_initials)
-            )
-            for pos_initial in self.pos_initials:
-                nn.init.normal_(pos_initial)
+
+            # self.pos_initials = nn.ParameterList(
+            #     nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
+            #     for _ in range(self.num_initials)
+            # )
+            # for pos_initial in self.pos_initials:
+            #     nn.init.normal_(pos_initial)
 
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
@@ -278,11 +279,17 @@ class PELayer(nn.Module):
 
                 # pe = torch.softmax(pe, dim=1)
             else:
-                pe = self.embedding_pos_encs[0](pe)
+                if not self.cat:
+                    pe = self.embedding_pos_encs[0](pe)
+
                 if self.gape_softmax_after:
                     # pe = torch.softmax(pe, dim=0)
-                    pe = torch.relu(pe)
+                    # pe = torch.relu(pe)
+                    pe = torch.tanh(pe)
 
+            if self.dataset in ("CYCLES", "ZINC"):
+                # pe = pe.clamp(-3, 3)
+                pe = torch.tanh(pe)
             return pe
 
         elif self.pagerank:

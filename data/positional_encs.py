@@ -215,7 +215,6 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     elif matrix == 'RWK':
         n = g.number_of_nodes()
         A = g.adjacency_matrix(scipy_fmt="csr")
-        # p_steps = int(0.5*n)
         p_steps = n
         # p_steps = int(0.4*n)
         # p_steps = int(0.7*n)
@@ -250,16 +249,37 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         initial_vector = initial_vector.cpu().numpy()
         mat_product = transition_inv @ initial_vector
 
+    # initial_vector = torch.from_numpy(initial_vector).transpose(1, 0).flatten()
+    # pe = initial_vector
+    # lam = 0.25
+    # mat = torch.from_numpy(mat)
+    # for _ in range(1):
+    #     kron_prod = torch.kron(mat.reshape(mat.shape[1], mat.shape[0]), transition_matrix).type(torch.float)
+    #     pe = ((lam*kron_prod) @ pe) + initial_vector
+
+    # pe = torch.stack((pe.split(transition_matrix.shape[0])), dim=1)
+    # pe = pe.transpose(1, 0)
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
-    # if storage is not None:
-    #     storage['mins'].append(torch.min(pe))
-    #     storage['maxs'].append(torch.max(pe))
-    #     storage['all'].extend(torch.flatten(pe).tolist())
-    #     return storage
-    pe = torch.clamp(pe, -5, 5)
-    # pe = torch.tanh(pe)
+    if storage is not None:
+        storage['before']['mins'].append(torch.min(pe))
+        storage['before']['maxs'].append(torch.max(pe))
+        storage['before']['all'].extend(torch.flatten(pe).tolist())
+
+        clameped_pe = torch.clamp(pe, -5, 5)
+        # clameped_pe = 5*torch.tanh(pe)
+        # clameped_pe = torch.nn.functional.normalize(pe, dim=1)
+        # clameped_pe = torch.relu(pe)
+
+        storage['after']['mins'].append(torch.min(clameped_pe))
+        storage['after']['maxs'].append(torch.max(clameped_pe))
+        storage['after']['all'].extend(torch.flatten(clameped_pe).tolist())
+
+        return storage
+    # pe = torch.clamp(pe, -6, 6)
+    # pe = torch.nn.functional.normalize(pe, dim=1)
+    # pe = torch.relu(pe)
 
     if ret_pe:
         return pe
@@ -270,28 +290,40 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A'):
     # Graph positional encoding w/ pre-computed automaton encoding
     storage = {
-        'mins': [],
-        'maxs': [],
-        'all': []
+        'before': {
+            'mins': [],
+            'maxs': [],
+            'all': []
+        },
+        'after': {
+            'mins': [],
+            'maxs': [],
+            'all': []
+        }
     }
-    # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
-    for g in dataset.train.graph_lists:
-        storage = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, storage)
 
-    # print(f"max: {max(storage['all'])}")
-    # print(f"min: {min(storage['all'])}")
+    # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
+
+    for g in dataset.train.graph_lists:
+        storage = automaton_encoding(g, transition_matrix, initial_vector, diag, 'L', False, storage)
 
     # import matplotlib.pyplot as plt
-    # plt.figure("Max tensor values")
-    # plt.hist(storage['maxs'], bins=10)
 
-    # plt.figure("Min tensor values")
-    # plt.hist(storage['mins'], bins=10)
+    print(f"max before: {max(storage['before']['all'])}")
+    print(f"min before: {min(storage['before']['all'])}")
+    print(f"variance before: {np.var(storage['before']['all'])}")
+    print(f"mean before: {np.mean(storage['before']['all'])}")
 
-    # plt.figure("Total tensor values")
-    # plt.hist(storage['all'], bins=10)
+    print(f"max after: {max(storage['after']['all'])}")
+    print(f"min after: {min(storage['after']['all'])}")
+    print(f"variance after: {np.var(storage['after']['all'])}")
+    print(f"mean after: {np.mean(storage['after']['all'])}")
 
-    # plt.show()
+    # plt.figure("Total tensor values before")
+    # plt.hist(storage['before']['all'], bins=100)
+
+    # plt.figure("Total tensor values after")
+    # plt.hist(storage['after']['all'], bins=100)
 
     dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
