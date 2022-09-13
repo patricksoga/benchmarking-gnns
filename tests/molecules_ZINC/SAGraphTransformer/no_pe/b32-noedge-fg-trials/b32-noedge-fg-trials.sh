@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 8)
+pos_enc_dim=(0 10)
 fname=$(pwd)/b32-noedge-fg-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -35,6 +35,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #                 'hidden_dim': 56,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
+#                 'lpe_dim': 8,
 #                 'lpe_layers': 2,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
@@ -59,7 +60,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
-#             'save_name': 'b128-noedge-fg-triasl',
+#             'save_name': 'b128-noedge-fg-trials',
 #             'seed': 41,
 #             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
@@ -67,4 +68,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b32-noedge-fg-trials --param_values 8 --save_name b128-noedge-fg-triasl --batch_size 32 --edge_feat False --out_dim 56 --hidden_dim 56 --full_graph False --seed_array 41 95 22 35 --full_graph True
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b32-noedge-fg-trials --param_values 10 --lpe_dim 8 --save_name b128-noedge-fg-trials --batch_size 32 --edge_feat False --out_dim 56 --hidden_dim 56 --full_graph False --seed_array 41 95 22 35 --full_graph True --L 10
