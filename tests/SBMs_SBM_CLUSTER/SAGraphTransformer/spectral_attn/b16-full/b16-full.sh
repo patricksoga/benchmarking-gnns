@@ -2,9 +2,9 @@
 #$ -N SAGraphTransformer_SBM_CLUSTER_b16-full
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 8 10 16 20 32)
+pos_enc_dim=(0 10)
 fname=$(pwd)/b16-full_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -27,10 +27,14 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'full_graph': True,
+#                 'gape_individual': False,
+#                 'gape_softmax_after': False,
+#                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 48,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
+#                 'lpe_dim': 16,
 #                 'lpe_layers': 1,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
@@ -41,6 +45,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
 #                 'rand_pos_enc': False,
+#                 'random_orientation': False,
 #                 'readout': 'mean',
 #                 'residual': True,
 #                 'rw_pos_enc': False,
@@ -63,4 +68,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_CLUSTER_500k.json --job_note b16-full --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 8 10 16 20 32 --full_graph True
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_CLUSTER_500k.json --job_note b16-full --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 10 --lpe_dim 16 --full_graph True
