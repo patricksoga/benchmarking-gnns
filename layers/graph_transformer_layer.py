@@ -27,9 +27,6 @@ def scaling(field, scale_constant):
 
 def add_bias(field, bias):
     def func(edges):
-        print(edges.src)
-        print(edges.dst)
-        exit()
         src, dest = edges.edges()[0], edges.edges()[1]
         bias_weights = bias[src, dest].unsqueeze(-1)
         return {field: edges.data[field] + bias_weights}
