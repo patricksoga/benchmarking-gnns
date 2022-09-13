@@ -44,7 +44,7 @@ def main(args):
         for seed in seeds:
             command[job_num_idx] = f'{value}'
             command[pos_enc_dim_idx] = f'{value}'
-            command.append(f'--seed_array [{seed}]')
+            command.append(f'--seed_array {seed}')
             with open(f'{dir}/{job_name}_{seed}_{idx}.sh', 'w') as f:
                 f.write(get_script_text(job_name, value, ' '.join(command), idx=idx, seed=seed))
             command.pop(-1)
