@@ -18,9 +18,9 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGra
 # {'dataset': 'ZINC',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'PseudoGraphormer',
-#  'net_params': {'L': 9,
+#  'net_params': {'L': 10,
 #                 'adj_enc': False,
-#                 'batch_norm': True,
+#                 'batch_norm': False,
 #                 'batch_size': 128,
 #                 'cat_gape': False,
 #                 'dataset': 'ZINC',
@@ -60,6 +60,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGra
 #             'max_time': 24,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
+#             'save_name': 'b128-bnorm-500k-fg',
 #             'seed': 41,
 #             'seed_array': [41],
 #             'weight_decay': 0.0}}
@@ -67,4 +68,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/PseudoGra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_PseudoGraphormer_ZINC_500k.json --job_note b128-lnorm-500k-fg --param_values 1 --layer_norm True --full_graph True
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_PseudoGraphormer_ZINC_500k.json --job_note b128-lnorm-500k-fg --param_values 1 --layer_norm True --full_graph True --L 10 --batch_norm False --save_name b128-bnorm-500k-fg
