@@ -123,6 +123,7 @@ def add_args(parser):
     parser.add_argument('--gape_softmax_after', help="Use softmax after GAPE pooling")
     parser.add_argument('--gape_softmax_before', help="Use softmax before GAPE pooling")
     parser.add_argument('--gape_individual', help="Use individual linear layers for each GAPE automaton")
+    parser.add_argument('--gape_clamp', help="Clamp PE values for stability")
     parser.add_argument('--random_orientation', help="Add a random orientation to the graphs")
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
@@ -345,6 +346,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['random_orientation'] = False
+    
+    if args.gape_clamp is not None:
+        net_params['gape_clamp'] = True if args.gape_clamp == 'True' else False
+    elif 'gape_clamp' in net_params:
+        pass
+    else:
+        net_params['gape_clamp'] = False
 
     # net_params['pow_of_mat'] = args.pow_of_mat
 

@@ -52,6 +52,7 @@ class PELayer(nn.Module):
         self.gape_softmax_after = net_params.get('gape_softmax_after', False)
         self.gape_softmax_before = net_params.get('gape_softmax_before', False)
         self.gape_individual = net_params.get('gape_individual', False)
+        self.clamp = net_params.get('gape_clamp', False)
 
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
@@ -287,7 +288,8 @@ class PELayer(nn.Module):
                     # pe = torch.relu(pe)
                     pe = torch.tanh(pe)
 
-            if self.dataset in ("CYCLES", "ZINC"):
+            # if self.dataset in ("CYCLES", "ZINC"):
+            if self.clamp:
                 # pe = pe.clamp(-3, 3)
                 pe = torch.tanh(pe)
             return pe
