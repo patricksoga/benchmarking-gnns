@@ -18,7 +18,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 # {'dataset': 'SBM_PATTERN',
 #  'gpu': {'id': 0, 'use': True},
 #  'model': 'SAGraphTransformer',
-#  'net_params': {'L': 6,
+#  'net_params': {'L': 4,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
 #                 'batch_size': 16,
@@ -67,4 +67,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b16-full --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 8 10 16 20 32 --full_graph True
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_PATTERN_500k.json --job_note b16-full --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 8 10 16 20 32 --full_graph True --L 4
