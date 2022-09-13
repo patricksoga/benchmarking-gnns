@@ -298,6 +298,8 @@ def get_net_params(config, args, device, params, DATASET_NAME):
 
     if args.lpe_layers is not None:
         net_params['lpe_layers'] = int(args.lpe_layers)
+    if args.lpe_dim is not None:
+        net_params['lpe_dim'] = int(args.lpe_dim)
     if args.lpe_n_heads is not None:
         net_params['lpe_n_heads'] = int(args.lpe_n_heads)
 
