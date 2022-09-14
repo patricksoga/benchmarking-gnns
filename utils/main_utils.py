@@ -149,6 +149,7 @@ def add_args(parser):
     parser.add_argument('--gape_clamp', help="Clamp PE values for stability")
     parser.add_argument('--random_orientation', help="Add a random orientation to the graphs")
     parser.add_argument('--rand_sketchy_pos_enc', help="Add rand_sketchy_pos_enc")
+    parser.add_argument('--eigen_bartels_stewart', help="Use eigendecomposition-based Bartels-Stewart (needs diag)")
 
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
@@ -388,5 +389,11 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     else:
         net_params['rand_sketchy_pos_enc'] = False
     # net_params['pow_of_mat'] = args.pow_of_mat
+    if args.eigen_bartels_stewart is not None:
+        net_params['eigen_bartels_stewart'] = True if args.eigen_bartels_stewart == 'True' else False
+    elif 'eigen_bartels_stewart' in net_params:
+        pass
+    else:
+        net_params['eigen_bartels_stewart'] = False
 
     return net_params

@@ -97,12 +97,16 @@ class PELayer(nn.Module):
                 nn.init.normal_(pos_initial)
 
             # init transition weights
+            shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
             self.pos_transitions = nn.ParameterList(
-                nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+                nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
                 for _ in range(self.n_gape)
             )
             for pos_transition in self.pos_transitions:
-                nn.init.orthogonal_(pos_transition)
+                if net_params['diag']:
+                    nn.init.normal_(pos_transition)
+                else:
+                    nn.init.orthogonal_(pos_transition)
             # init linear layers for reshaping to hidden dim
             if self.gape_individual:
                 self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))
@@ -149,6 +153,8 @@ class PELayer(nn.Module):
         self.pos_adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
         nn.init.normal_(self.pos_adder)
 
+        self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
+
     def stack_strategy(self, num_nodes):
         """
             Given more than one initial weight vector, define the stack strategy.
@@ -173,6 +179,39 @@ class PELayer(nn.Module):
     def kronecker(self, mat1, mat2):
         return torch.einsum('ab,cd->acbd', mat1, mat2).reshape(mat1.shape[0] * mat2.shape[0], mat1.shape[1] * mat2.shape[1])
 
+
+    def sylvester(self, A, B, C, initial_vector):
+        R, U = torch.linalg.eig(A)
+        S, V = torch.linalg.eig(B)
+        F = U.transpose(-1, -2) @ (C + 0j) @ V
+        W = R[..., :, None] - S[..., None, :]
+        # Y = F @ torch.linalg.inv(W)
+        # Y = F @ torch.linalg.pinv(W)
+        Y = F @ torch.linalg.pinv(W)
+
+        # print("F: ", F.transpose(1, 0).shape)
+        # print("torch.linalg.pinv(W): ", torch.linalg.pinv(W).transpose(1, 0).shape)
+
+        return U @ Y @ initial_vector.type(torch.complex64) @ V.transpose(-1, -2)
+
+
+    def learned_forward(self, g):
+        if not self.diag:
+            print("Must use diag with eigendecomposition-based Bartels-Stewart")
+            exit()
+        mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
+        vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
+        transition = torch.diag(self.pos_transitions[0])
+        transition_inverse = torch.linalg.inv(transition).to(self.device)
+        mat_product = transition_inverse @ vec_init
+        pe = self.sylvester(transition_inverse, -mat, mat_product, vec_init)
+        pe = pe.transpose(1, 0).type(torch.float32)
+        pe = self.embedding_pos_encs[0](pe)
+        if self.clamp:
+            pe = torch.tanh(pe)
+        return pe
+
+
     def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
         if self.wl_pos_enc:
             h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
@@ -196,6 +235,9 @@ class PELayer(nn.Module):
         if self.pos_enc or self.adj_enc or self.rw_pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
+            if self.eigen_bartels_stewart:
+                return self.learned_forward(g)
+
             mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g.num_nodes())
             vec_init = vec_init.transpose(1, 0).flatten()
