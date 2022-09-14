@@ -146,6 +146,8 @@ class PELayer(nn.Module):
         
         self.transition_mul_mat = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=True)
         nn.init.normal_(self.transition_mul_mat)
+        self.pos_adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
+        nn.init.normal_(self.pos_adder)
 
     def stack_strategy(self, num_nodes):
         """
@@ -225,6 +227,9 @@ class PELayer(nn.Module):
         elif self.rand_sketchy_pos_enc:
             mat = self.type_of_matrix(g, self.matrix_type)
             initial_vector = torch.cat([self.pos_initials[0] for _ in range(mat.shape[0])], dim=1)
+
+            initial_adder = torch.cat([self.pos_adder for _ in range(mat.shape[0])], dim=1)
+            initial_vector = (initial_vector + initial_adder).detach().numpy()
 
             self.pos_transitions[0] = self.pos_transitions[0] + self.transition_mul_mat
             transition_inv = torch.inverse(self.pos_transitions[0]).detach().cpu().numpy()
