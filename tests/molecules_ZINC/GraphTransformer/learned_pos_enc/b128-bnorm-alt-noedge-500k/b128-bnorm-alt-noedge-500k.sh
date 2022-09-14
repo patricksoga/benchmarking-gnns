@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 4)
+pos_enc_dim=(0 6)
 fname=$(pwd)/b128-bnorm-alt-noedge-500k_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -28,7 +28,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'full_graph': False,
-#                 'gape_clamp': False,
+#                 'gape_clamp': True,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -68,4 +68,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k --batch_norm True --layer_norm False --rand_pos_enc False --learned_pos_enc True --param_values 4 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge-500k --L 10 --hidden_dim 80 --out_dim 80 --full_graph False
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k --batch_norm True --layer_norm False --rand_pos_enc False --learned_pos_enc True --param_values 6 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge-500k --L 10 --hidden_dim 80 --out_dim 80 --full_graph False --gape_clamp True
