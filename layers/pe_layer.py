@@ -229,7 +229,7 @@ class PELayer(nn.Module):
             initial_vector = torch.cat([self.pos_initials[0] for _ in range(mat.shape[0])], dim=1)
 
             initial_adder = torch.cat([self.pos_adder for _ in range(mat.shape[0])], dim=1)
-            initial_vector = (initial_vector + initial_adder).detach().numpy()
+            initial_vector = (initial_vector + initial_adder).detach().cpu().numpy()
 
             self.pos_transitions[0] = self.pos_transitions[0] + self.transition_mul_mat
             transition_inv = torch.inverse(self.pos_transitions[0]).detach().cpu().numpy()
