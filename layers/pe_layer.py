@@ -234,7 +234,7 @@ class PELayer(nn.Module):
 
             mat = mat.cpu().numpy()
             pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
-            pe = torch.from_numpy(pe.T).float()
+            pe = torch.from_numpy(pe.T).float().to(self.device)
             return self.embedding_pos_encs[0](pe)
 
         elif self.rand_pos_enc:
