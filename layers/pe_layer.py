@@ -120,7 +120,7 @@ class PELayer(nn.Module):
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         if self.rw_pos_enc:
-            self.rw_embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim) 
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim) 
 
         in_dim = 1
         if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
@@ -179,9 +179,9 @@ class PELayer(nn.Module):
         if not self.use_pos_enc:
             return self.embedding_h(h)
 
-        if self.rw_pos_enc:
-            pe = self.rw_embedding_pos_enc(pos_enc)
-            return pe
+        # if self.rw_pos_enc:
+        #     pe = self.rw_embedding_pos_enc(pos_enc)
+        #     return pe
 
         pe = None
 
@@ -210,6 +210,11 @@ class PELayer(nn.Module):
             stacked_encs = torch.stack(encs.split(self.pos_enc_dim), dim=1)
             stacked_encs = stacked_encs.transpose(1, 0)
             pe = self.embedding_pos_encs[0](stacked_encs)
+
+            if self.clamp:
+                # pe = pe.clamp(-3, 3)
+                pe = torch.tanh(pe)
+
             return pe
         elif self.rand_pos_enc:
             if self.power_method:
@@ -319,8 +324,9 @@ class PELayer(nn.Module):
         # #     return pe
 
         # return h + pe if pe is not None else h
-        if self.dataset in ("CYCLES", "ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
-            return pe + h
+        # if self.dataset in ("CYCLES", "ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
+        #     return pe + h
+
         return pe
 
     def get_normalized_laplacian(self, g):
