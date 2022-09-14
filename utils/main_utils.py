@@ -3,7 +3,30 @@ import torch
 import numpy as np
 import logging
 import time
-import sqlite3
+
+import scipy.sparse as sp
+
+def rw_pow_transition(transition_matrix, power):
+    # Geometric diffusion features with Random Walk
+    Q = transition_matrix.shape[0]
+    A = np.array(torch.full((Q, Q), 1))
+    np.fill_diagonal(A, 0)
+    A = sp.csr_matrix(A)
+
+    degrees = np.full((Q,), Q-1)
+    Dinv = sp.diags(degrees.clip(1) ** -1.0, dtype=float) # D^-1
+
+    print(A.todense())
+    print(Dinv.todense())
+
+    RW = A * Dinv 
+    M = RW
+
+    M_power = M
+    for _ in range(power-1):
+        M_power = M_power * M
+    return M_power
+
 
 def get_logger(logfile=None):
     _logfile = logfile if logfile else './DEBUG.log'
@@ -125,6 +148,8 @@ def add_args(parser):
     parser.add_argument('--gape_individual', help="Use individual linear layers for each GAPE automaton")
     parser.add_argument('--gape_clamp', help="Clamp PE values for stability")
     parser.add_argument('--random_orientation', help="Add a random orientation to the graphs")
+    parser.add_argument('--rand_sketchy_pos_enc', help="Add rand_sketchy_pos_enc")
+
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
     parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
@@ -355,7 +380,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_clamp'] = False
-
+    
+    if args.rand_sketchy_pos_enc is not None:
+        net_params['rand_sketchy_pos_enc'] = True if args.rand_sketchy_pos_enc == 'True' else False
+    elif 'rand_sketchy_pos_enc' in net_params:
+        pass
+    else:
+        net_params['rand_sketchy_pos_enc'] = False
     # net_params['pow_of_mat'] = args.pow_of_mat
 
     return net_params

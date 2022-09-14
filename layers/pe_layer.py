@@ -4,6 +4,7 @@ import scipy as sp
 import numpy as np
 import networkx as nx
 import dgl
+import scipy
 
 from utils.main_utils import get_logger
 
@@ -60,6 +61,8 @@ class PELayer(nn.Module):
         self.power_method = net_params.get('power_method', False)
         self.power_method_iters = net_params.get('power_iters', 50)
 
+        self.rand_sketchy_pos_enc = net_params.get('rand_sketchy_pos_enc', False)
+
         hidden_dim = net_params['hidden_dim']
         max_wl_role_index = 37 # this is maximum graph size in the dataset
 
@@ -68,7 +71,7 @@ class PELayer(nn.Module):
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
-        elif self.learned_pos_enc or self.rand_pos_enc:
+        elif self.learned_pos_enc or self.rand_pos_enc or self.rand_sketchy_pos_enc:
 
             # if net_params['diag']:
             #     self.pos_transition = nn.Parameter(torch.Tensor(self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
@@ -87,7 +90,7 @@ class PELayer(nn.Module):
             #     nn.init.normal_(pos_initial)
 
             self.pos_initials = nn.ParameterList(
-                nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc)
+                nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
                 for _ in range(self.n_gape)
             )
             for pos_initial in self.pos_initials:
@@ -95,7 +98,7 @@ class PELayer(nn.Module):
 
             # init transition weights
             self.pos_transitions = nn.ParameterList(
-                nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc)
+                nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
                 for _ in range(self.n_gape)
             )
             for pos_transition in self.pos_transitions:
@@ -129,7 +132,7 @@ class PELayer(nn.Module):
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc
+        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc or self.rand_sketchy_pos_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
@@ -140,6 +143,9 @@ class PELayer(nn.Module):
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
         if self.power_method:
             self.logger.info(f"Using power method with {self.power_method_iters} iterations")
+        
+        self.transition_mul_mat = nn.Parameter(torch.Tensor(self.pos_enc_dim, self.pos_enc_dim), requires_grad=True)
+        nn.init.normal_(self.transition_mul_mat)
 
     def stack_strategy(self, num_nodes):
         """
@@ -216,6 +222,21 @@ class PELayer(nn.Module):
                 pe = torch.tanh(pe)
 
             return pe
+        elif self.rand_sketchy_pos_enc:
+            mat = self.type_of_matrix(g, self.matrix_type)
+            initial_vector = torch.cat([self.pos_initials[0] for _ in range(mat.shape[0])], dim=1)
+
+            self.pos_transitions[0] = self.pos_transitions[0] + self.transition_mul_mat
+            transition_inv = torch.inverse(self.pos_transitions[0]).detach().cpu().numpy()
+            mat_product = torch.inverse(self.pos_transitions[0]).detach() @ initial_vector
+            # initial_vector = initial_vector.cpu().numpy()
+            mat_product = mat_product.cpu().numpy()
+
+            mat = mat.cpu().numpy()
+            pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
+            pe = torch.from_numpy(pe.T).float()
+            return self.embedding_pos_encs[0](pe)
+
         elif self.rand_pos_enc:
             if self.power_method:
                 mat = self.type_of_matrix(g, self.matrix_type)
