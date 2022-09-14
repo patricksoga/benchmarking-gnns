@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 16)
+pos_enc_dim=(0 4)
 fname=$(pwd)/b128-bnorm-alt-noedge-500k_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -21,13 +21,14 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 64,
+#                 'batch_size': 128,
 #                 'cat_gape': False,
 #                 'dataset': 'ZINC',
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'full_graph': False,
+#                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -43,6 +44,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
 #                 'rand_pos_enc': False,
+#                 'random_orientation': False,
 #                 'readout': 'mean',
 #                 'residual': True,
 #                 'rw_pos_enc': False,
@@ -50,7 +52,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
 #  'out_dir': 'out/molecules_graph_regression_b128-bnorm-alt-noedge-500k',
-#  'params': {'batch_size': 64,
+#  'params': {'batch_size': 128,
 #             'epochs': 1000,
 #             'init_lr': 0.0007,
 #             'lr_reduce_factor': 0.5,
@@ -66,4 +68,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 64 --job_note b128-bnorm-alt-noedge-500k --batch_norm True --layer_norm False --rand_pos_enc False --learned_pos_enc True --param_values 16 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge-500k --L 10 --hidden_dim 80 --out_dim 80
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k --batch_norm True --layer_norm False --rand_pos_enc False --learned_pos_enc True --param_values 4 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge-500k --L 10 --hidden_dim 80 --out_dim 80 --full_graph False
