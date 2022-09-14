@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_CSL_b5-300k-trials
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 4 8 16 20 32)
+pos_enc_dim=(0 32)
 fname=$(pwd)/b5-300k-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -70,4 +70,4 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --partial_rw_pos_enc True --param_values 4 8 16 20 32 --job_note b5-300k-trials --seed_array 41 95 22 35
+#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --partial_rw_pos_enc True --param_values 32 --job_note b5-300k-trials --seed_array 41 95 22 35
