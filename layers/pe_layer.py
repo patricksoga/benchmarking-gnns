@@ -233,7 +233,7 @@ class PELayer(nn.Module):
 
             self.pos_transitions[0] = self.pos_transitions[0] + self.transition_mul_mat
             transition_inv = torch.inverse(self.pos_transitions[0]).detach().cpu().numpy()
-            mat_product = torch.inverse(self.pos_transitions[0]).detach() @ initial_vector
+            mat_product = torch.inverse(self.pos_transitions[0]).detach().cpu() @ initial_vector
             # initial_vector = initial_vector.cpu().numpy()
             mat_product = mat_product.cpu().numpy()
 
