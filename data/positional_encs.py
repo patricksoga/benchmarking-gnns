@@ -219,9 +219,11 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
         rw = (A*D).todense()
         m_power = rw
+
         for _ in range(20):
             m_power = m_power * rw
         mat = m_power
+
     elif matrix == 'RV':
         n = g.number_of_nodes()
         A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
@@ -240,11 +242,13 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     elif matrix == 'RWK':
         n = g.number_of_nodes()
         A = g.adjacency_matrix(scipy_fmt="csr")
-        p_steps = n
+        # p_steps = n
+        p_steps = int(0.8*n)
         # p_steps = int(0.4*n)
         # p_steps = int(0.7*n)
         # p_steps = int(0.3*n)
-        gamma = 1
+        # gamma = 1
+        gamma = 0.8
 
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
         I = sp.eye(n)
@@ -356,6 +360,12 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
+def add_random_walk_encoding_CSL(splits, pos_enc_dim):
+    graphs = []
+    for split in splits[0]:
+        graphs.append(random_walk_encoding(split, pos_enc_dim))
+    new_split = (graphs, splits[1])
+    return new_split
 
 def add_spd_encoding_CSL(splits):
     graphs = []

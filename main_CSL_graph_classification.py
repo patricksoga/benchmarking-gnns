@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL, add_spd_encoding_CSL
+from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL, add_random_walk_encoding_CSL, add_spd_encoding_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -88,6 +88,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                     valset.lists = add_multiple_automaton_encodings_CSL(valset.lists, model)
                     testset.lists = add_multiple_automaton_encodings_CSL(testset.lists, model)
                 else:
+                    logger.info("[!] Adding random automaton encodings")
                     trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
                     valset.lists = add_automaton_encodings_CSL(valset.lists, model)
                     testset.lists = add_automaton_encodings_CSL(testset.lists, model)
@@ -97,6 +98,11 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                 trainset.lists = add_spd_encoding_CSL(trainset.lists)
                 valset.lists = add_spd_encoding_CSL(valset.lists)
                 testset.lists = add_spd_encoding_CSL(testset.lists)
+            
+            if net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False):
+                trainset.lists = add_random_walk_encoding_CSL(trainset.lists, net_params.get('pos_enc_dim'))
+                valset.lists = add_random_walk_encoding_CSL(valset.lists, net_params.get('pos_enc_dim'))
+                testset.lists = add_random_walk_encoding_CSL(testset.lists, net_params.get('pos_enc_dim'))
 
 
             logger.info(f"Training Graphs: {len(trainset)}")
