@@ -60,7 +60,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
 #             'lr_schedule_patience': 10,
-#             'max_time': 24,
+#             'max_time': 50.0,
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
 #             'seed': 41,
@@ -70,4 +70,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-clamped --rand_pos_enc False --param_values 6 8 12 16 --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --gape_clamp True
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-clamped --rand_pos_enc False --param_values 6 8 12 16 --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --gape_clamp True --max_time 50
