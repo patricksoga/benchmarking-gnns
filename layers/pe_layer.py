@@ -54,7 +54,7 @@ class PELayer(nn.Module):
         self.gape_softmax_before = net_params.get('gape_softmax_before', False)
         self.gape_individual = net_params.get('gape_individual', False)
         self.clamp = net_params.get('gape_clamp', False)
-
+        self.diag = net_params.get('diag', False)
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
 
