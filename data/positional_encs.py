@@ -8,6 +8,7 @@ import numpy as np
 import torch.nn.functional as F
 import pyximport
 import networkx as nx
+from tqdm import tqdm
 
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
@@ -243,12 +244,12 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         n = g.number_of_nodes()
         A = g.adjacency_matrix(scipy_fmt="csr")
         # p_steps = n
-        p_steps = int(0.8*n)
+        p_steps = int(n)
         # p_steps = int(0.4*n)
         # p_steps = int(0.7*n)
         # p_steps = int(0.3*n)
         # gamma = 1
-        gamma = 0.8
+        gamma = 1
 
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
         I = sp.eye(n)
@@ -263,6 +264,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         mat = k_RW_power
 
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+    # import random
     # if idx == 0:
     #     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     # else:
@@ -333,20 +335,20 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
 
     # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix) for g in dataset.train.graph_lists]
 
-    for g in dataset.train.graph_lists:
-        storage = automaton_encoding(g, transition_matrix, initial_vector, diag, 'L', False, storage)
+    # for g in dataset.train.graph_lists:
+    #     storage = automaton_encoding(g, transition_matrix, initial_vector, diag, 'A', False, storage)
 
-    # import matplotlib.pyplot as plt
+    # # import matplotlib.pyplot as plt
 
-    print(f"max before: {max(storage['before']['all'])}")
-    print(f"min before: {min(storage['before']['all'])}")
-    print(f"variance before: {np.var(storage['before']['all'])}")
-    print(f"mean before: {np.mean(storage['before']['all'])}")
+    # print(f"max before: {max(storage['before']['all'])}")
+    # print(f"min before: {min(storage['before']['all'])}")
+    # print(f"variance before: {np.var(storage['before']['all'])}")
+    # print(f"mean before: {np.mean(storage['before']['all'])}")
 
-    print(f"max after: {max(storage['after']['all'])}")
-    print(f"min after: {min(storage['after']['all'])}")
-    print(f"variance after: {np.var(storage['after']['all'])}")
-    print(f"mean after: {np.mean(storage['after']['all'])}")
+    # print(f"max after: {max(storage['after']['all'])}")
+    # print(f"min after: {min(storage['after']['all'])}")
+    # print(f"variance after: {np.var(storage['after']['all'])}")
+    # print(f"mean after: {np.mean(storage['after']['all'])}")
 
     # plt.figure("Total tensor values before")
     # plt.hist(storage['before']['all'], bins=100)
@@ -354,6 +356,19 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # plt.figure("Total tensor values after")
     # plt.hist(storage['after']['all'], bins=100)
 
+    # train = []
+    # val = []
+    # test = []
+    # for g in tqdm(dataset.train.graph_lists):
+    #     train.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    # for g in tqdm(dataset.val.graph_lists):
+    #     val.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    # for g in tqdm(dataset.test.graph_lists):
+    #     test.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    
+    # dataset.train.graph_lists = train
+    # dataset.val.graph_lists = train
+    # dataset.test.graph_lists = train
     dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
     dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
