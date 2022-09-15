@@ -21,7 +21,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 10,
+#                 'batch_size': 26,
 #                 'cat_gape': False,
 #                 'dataset': 'SBM_PATTERN',
 #                 'diag': False,
@@ -54,7 +54,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
 #  'out_dir': 'out/SBMs_node_classification_b26-500k-trials',
-#  'params': {'batch_size': 10,
+#  'params': {'batch_size': 26,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
@@ -69,4 +69,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_PE_500k.json --job_note b26-500k-trials --out_dim 80 --hidden_dim 80 --L 10 --readout mean --pos_enc_dim 2 --batch_norm True --layer_norm False --param_values 2 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_PE_500k.json --job_note b26-500k-trials --out_dim 80 --hidden_dim 80 --L 10 --readout mean --pos_enc_dim 2 --batch_norm True --layer_norm False --param_values 2 --seed_array 41 95 22 35 --batch_size 26
