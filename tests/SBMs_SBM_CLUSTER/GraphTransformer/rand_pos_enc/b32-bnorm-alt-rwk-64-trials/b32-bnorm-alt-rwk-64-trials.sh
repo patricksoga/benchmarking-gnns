@@ -4,7 +4,7 @@
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
-pos_enc_dim=(0 128)
+pos_enc_dim=(0 64)
 fname=$(pwd)/b32-bnorm-alt-rwk-64-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -21,7 +21,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
 #                 'batch_norm': True,
-#                 'batch_size': 64,
+#                 'batch_size': 32,
 #                 'cat_gape': False,
 #                 'dataset': 'SBM_CLUSTER',
 #                 'diag': False,
@@ -51,7 +51,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
 #  'out_dir': 'out/SBMs_node_classification_b32-bnorm-alt-rwk-64-trials',
-#  'params': {'batch_size': 64,
+#  'params': {'batch_size': 32,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
 #             'lr_reduce_factor': 0.5,
@@ -66,4 +66,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-rwk-64-trials --param_values 128 --batch_size 64 --seed_array 41 95 22 35 --rand_pos_enc True --batch_norm True --layer_norm False --matrix_type RWK
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-rwk-64-trials --param_values 64 --batch_size 32 --seed_array 41 95 22 35 --rand_pos_enc True --batch_norm True --layer_norm False --matrix_type RWK
