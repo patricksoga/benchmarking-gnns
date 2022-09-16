@@ -28,7 +28,7 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 #                 'dropout': 0.0,
 #                 'eigen_bartels_stewart': False,
 #                 'full_graph': False,
-#                 'gape_clamp': True,
+#                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -45,7 +45,7 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 #                 'pos_enc_dim': 20,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
-#                 'rand_pos_enc': True,
+#                 'rand_pos_enc': False,
 #                 'rand_sketchy_pos_enc': False,
 #                 'random_orientation': False,
 #                 'readout': 'sum',
@@ -70,4 +70,4 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --rand_pos_enc True --matrix_type A --param_values 32 --job_note b5-300k-trials --seed_array 41 95 22 35 --gape_clamp True
+#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --pos_enc False --rand_pos_enc False --param_values 32 --job_note b5-300k-trials --seed_array 41 95 22 35
