@@ -27,23 +27,26 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
+#                 'eigen_bartels_stewart': False,
 #                 'full_graph': False,
+#                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
-#                 'hidden_dim': 72,
+#                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
 #                 'lpe_dim': 8,
-#                 'lpe_layers': 3,
+#                 'lpe_layers': 1,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'out_dim': 72,
+#                 'out_dim': 80,
 #                 'pos_enc_dim': 8,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
+#                 'rand_sketchy_pos_enc': False,
 #                 'random_orientation': False,
 #                 'readout': 'sum',
 #                 'residual': True,
@@ -68,4 +71,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/SAGraphTr
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge-500k-trials --param_values 10 --lpe_dim 8 --save_name b128-noedge --batch_size 128 --edge_feat False --out_dim 72 --hidden_dim 72 --lpe_layers 3 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_SAGraphTransformer_ZINC_500k.json --job_note b128-noedge-500k-trials --param_values 10 --lpe_dim 8 --save_name b128-noedge --batch_size 128 --edge_feat False --out_dim 80 --hidden_dim 80 --lpe_layers 1 --seed_array 41 95 22 35
