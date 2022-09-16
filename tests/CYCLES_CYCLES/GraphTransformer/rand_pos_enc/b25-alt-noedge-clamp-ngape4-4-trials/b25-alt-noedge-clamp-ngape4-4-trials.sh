@@ -67,10 +67,10 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
 #             'seed': 41,
-#             'seed_array': [41],
+#             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
 
 
 
 # Generated with command:
-#python3 configure_tests.py --config /Users/psoga/Documents/projects/benchmarking-gnns/configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --job_note b25-alt-noedge-clamp-ngape4-4-trials --param_values 4 --batch_size 25 --pos_enc False --full_graph False --rand_pos_enc True --edge_feat False --n_gape 4 --gape_pooling mean --gape_clamp True
+#python3 configure_tests.py --config /Users/psoga/Documents/projects/benchmarking-gnns/configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --job_note b25-alt-noedge-clamp-ngape4-4-trials --param_values 4 --batch_size 25 --pos_enc False --full_graph False --rand_pos_enc True --edge_feat False --n_gape 4 --gape_pooling mean --gape_clamp True --seed_array 41 95 22 35
