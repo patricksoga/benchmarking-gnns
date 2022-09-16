@@ -28,7 +28,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'eigen_bartels_stewart': False,
-#                 'full_graph': True,
+#                 'full_graph': False,
 #                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
@@ -70,4 +70,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k-ngape4-4-trials --batch_norm True --layer_norm False --rand_pos_enc True --param_values 4 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge --full_graph True --n_gape 4 --hidden_dim 80 --out_dim 80 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k-ngape4-4-trials --batch_norm True --layer_norm False --rand_pos_enc True --param_values 4 --edge_feat False --init_lr 0.0007 --save_name b128-bnorm-alt-noedge --full_graph False --n_gape 4 --hidden_dim 80 --out_dim 80 --seed_array 41 95 22 35
