@@ -180,31 +180,29 @@ class PELayer(nn.Module):
         return torch.einsum('ab,cd->acbd', mat1, mat2).reshape(mat1.shape[0] * mat2.shape[0], mat1.shape[1] * mat2.shape[1])
 
 
-    def sylvester(self, A, B, C, initial_vector):
+    def sylvester(self, A, B, C):
+        m = B.shape[-1]
+        n = A.shape[-1]
         R, U = torch.linalg.eig(A)
         S, V = torch.linalg.eig(B)
-        F = U.transpose(-1, -2) @ (C + 0j) @ V
-        W = R[..., :, None] - S[..., None, :]
-        # Y = F @ torch.linalg.inv(W)
-        # Y = F @ torch.linalg.pinv(W)
-        Y = F @ torch.linalg.pinv(W)
-
-        # print("F: ", F.transpose(1, 0).shape)
-        # print("torch.linalg.pinv(W): ", torch.linalg.pinv(W).transpose(1, 0).shape)
-
-        return U @ Y @ initial_vector.type(torch.complex64) @ V.transpose(-1, -2)
-
+        F = torch.linalg.solve(U, (C + 0j) @ V)
+        Y = F / R[..., : , None] - S[..., None, :]
+        X = U[..., :n, :n] @ Y[..., :n, :m] @ torch.linalg.inv(V)[..., :m, :m]
+        if all(torch.isreal(x.flatten()[0]) for x in [A, B, C]):
+            return X.isreal
+        else:
+            return X
 
     def learned_forward(self, g):
-        if not self.diag:
-            print("Must use diag with eigendecomposition-based Bartels-Stewart")
-            exit()
+        # if not self.diag:
+        #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
+        #     exit()
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         transition = torch.diag(self.pos_transitions[0])
         transition_inverse = torch.linalg.inv(transition).to(self.device)
         mat_product = transition_inverse @ vec_init
-        pe = self.sylvester(transition_inverse, -mat, mat_product, vec_init)
+        pe = self.sylvester(transition_inverse, -mat, mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
         pe = self.embedding_pos_encs[0](pe)
         if self.clamp:
@@ -226,9 +224,9 @@ class PELayer(nn.Module):
         if not self.use_pos_enc:
             return self.embedding_h(h)
 
-        # if self.rw_pos_enc:
-        #     pe = self.rw_embedding_pos_enc(pos_enc)
-        #     return pe
+        if self.rw_pos_enc:
+            pe = self.embedding_pos_enc(pos_enc)
+            return pe
 
         pe = None
 
