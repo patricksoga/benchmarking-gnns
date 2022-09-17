@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N SAGraphTransformer_CYCLES_b25-noedge-500k-3lpe
+#$ -N SAGraphTransformer_CYCLES_b25-noedge-500k-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 10)
-fname=$(pwd)/b25-noedge-500k-3lpe_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-noedge-500k-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphTransformer_CYCLES_CYCLES_b25-noedge-500k-3lpe.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphTransformer_CYCLES_CYCLES_b25-noedge-500k-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -34,16 +34,16 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
-#                 'hidden_dim': 64,
+#                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
-#                 'lpe_dim': 16,
-#                 'lpe_layers': 3,
+#                 'lpe_dim': 8,
+#                 'lpe_layers': 1,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
 #                 'num_train_data': 200,
-#                 'out_dim': 64,
+#                 'out_dim': 80,
 #                 'pos_enc': False,
 #                 'pos_enc_dim': 16,
 #                 'pow_of_mat': 1,
@@ -56,7 +56,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-noedge-500k-3lpe',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-noedge-500k-trials',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -72,4 +72,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge-500k-3lpe --param_values 10 --lpe_layers 3 --L 10 --hidden_dim 64 --out_dim 64 --n_heads 8 --full_graph False --edge_feat False --lpe_dim 16 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge-500k-trials --param_values 10 --lpe_layers 3 --L 10 --hidden_dim 80 --out_dim 80 --n_heads 8 --full_graph False --edge_feat False --lpe_dim 8 --seed_array 41 95 22 35 --lpe_layers 1
