@@ -37,7 +37,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
 #                 'matrix_type': 'A',
-#                 'n_gape': 6,
+#                 'n_gape': 3,
 #                 'n_heads': 8,
 #                 'out_dim': 80,
 #                 'pow_of_mat': 1,
@@ -67,4 +67,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-clamp-ngape6-2-trials --param_values 2 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --n_gape 6 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-clamp-ngape6-2-trials --param_values 2 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --n_gape 3 --seed_array 41 95 22 35 --gape_clamp True
