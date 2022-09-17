@@ -1,0 +1,21 @@
+[I] Loading dataset ZINC, fold 1...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 11.2500s
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 371, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 369, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, params['save_name'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 165, in train_val_pipeline
+    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_molecules_graph_regression.py", line 54, in train_epoch_sparse
+    raise E
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_molecules_graph_regression.py", line 52, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'])
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/view.py", line 67, in __getitem__
+    return self._graph._get_n_repr(self._ntid, self._nodes)[key]
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/frame.py", line 523, in __getitem__
+    return self._columns[name].data
+KeyError: 'pos_enc'
