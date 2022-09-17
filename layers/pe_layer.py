@@ -42,7 +42,6 @@ class PELayer(nn.Module):
         self.rw_pos_enc = net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False)
         self.adj_enc = net_params['adj_enc']
         self.pos_enc_dim = net_params.get('pos_enc_dim', 0)
-        self.wl_pos_enc = net_params.get('wl_pos_enc', False)
         self.dataset = net_params.get('dataset', 'CYCLES')
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
         self.num_initials = net_params.get('num_initials', 1)
@@ -64,7 +63,6 @@ class PELayer(nn.Module):
         self.rand_sketchy_pos_enc = net_params.get('rand_sketchy_pos_enc', False)
 
         hidden_dim = net_params['hidden_dim']
-        max_wl_role_index = 37 # this is maximum graph size in the dataset
 
         self.logger.info(type_of_enc(net_params))
         if self.pos_enc:
@@ -118,9 +116,9 @@ class PELayer(nn.Module):
                 self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1), requires_grad=True)
                 nn.init.normal_(self.gape_pool_vec)
 
-            self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
-            for mat_pow in self.mat_pows:
-                nn.init.constant_(mat_pow, 1)
+            # self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
+            # for mat_pow in self.mat_pows:
+            #     nn.init.constant_(mat_pow, 1)
             # self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
 
         elif self.pagerank:
@@ -133,15 +131,13 @@ class PELayer(nn.Module):
         if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
             in_dim = net_params['in_dim']
         # self.embedding_h = nn.Linear(in_dim, hidden_dim)
-        if self.wl_pos_enc:
-            self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.use_pos_enc = self.pos_enc or self.wl_pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc or self.rand_sketchy_pos_enc
+        self.use_pos_enc = self.pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc or self.rand_sketchy_pos_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
 
-        if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST', 'SBM_PATTERN', 'SBM_CLUSTER', 'Cora'):
-            self.embedding_h = nn.Embedding(in_dim, hidden_dim)
+        # if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST', 'SBM_PATTERN', 'SBM_CLUSTER', 'Cora'):
+        #     self.embedding_h = nn.Embedding(in_dim, hidden_dim)
 
         self.logger.info(f"Using matrix: {self.matrix_type}")
         self.logger.info(f"Matrix power: {self.pow_of_mat}")
@@ -210,25 +206,14 @@ class PELayer(nn.Module):
         return pe
 
 
-    def forward(self, g, h, pos_enc=None, h_wl_pos_enc=None):
-        if self.wl_pos_enc:
-            h_wl_pos_enc = self.embedding_wl_pos_enc(h_wl_pos_enc) 
-            h = h + h_wl_pos_enc
-            return h
-
-        # if not self.use_pos_enc and self.dataset in ("ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "wisconsin", "Cora"):
-        #     return h
+    def forward(self, g, h, pos_enc=None):
+        pe = None
         if not self.use_pos_enc:
             return h
-
-        if not self.use_pos_enc:
-            return self.embedding_h(h)
 
         if self.rw_pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
             return pe
-
-        pe = None
 
         if self.pos_enc or self.adj_enc or self.rw_pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
@@ -246,11 +231,9 @@ class PELayer(nn.Module):
                 lam = 0.25
                 for _ in range(self.power_method_iters):
                     encs = ((lam*kron_prod) @ encs) + vec_init
-                    # print(self.power_method_iters)
                     # norm = torch.norm(encs, p=2, dim=0)
                     # encs = encs / norm
                     # encs = encs.clamp(min=-1, max=1)
-                    # print(encs)
             else:
                 B = torch.eye(kron_prod.shape[1]).to(self.device) - kron_prod
                 encs = torch.linalg.solve(B, vec_init)
@@ -274,7 +257,6 @@ class PELayer(nn.Module):
             self.pos_transitions[0] = self.pos_transitions[0] + self.transition_mul_mat
             transition_inv = torch.inverse(self.pos_transitions[0]).detach().cpu().numpy()
             mat_product = torch.inverse(self.pos_transitions[0]).detach().cpu() @ initial_vector
-            # initial_vector = initial_vector.cpu().numpy()
             mat_product = mat_product.cpu().numpy()
 
             mat = mat.cpu().numpy()
@@ -304,10 +286,6 @@ class PELayer(nn.Module):
                 transition_inv = torch.inverse(self.pos_transition).to(device)
 
                 # AX + XB = Q
-                #  X = alpha
-                #  A = mu inverse
-                #  B = -A
-                #  Q = mu inverse + pi
                 transition_inv = transition_inv.numpy()
                 mat = mat.detach().cpu().numpy()
                 vec_init = vec_init.cpu().numpy()
@@ -316,12 +294,8 @@ class PELayer(nn.Module):
             else:
                 pe = pos_enc
 
-            # if self.cat:
-            #     return pe
-
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
-                # if not self.cat:
                 
                 if self.gape_individual:
                     pos_encs = [self.embedding_pos_encs[i](pos_encs[i]) for i in range(self.n_gape)]
@@ -356,20 +330,16 @@ class PELayer(nn.Module):
                 if not self.gape_individual:
                     pe = self.embedding_pos_encs[0](pe)
 
-                # pe = torch.softmax(pe, dim=1)
             else:
                 if not self.cat:
                     pe = self.embedding_pos_encs[0](pe)
 
                 if self.gape_softmax_after:
-                    # pe = torch.softmax(pe, dim=0)
-                    # pe = torch.relu(pe)
                     pe = torch.tanh(pe)
 
-            # if self.dataset in ("CYCLES", "ZINC"):
             if self.clamp:
-                # pe = pe.clamp(-3, 3)
                 pe = torch.tanh(pe)
+
             return pe
 
         elif self.pagerank:
@@ -383,15 +353,6 @@ class PELayer(nn.Module):
             elif self.dataset == "Cora":
                 return h
             pe = self.embedding_h(h)
-            # elif self.dataset == "CYCLES":
-            #     pe = self.embedding_h(h)
-
-        # # if self.dataset in ("CYCLES", "ZINC"):
-        # #     return pe
-
-        # return h + pe if pe is not None else h
-        # if self.dataset in ("CYCLES", "ZINC", "AQSOL", "SBM_PATTERN", "SBM_CLUSTER", "WikiCS", "cornell", "texas", "Cora", "CSL"):
-        #     return pe + h
 
         return pe
 
