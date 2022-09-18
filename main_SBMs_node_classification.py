@@ -61,7 +61,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
                 dataset._add_self_loops()
 
-        # l = 10
+        # l = 100
         # dataset.train.graph_lists = dataset.train.graph_lists[:l]
         # dataset.val.graph_lists = dataset.val.graph_lists[:l]
         # dataset.test.graph_lists = dataset.test.graph_lists[:l]
