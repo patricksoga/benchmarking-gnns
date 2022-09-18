@@ -243,12 +243,33 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     elif matrix == 'RWK':
         n = g.number_of_nodes()
         A = g.adjacency_matrix(scipy_fmt="csr")
-        # p_steps = n
-        p_steps = int(n)
+        p_steps = n
+        # p_steps = int(0.7*n)
         # p_steps = int(0.4*n)
         # p_steps = int(0.7*n)
         # p_steps = int(0.3*n)
-        # gamma = 1
+        gamma = 1
+
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        I = sp.eye(n)
+        L = I - N * A * N
+
+        k_RW = I - gamma*L
+        k_RW_power = k_RW
+        for _ in range(p_steps - 1):
+            k_RW_power = k_RW_power.dot(k_RW)
+
+        k_RW_power = k_RW_power.toarray()
+        mat = k_RW_power
+
+    elif matrix == 'RWK16':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix(scipy_fmt="csr")
+        p_steps = 16
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.4*n)
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.3*n)
         gamma = 1
 
         N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
@@ -356,22 +377,22 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # plt.figure("Total tensor values after")
     # plt.hist(storage['after']['all'], bins=100)
 
-    # train = []
-    # val = []
-    # test = []
-    # for g in tqdm(dataset.train.graph_lists):
-    #     train.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
-    # for g in tqdm(dataset.val.graph_lists):
-    #     val.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
-    # for g in tqdm(dataset.test.graph_lists):
-    #     test.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    train = []
+    val = []
+    test = []
+    for g in tqdm(dataset.train.graph_lists):
+        train.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    for g in tqdm(dataset.val.graph_lists):
+        val.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    for g in tqdm(dataset.test.graph_lists):
+        test.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
     
-    # dataset.train.graph_lists = train
-    # dataset.val.graph_lists = train
-    # dataset.test.graph_lists = train
-    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
-    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
+    dataset.train.graph_lists = train
+    dataset.val.graph_lists = train
+    dataset.test.graph_lists = train
+    # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
+    # dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
+    # dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 

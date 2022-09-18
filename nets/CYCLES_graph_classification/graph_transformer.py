@@ -1,8 +1,11 @@
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import torch
 import torch.nn as nn
 
 import dgl
 from layers.pe_layer import PELayer
+from scipy import sparse as sp
+from scipy.sparse.linalg import norm
 
 """
     Graph Transformer with edge features
@@ -29,11 +32,9 @@ class GraphTransformerNet(nn.Module):
         self.residual = net_params['residual']
         self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
-        self.wl_pos_enc = net_params['wl_pos_enc']
         self.pe_layer = PELayer(net_params)
         self.cat = net_params.get('cat_gape', False)
 
-        self.use_pos_enc = net_params.get('pos_enc', False) or net_params.get('wl_pos_enc', False) or net_params.get('learned_pos_enc', False) or net_params.get('rand_pos_enc', False) or net_params.get('adj_enc', False)
         # if self.edge_feat:
         #     self.embedding_e = nn.Embedding(num_bond_type, hidden_dim)
         # else:
@@ -43,7 +44,10 @@ class GraphTransformerNet(nn.Module):
         else:
             from layers.graph_transformer_layer import GraphTransformerLayer
 
-        self.embedding_h = nn.Linear(in_dim, hidden_dim)
+        if self.cat:
+            self.embedding_h = nn.Linear(in_dim, hidden_dim - net_params['pos_enc_dim'])
+        else:
+            self.embedding_h = nn.Linear(in_dim, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
@@ -54,21 +58,26 @@ class GraphTransformerNet(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, n_classes)
 
         if self.cat:
-            self.ll = nn.Linear(hidden_dim - net_params['pos_enc_dim'], hidden_dim,)
+            self.ll = nn.Linear(hidden_dim - net_params['pos_enc_dim'], hidden_dim)
+        
+        self.g = None
+        self.lambda_loss = 1000
+        self.alpha_loss = 1e-4
+        self.pos_enc_dim = net_params['pos_enc_dim']
         
     def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
         h = self.embedding_h(h)
         if self.cat:
             pe = self.pe_layer(g, h, pos_enc)
             h = torch.cat((h, pe), dim=1)
-            h = self.ll(h)
             h = self.in_feat_dropout(h)
         else:
         # h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
-            pe = self.pe_layer(g, h, pos_enc)
-            # h = h + pe
-            h = pe
+            if self.pe_layer.use_pos_enc:
+                pe = self.pe_layer(g, h, pos_enc)
+                h = h + pe
+            # h = pe
 
         # if not self.edge_feat: # edge feature set to 1
         if self.edge_feat:
@@ -93,9 +102,37 @@ class GraphTransformerNet(nn.Module):
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
             
+        # self.g = g
         return self.MLP_layer(hg)
         
     def loss(self, pred, label):
         criterion = nn.CrossEntropyLoss()
-        loss = criterion(pred, label)
+        loss_a = criterion(pred, label)
+        return loss_a
+
+        g = self.g
+        n = g.number_of_nodes()
+
+        # Laplacian 
+        A = g.adjacency_matrix(scipy_fmt="csr")
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - N * A * N
+
+        p = g.ndata['pos_enc']
+        pT = torch.transpose(p, 1, 0)
+        loss_b_1 = torch.trace(torch.mm(torch.mm(pT, torch.Tensor(L.todense()).to(self.device)), p))
+
+        # Correct batch-graph wise loss_b_2 implementation; using a block diagonal matrix
+        bg = dgl.unbatch(g)
+        batch_size = len(bg)
+        P = sp.block_diag([bg[i].ndata['pos_enc'].detach().cpu() for i in range(batch_size)])
+        PTP_In = P.T * P - sp.eye(P.shape[1])
+        loss_b_2 = torch.tensor(norm(PTP_In, 'fro')**2).float().to(self.device)
+
+        loss_b = ( loss_b_1 + self.lambda_loss * loss_b_2 ) / ( self.pos_enc_dim * batch_size * n) 
+
+        del bg, P, PTP_In, loss_b_1, loss_b_2
+
+        loss = loss_a + self.alpha_loss * loss_b
+
         return loss

@@ -2,9 +2,9 @@
 #$ -N SAGraphTransformer_CYCLES_b25-noedge-500k-3lpe
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-3:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 8 16 20)
+pos_enc_dim=(0 10)
 fname=$(pwd)/b25-noedge-500k-3lpe_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -27,7 +27,9 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
+#                 'eigen_bartels_stewart': False,
 #                 'full_graph': False,
+#                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -35,6 +37,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'hidden_dim': 64,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
+#                 'lpe_dim': 16,
 #                 'lpe_layers': 3,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
@@ -45,6 +48,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #                 'pos_enc_dim': 16,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
+#                 'rand_sketchy_pos_enc': False,
 #                 'random_orientation': False,
 #                 'readout': 'mean',
 #                 'residual': True,
@@ -62,10 +66,10 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/SAGraphT
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
 #             'seed': 41,
-#             'seed_array': [41],
+#             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
 
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge-500k-3lpe --param_values 8 16 20 --lpe_layers 3 --L 10 --hidden_dim 64 --out_dim 64 --n_heads 8 --full_graph False --edge_feat False
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_SAGraphTransformer_500k.json --job_note b25-noedge-500k-3lpe --param_values 10 --lpe_layers 3 --L 10 --hidden_dim 64 --out_dim 64 --n_heads 8 --full_graph False --edge_feat False --lpe_dim 16 --seed_array 41 95 22 35
