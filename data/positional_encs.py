@@ -13,7 +13,7 @@ from tqdm import tqdm
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
 
-def spd_encoding(g: dgl.DGLGraph):
+def spd_encoding(g):
     # shortest_path_result, _ = algos.floyd_warshall(g.adj().to_dense().numpy().astype(int))
     # spatial_pos = torch.from_numpy((shortest_path_result)).long()
     
@@ -377,22 +377,22 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # plt.figure("Total tensor values after")
     # plt.hist(storage['after']['all'], bins=100)
 
-    train = []
-    val = []
-    test = []
-    for g in tqdm(dataset.train.graph_lists):
-        train.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
-    for g in tqdm(dataset.val.graph_lists):
-        val.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
-    for g in tqdm(dataset.test.graph_lists):
-        test.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    # train = []
+    # val = []
+    # test = []
+    # for g in tqdm(dataset.train.graph_lists):
+    #     train.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    # for g in tqdm(dataset.val.graph_lists):
+    #     val.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
+    # for g in tqdm(dataset.test.graph_lists):
+    #     test.append(automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False))
     
-    dataset.train.graph_lists = train
-    dataset.val.graph_lists = train
-    dataset.test.graph_lists = train
-    # dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
-    # dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
-    # dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
+    # dataset.train.graph_lists = train
+    # dataset.val.graph_lists = train
+    # dataset.test.graph_lists = train
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
