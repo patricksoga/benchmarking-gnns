@@ -26,26 +26,28 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 #                 'dataset': 'SBM_CLUSTER',
 #                 'diag': False,
 #                 'dropout': 0.0,
+#                 'eigen_bartels_stewart': False,
 #                 'full_graph': True,
 #                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
-#                 'hidden_dim': 72,
+#                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
 #                 'layer_norm': False,
-#                 'lpe_dim': 16,
+#                 'lpe_dim': 8,
 #                 'lpe_layers': 1,
 #                 'lpe_n_heads': 4,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'out_dim': 72,
+#                 'out_dim': 80,
 #                 'pos_enc': False,
 #                 'pos_enc_dim': 16,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
 #                 'rand_pos_enc': False,
+#                 'rand_sketchy_pos_enc': False,
 #                 'random_orientation': False,
 #                 'readout': 'mean',
 #                 'residual': True,
@@ -69,4 +71,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/SAGraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_CLUSTER_500k.json --job_note b32-sparse-500k-fg-trials --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 10 --lpe_dim 16 --full_graph True --L 10 --out_dim 72 --hidden_dim 72 --batch_size 32 --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_SAGraphTransformer_CLUSTER_500k.json --job_note b32-sparse-500k-fg-trials --spectral_attn True --pos_enc False --rand_pos_enc False --param_values 10 --lpe_dim 8 --full_graph True --L 10 --out_dim 80 --hidden_dim 80 --batch_size 32 --seed_array 41 95 22 35
