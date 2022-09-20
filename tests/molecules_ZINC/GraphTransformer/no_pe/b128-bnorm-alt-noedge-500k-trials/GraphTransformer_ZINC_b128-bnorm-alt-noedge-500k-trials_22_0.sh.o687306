@@ -1,0 +1,22 @@
+[I] Loading dataset ZINC, fold 1...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 12.1911s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 371, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 369, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, params['save_name'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 48, in train_val_pipeline
+    model = model.to(device)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in to
+    return self._apply(convert)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 579, in _apply
+    module._apply(fn)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 602, in _apply
+    param_applied = fn(param)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 925, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+RuntimeError: CUDA error: out of memory
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
