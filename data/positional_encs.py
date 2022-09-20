@@ -17,14 +17,16 @@ def spd_encoding(g):
     # shortest_path_result, _ = algos.floyd_warshall(g.adj().to_dense().numpy().astype(int))
     # spatial_pos = torch.from_numpy((shortest_path_result)).long()
     
-    g = dgl.to_networkx(g)
-    shortest_paths = nx.floyd_warshall(g)
-    spatial_pos = [[-1]*g.number_of_nodes() for _ in range(g.number_of_nodes())]
+    # g = dgl.to_networkx(g)
+    # shortest_paths = nx.floyd_warshall(g)
+    # spatial_pos = [[-1]*g.number_of_nodes() for _ in range(g.number_of_nodes())]
+    shortest_path_result, _ = algos.floyd_warshall(g.adjacency_matrix().to_dense().numpy().astype(int))
+    spatial_pos = torch.from_numpy((shortest_path_result)).long()
 
-    for src, trg_dict in shortest_paths.items():
-        for trg, distance in trg_dict.items():
-            spatial_pos[src][trg] = distance
-            spatial_pos[trg][src] = distance
+    # for src, trg_dict in shortest_paths.items():
+    #     for trg, distance in trg_dict.items():
+    #         spatial_pos[src][trg] = distance
+    #         spatial_pos[trg][src] = distance
 
     spatial_pos = torch.from_numpy(np.array(spatial_pos))
     # spatial_pos[spatial_pos == float('inf')] = 512
@@ -165,7 +167,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
     if matrix == 'A':
         # Adjacency matrix
-        mat = g.adjacency_matrix().to_dense().cpu().numpy()
+        mat = gr.adjacency_matrix().to_dense().cpu().numpy()
     elif matrix == 'L':
         # Normalized Laplacian
         n = g.number_of_nodes()
