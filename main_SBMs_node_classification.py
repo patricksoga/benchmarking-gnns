@@ -111,8 +111,20 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         if net_params.get('full_graph', False):
             st = time.time()
             try:
-                dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
+                loaded_dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
                 logger.info("[!] Loaded full graph dataset")
+                try:
+                    for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
+                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+                    for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
+                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+                    for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
+                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+                except:
+                    pass
             except:
                 logger.info("[!] Converting the given graphs to full graphs..")
                 dataset._make_full_graph()
