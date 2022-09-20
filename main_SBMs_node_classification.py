@@ -61,18 +61,18 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
                 dataset._add_self_loops()
 
-        l = 10
-        dataset.train.graph_lists = dataset.train.graph_lists[:l]
-        dataset.val.graph_lists = dataset.val.graph_lists[:l]
-        dataset.test.graph_lists = dataset.test.graph_lists[:l]
+        # l = 10
+        # dataset.train.graph_lists = dataset.train.graph_lists[:l]
+        # dataset.val.graph_lists = dataset.val.graph_lists[:l]
+        # dataset.test.graph_lists = dataset.test.graph_lists[:l]
 
-        dataset.train.node_labels = dataset.train.node_labels[:l]
-        dataset.val.node_labels = dataset.val.node_labels[:l]
-        dataset.test.node_labels = dataset.test.node_labels[:l]
+        # dataset.train.node_labels = dataset.train.node_labels[:l]
+        # dataset.val.node_labels = dataset.val.node_labels[:l]
+        # dataset.test.node_labels = dataset.test.node_labels[:l]
 
-        dataset.train.n_samples = l
-        dataset.val.n_samples = l
-        dataset.test.n_samples = l
+        # dataset.train.n_samples = l
+        # dataset.val.n_samples = l
+        # dataset.test.n_samples = l
 
         if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
             if net_params.get('pos_enc', False):
@@ -110,13 +110,14 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
         if net_params.get('full_graph', False):
             st = time.time()
-            try:
-                dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
-            except:
-                logger.info("[!] Converting the given graphs to full graphs..")
-                dataset._make_full_graph()
-                logger.info('Time taken to convert to full graphs:',time.time()-st)    
-                pickle.dump(dataset, open(f'./{DATASET_NAME}', 'wb'))
+            # try:
+                # dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
+                # logger.info("[!] Loaded full graph dataset")
+            # except:
+            logger.info("[!] Converting the given graphs to full graphs..")
+            dataset._make_full_graph()
+            logger.info('Time taken to convert to full graphs:',time.time()-st)    
+            pickle.dump(dataset, open(f'./{DATASET_NAME}', 'wb'))
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
