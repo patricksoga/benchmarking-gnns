@@ -4,6 +4,8 @@ import torch.nn.functional as F
 
 import dgl
 
+from layers.pe_layer import PELayer
+
 """
     ResGatedGCN: Residual Gated Graph ConvNets
     An Experimental Study of Neural Networks for Variable Graphs (Xavier Bresson and Thomas Laurent, ICLR 2018)
@@ -33,7 +35,9 @@ class GatedGCNNet(nn.Module):
             in_dim = 1
             self.embedding_h = nn.Linear(in_dim, hidden_dim)
 
+        self.pe_layer = PELayer(net_params)
         self.embedding_e = nn.Linear(1, hidden_dim)
+        self.embedding_h = nn.Linear(1, hidden_dim)
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
@@ -42,19 +46,22 @@ class GatedGCNNet(nn.Module):
         self.layers.append(GatedGCNLayer(hidden_dim, out_dim, dropout, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, n_classes)
 
+        self.edge_feat = net_params.get('edge_feat', False)
+
         
     def forward(self, g, h, e, pos_enc=None):
 
         # input embedding
-        if self.pos_enc:
-            h = self.embedding_pos_enc(pos_enc) 
-        else:
-            h = self.embedding_h(h)
+        if self.pe_layer.use_pos_enc:
+            pe = self.pe_layer(g, h, pos_enc)
+            h = pe
+            # h = pe
         h = self.in_feat_dropout(h)
         
-        # edge feature set to 1
-        e = torch.ones(e.size(0),1).to(self.device) 
-        e = self.embedding_e(e)
+        if self.edge_feat:
+            # edge feature set to 1
+            e = torch.ones(e.size(0),1).to(self.device) 
+            e = self.embedding_e(e)
         
         # convnets
         for conv in self.layers:
