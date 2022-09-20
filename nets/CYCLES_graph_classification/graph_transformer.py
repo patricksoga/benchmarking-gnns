@@ -1,4 +1,3 @@
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import torch
 import torch.nn as nn
 
