@@ -111,12 +111,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         if net_params.get('full_graph', False):
             st = time.time()
             try:
-                dataset = pickle.load(open('./SBM_full_graph_set', 'rb'))
+                dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
             except:
                 logger.info("[!] Converting the given graphs to full graphs..")
                 dataset._make_full_graph()
                 logger.info('Time taken to convert to full graphs:',time.time()-st)    
-                pickle.dump(dataset, open('SBM_full_graph_set', 'wb'))
+                pickle.dump(dataset, open(f'./{DATASET_NAME}', 'wb'))
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
