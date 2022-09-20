@@ -167,7 +167,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
     if matrix == 'A':
         # Adjacency matrix
-        mat = gr.adjacency_matrix().to_dense().cpu().numpy()
+        mat = g.adjacency_matrix().to_dense().cpu().numpy()
     elif matrix == 'L':
         # Normalized Laplacian
         n = g.number_of_nodes()
