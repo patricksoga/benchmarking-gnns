@@ -27,7 +27,8 @@ def scaling(field, scale_constant):
 
 def add_bias(field, bias):
     def func(edges):
-        src, dest = edges.edges()[0], edges.edges()[1]
+        eids = edges.edges()
+        src, dest = eids[0], eids[1]
         bias_weights = bias[src, dest].unsqueeze(-1)
         return {field: edges.data[field] + bias_weights}
     return func
@@ -193,8 +194,8 @@ class GraphTransformerLayer(nn.Module):
         if self.residual:
             h = h_in1 + h # residual connection
         
-        # if self.layer_norm:
-        #     h = self.layer_norm1(h)
+        if self.layer_norm:
+            h = self.layer_norm1(h)
             
         if self.batch_norm:
             h = self.batch_norm1(h)
