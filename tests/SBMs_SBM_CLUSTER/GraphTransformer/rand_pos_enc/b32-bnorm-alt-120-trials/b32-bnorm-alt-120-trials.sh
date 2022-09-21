@@ -28,7 +28,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'dropout': 0.0,
 #                 'eigen_bartels_stewart': False,
 #                 'full_graph': False,
-#                 'gape_clamp': True,
+#                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_rand': False,
 #                 'gape_softmax_after': False,
@@ -67,4 +67,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-120-trials --param_values 120 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --gape_clamp True --seed_array 41 95 22 35
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-120-trials --param_values 120 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35
