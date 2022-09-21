@@ -1,0 +1,71 @@
+/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py:3719: DGLWarning: DGLGraph.adjacency_matrix_scipy is deprecated. Please replace it with:
+
+	DGLGraph.adjacency_matrix(transpose, scipy_fmt="csr").
+
+  dgl_warning('DGLGraph.adjacency_matrix_scipy is deprecated. '
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 14.4290s
+Epoch 00042: reducing learning rate of group 0 to 2.5000e-04.
+Epoch 00053: reducing learning rate of group 0 to 1.2500e-04.
+Epoch 00064: reducing learning rate of group 0 to 6.2500e-05.
+Epoch 00075: reducing learning rate of group 0 to 3.1250e-05.
+Epoch 00086: reducing learning rate of group 0 to 1.5625e-05.
+Epoch 00097: reducing learning rate of group 0 to 7.8125e-06.
+Epoch 00108: reducing learning rate of group 0 to 3.9063e-06.
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 42, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/sa_graph_transformer.py", line 61, in forward
+    h = conv(g, h)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 187, in forward
+    attn_out = self.attention(g, h, spatial_pos_bias=spatial_pos_bias)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 138, in forward
+    self.propagate_attention(g, spatial_pos_bias)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 98, in propagate_attention
+    g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score'))
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py", line 4460, in apply_edges
+    edata = core.invoke_edge_udf(g, eid, etype, func)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/core.py", line 73, in invoke_edge_udf
+    u, v, eid = graph.edges(form='all')
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/view.py", line 158, in __call__
+    return self._graph.all_edges(*args, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py", line 3417, in all_edges
+    src, dst, eid = self._graph.edges(self.get_etype_id(etype), order)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph_index.py", line 593, in edges
+    edge_array = _CAPI_DGLHeteroEdges(self, int(etype), order)
+  File "dgl/_ffi/_cython/./function.pxi", line 287, in dgl._ffi._cy3.core.FunctionBase.__call__
+  File "dgl/_ffi/_cython/./function.pxi", line 222, in dgl._ffi._cy3.core.FuncCall
+  File "dgl/_ffi/_cython/./function.pxi", line 211, in dgl._ffi._cy3.core.FuncCall3
+  File "dgl/_ffi/_cython/./base.pxi", line 155, in dgl._ffi._cy3.core.CALL
+dgl._ffi.base.DGLError: [02:08:30] /opt/dgl/src/runtime/cuda/cuda_device_api.cc:97: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: out of memory
+Stack trace:
+  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x147b41e295ff]
+  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::CUDADeviceAPI::AllocDataSpace(DLContext, unsigned long, unsigned long, DLDataType)+0x108) [0x147b422f8c28]
+  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray::Empty(std::vector<long, std::allocator<long> >, DLDataType, DLContext)+0x351) [0x147b421707f1]
+  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::NewIdArray(long, DLContext, unsigned char)+0x6d) [0x147b41dfaafd]
+  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray dgl::aten::impl::Range<(DLDeviceType)2, long>(long, long, DLContext)+0x9a) [0x147b4231355a]
+  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::Range(long, long, unsigned char, DLContext)+0x1fd) [0x147b41dfae8d]
+  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::COO::Edges(unsigned long, std::string const&) const+0x9b) [0x147b422c57fb]
+  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::Edges(unsigned long, std::string const&) const+0xa1) [0x147b422c04c1]
+  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::HeteroGraph::Edges(unsigned long, std::string const&) const+0x2a) [0x147b421bfeca]
+
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 390, in <module>
+    logger.info(params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 388, in main
+    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 204, in train_val_pipeline
+    try:
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 58, in train_epoch_sparse
+    raise e
+TypeError: SAGraphTransformerNet.forward() missing 2 required positional arguments: 'eigvecs' and 'eigvals'
