@@ -130,13 +130,16 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     loaded_dataset.test.spatial_pos_lists = dataset.test.spatial_pos_lists
                     dataset = loaded_dataset
                 else:
-                    for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
-                        full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                    for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
-                        full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                    for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
-                        full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                    dataset = loaded_dataset
+                    try:
+                        for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
+                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+                        for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
+                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+                        for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
+                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+                        dataset = loaded_dataset
+                    except Exception as e:
+                        raise e
             except:
                 logger.info("[!] Converting the given graphs to full graphs..")
                 dataset._make_full_graph()
