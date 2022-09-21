@@ -123,6 +123,14 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
                         full_graph.ndata['EigVals'] = graph.ndata['EigVals']
                         full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+                    dataset = loaded_dataset
+                except:
+                    pass
+                try:
+                    loaded_dataset.train.spatial_pos_lists = dataset.train.spatial_pos_lists
+                    loaded_dataset.val.spatial_pos_lists = dataset.val.spatial_pos_lists
+                    loaded_dataset.test.spatial_pos_lists = dataset.test.spatial_pos_lists
+                    dataset = loaded_dataset
                 except:
                     pass
             except:
