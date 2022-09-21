@@ -61,18 +61,18 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
                 dataset._add_self_loops()
 
-        # l = 10
-        # dataset.train.graph_lists = dataset.train.graph_lists[:l]
-        # dataset.val.graph_lists = dataset.val.graph_lists[:l]
-        # dataset.test.graph_lists = dataset.test.graph_lists[:l]
+        l = 10
+        dataset.train.graph_lists = dataset.train.graph_lists[:l]
+        dataset.val.graph_lists = dataset.val.graph_lists[:l]
+        dataset.test.graph_lists = dataset.test.graph_lists[:l]
 
-        # dataset.train.node_labels = dataset.train.node_labels[:l]
-        # dataset.val.node_labels = dataset.val.node_labels[:l]
-        # dataset.test.node_labels = dataset.test.node_labels[:l]
+        dataset.train.node_labels = dataset.train.node_labels[:l]
+        dataset.val.node_labels = dataset.val.node_labels[:l]
+        dataset.test.node_labels = dataset.test.node_labels[:l]
 
-        # dataset.train.n_samples = l
-        # dataset.val.n_samples = l
-        # dataset.test.n_samples = l
+        dataset.train.n_samples = l
+        dataset.val.n_samples = l
+        dataset.test.n_samples = l
 
         if MODEL_NAME in ['GatedGCN', 'GIN', 'GraphTransformer']:
             if net_params.get('pos_enc', False):
@@ -113,7 +113,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             try:
                 loaded_dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
                 logger.info("[!] Loaded full graph dataset")
-                try:
+                if MODEL_NAME == 'SAGraphTransformer':
                     for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
                         full_graph.ndata['EigVals'] = graph.ndata['EigVals']
                         full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
@@ -124,16 +124,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                         full_graph.ndata['EigVals'] = graph.ndata['EigVals']
                         full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
                     dataset = loaded_dataset
-                except:
-                    pass
-                try:
+                elif MODEL_NAME ==  'PseudoGraphormer':
                     loaded_dataset.train.spatial_pos_lists = dataset.train.spatial_pos_lists
                     loaded_dataset.val.spatial_pos_lists = dataset.val.spatial_pos_lists
                     loaded_dataset.test.spatial_pos_lists = dataset.test.spatial_pos_lists
                     dataset = loaded_dataset
-                except:
-                    pass
-                try:
+                else:
                     for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
                         full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
                     for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
@@ -141,9 +137,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
                         full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
                     dataset = loaded_dataset
-                except Exception as e:
-                    raise e
-                    pass
             except:
                 logger.info("[!] Converting the given graphs to full graphs..")
                 dataset._make_full_graph()
