@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CSL_b5-300k-trials
+#$ -N GraphTransformer_CSL_b5-300k-baseline-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 32)
-fname=$(pwd)/b5-300k-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b5-300k-baseline-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransformer_CSL_CSL_b5-300k-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransformer_CSL_CSL_b5-300k-baseline-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CSL',
@@ -30,6 +30,7 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 #                 'full_graph': False,
 #                 'gape_clamp': False,
 #                 'gape_individual': False,
+#                 'gape_rand': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gpu_id': 0,
@@ -54,7 +55,7 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CSL_graph_classification_b5-300k-trials',
+#  'out_dir': 'out/CSL_graph_classification_b5-300k-baseline-trials',
 #  'params': {'batch_size': 5,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -70,4 +71,4 @@ python3 main_CSL_graph_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --pos_enc False --rand_pos_enc False --param_values 32 --job_note b5-300k-trials --seed_array 41 95 22 35
+#python3 configure_tests.py --config test-configs/GraphTransformer_CSL_rand_enc_b5.json --rand_pos_enc False --pos_enc False --rand_pos_enc False --param_values 32 --job_note b5-300k-baseline-trials --seed_array 41 95 22 35
