@@ -141,7 +141,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
                         full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
                     dataset = loaded_dataset
-                except:
+                except Exception as e:
+                    raise e
                     pass
             except:
                 logger.info("[!] Converting the given graphs to full graphs..")
