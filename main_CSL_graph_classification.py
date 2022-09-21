@@ -113,6 +113,7 @@ def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
                     testset.lists = add_spd_encoding_CSL(testset.lists)
                 
                 if net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False):
+                    logger.info("[!] Adding random walk positional encoding.")
                     trainset.lists = add_random_walk_encoding_CSL(trainset.lists, net_params.get('pos_enc_dim'))
                     valset.lists = add_random_walk_encoding_CSL(valset.lists, net_params.get('pos_enc_dim'))
                     testset.lists = add_random_walk_encoding_CSL(testset.lists, net_params.get('pos_enc_dim'))
