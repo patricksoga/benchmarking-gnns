@@ -327,7 +327,7 @@ class PELayer(nn.Module):
 
             else:
                 if not self.cat:
-                    pe = self.embedding_pos_encs[0](pe)
+                    pe = self.embedding_pos_encs[0](pos_enc)
 
                 if self.gape_softmax_after:
                     pe = torch.tanh(pe)
