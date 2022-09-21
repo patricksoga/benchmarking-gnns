@@ -14,6 +14,7 @@ from nets.CSL_graph_classification.ring_gnn_net import RingGNNNet
 from nets.CSL_graph_classification.three_wl_gnn_net import ThreeWLGNNNet
 from nets.CSL_graph_classification.graph_transformer import GraphTransformerNet
 from nets.CSL_graph_classification.pseudo_graphormer import PseudoGraphormerNet
+from nets.CSL_graph_classification.sa_graph_transformer import SAGraphTransformerNet
 
 
 def GatedGCN(net_params):
@@ -49,6 +50,9 @@ def GraphTransformer(net_params):
 def PseudoGraphormer(net_params):
     return PseudoGraphormerNet(net_params)
 
+def SAGraphTransformer(net_params):
+    return SAGraphTransformerNet(net_params)
+
 def gnn_model(MODEL_NAME, net_params):
     models = {
         'GatedGCN': GatedGCN,
@@ -61,7 +65,8 @@ def gnn_model(MODEL_NAME, net_params):
         'RingGNN': RingGNN,
         '3WLGNN': ThreeWLGNN,
         'GraphTransformer': GraphTransformer,
-        'PseudoGraphormer': PseudoGraphormer
+        'PseudoGraphormer': PseudoGraphormer,
+        'SAGraphTransformer': SAGraphTransformer
     }
         
     return models[MODEL_NAME](net_params)

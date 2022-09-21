@@ -31,6 +31,11 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
 
+        try:
+            self.spatial_pos_lists = lists[2]
+        except:
+            self.spatial_pos_lists = [None]
+
     def __getitem__(self, index):
         return tuple(li[index] for li in self.lists)
 
@@ -133,6 +138,7 @@ class CSL(torch.utils.data.Dataset):
         self.adj_list = pickle.load(open(os.path.join(path, 'graphs_Kary_Deterministic_Graphs.pkl'), 'rb'))
         self.graph_labels = torch.load(os.path.join(path, 'y_Kary_Deterministic_Graphs.pt'))
         self.graph_lists = []
+        self.spatial_pos_lists = []
         
         self.n_samples = len(self.graph_labels)
         self.num_node_type = 1 #41
@@ -174,7 +180,12 @@ class CSL(torch.utils.data.Dataset):
         return self.n_samples
     
     def __getitem__(self, idx):
-        return self.graph_lists[idx], self.graph_labels[idx]
+        try:
+            spatial_pos_list = self.spatial_pos_lists[idx]
+        except:
+            spatial_pos_list = None
+
+        return self.graph_lists[idx], self.graph_labels[idx], spatial_pos_list
     
     
     
@@ -257,19 +268,25 @@ class CSLDataset(torch.utils.data.Dataset):
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
-        # graphs, labels, spatial_pos_biases = map(list, zip(*samples))
-        graphs, labels = map(list, zip(*samples))
-        labels = torch.tensor(np.array(labels))
-        batched_graph = dgl.batch(graphs)
+        try:
+            graphs, labels, spatial_pos_biases = map(list, zip(*samples))
+            # graphs, labels = map(list, zip(*samples))
+            labels = torch.tensor(np.array(labels))
+            batched_graph = dgl.batch(graphs)
 
-        # if all([x is not None for x in spatial_pos_biases]):
-        #     batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
-        # else:
-        #     batched_spatial_pos_biases = None
+            if all([x is not None for x in spatial_pos_biases]):
+                batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+            else:
+                batched_spatial_pos_biases = None
 
-        # return batched_graph, labels, batched_spatial_pos_biases
-        return batched_graph, labels
-    
+            return batched_graph, labels, batched_spatial_pos_biases
+            # return batched_graph, labels
+        except:
+            graphs, labels = map(list, zip(*samples))
+            labels = torch.tensor(labels)
+            batched_graph = dgl.batch(graphs)
+
+            return batched_graph, labels
 
     # prepare dense tensors for GNNs using them; such as RingGNN, 3WLGNN
     def collate_dense_gnn(self, samples, pos_enc):

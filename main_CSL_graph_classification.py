@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL, add_random_walk_encoding_CSL, add_spd_encoding_CSL
+from data.positional_encs import add_automaton_encodings_CSL, add_multiple_automaton_encodings_CSL, add_random_walk_encoding_CSL, add_spd_encoding_CSL, add_spectral_decomposition_CSL
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -31,220 +31,239 @@ from data.data import LoadData # import dataset
     TRAINING CODE
 """
 def train_val_pipeline(MODEL_NAME, DATASET_NAME, params, net_params, dirs):
-    avg_test_acc = []
-    avg_train_acc = []
-    avg_epochs = []
+    test_history = []
+    val_history = []
+    train_history = []
 
-    t0 = time.time()
-    per_epoch_time = []
+    for seed in params['seed_array']:
+        logger.info(f"[!] Starting seed: {seed} in {params['seed_array']}...")
+        avg_test_acc = []
+        avg_train_acc = []
+        avg_epochs = []
 
-    dataset = LoadData(DATASET_NAME)
+        t0 = time.time()
+        per_epoch_time = []
 
-    if MODEL_NAME in ['GCN', 'GAT']:
-        if net_params['self_loop']:
-            logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
-            dataset._add_self_loops()
+        dataset = LoadData(DATASET_NAME)
 
-    if net_params['pos_enc']:
-        logger.info("[!] Adding Laplacian graph positional encoding.")
-        dataset._add_positional_encodings(net_params['pos_enc_dim'])
+        if MODEL_NAME in ['GCN', 'GAT']:
+            if net_params['self_loop']:
+                logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
+                dataset._add_self_loops()
 
-    trainset, valset, testset = dataset.train, dataset.val, dataset.test
-    
-    root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
-    
-    # Write the network and optimization hyper-parameters in folder config/
-    with open(write_config_file + '.txt', 'w') as f:
-        f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
-    
-    # At any point you can hit Ctrl + C to break out of training early.
-    try:
-        for split_number in range(5):
+        if net_params['pos_enc']:
+            logger.info("[!] Adding Laplacian graph positional encoding.")
+            dataset._add_positional_encodings(net_params['pos_enc_dim'])
 
-            t0_split = time.time()
-            log_dir = os.path.join(root_log_dir, "RUN_" + str(split_number))
-            writer = SummaryWriter(log_dir=log_dir)
+        trainset, valset, testset = dataset.train, dataset.val, dataset.test
+        
+        root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
+        
+        # Write the network and optimization hyper-parameters in folder config/
+        with open(write_config_file + '.txt', 'w') as f:
+            f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n"""                .format(DATASET_NAME, MODEL_NAME, params, net_params, net_params['total_param']))
+        
+        # At any point you can hit Ctrl + C to break out of training early.
+        try:
+            for split_number in range(5):
 
-            # setting seeds
-            random.seed(params['seed'])
-            np.random.seed(params['seed'])
-            torch.manual_seed(params['seed'])
-            device = net_params['device']
+                t0_split = time.time()
+                log_dir = os.path.join(root_log_dir, "RUN_" + str(split_number))
+                writer = SummaryWriter(log_dir=log_dir)
 
-            if device.type == 'cuda':
-                torch.cuda.manual_seed(params['seed'])
+                # setting seeds
+                random.seed(seed)
+                np.random.seed(seed)
+                torch.manual_seed(seed)
+                device = net_params['device']
 
-            logger.info(f"RUN NUMBER: {split_number}")
+                if device.type == 'cuda':
+                    torch.cuda.manual_seed(seed)
 
-            trainset, valset, testset = dataset.train[split_number], dataset.val[split_number], dataset.test[split_number]
-            
-            model = gnn_model(MODEL_NAME, net_params)
-            model = model.to(device)
+                logger.info(f"RUN NUMBER: {split_number}")
 
-            if net_params.get('rand_pos_enc', False):
-                if net_params.get('n_gape', 1) > 1:
-                    logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
-                    trainset.lists = add_multiple_automaton_encodings_CSL(trainset.lists, model)
-                    valset.lists = add_multiple_automaton_encodings_CSL(valset.lists, model)
-                    testset.lists = add_multiple_automaton_encodings_CSL(testset.lists, model)
-                else:
-                    logger.info("[!] Adding random automaton encodings")
-                    trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
-                    valset.lists = add_automaton_encodings_CSL(valset.lists, model)
-                    testset.lists = add_automaton_encodings_CSL(testset.lists, model)
-            
-            if MODEL_NAME in ['PseudoGraphormer']:
-                logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
-                trainset.lists = add_spd_encoding_CSL(trainset.lists)
-                valset.lists = add_spd_encoding_CSL(valset.lists)
-                testset.lists = add_spd_encoding_CSL(testset.lists)
-            
-            if net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False):
-                trainset.lists = add_random_walk_encoding_CSL(trainset.lists, net_params.get('pos_enc_dim'))
-                valset.lists = add_random_walk_encoding_CSL(valset.lists, net_params.get('pos_enc_dim'))
-                testset.lists = add_random_walk_encoding_CSL(testset.lists, net_params.get('pos_enc_dim'))
-
-
-            logger.info(f"Training Graphs: {len(trainset)}")
-            logger.info(f"Validation Graphs: {len(valset)}")
-            logger.info(f"Test Graphs: {len(testset)}")
-            logger.info(f"Number of Classes: {net_params['n_classes']}")
-
-            optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
-            scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                                             factor=params['lr_reduce_factor'],
-                                                             patience=params['lr_schedule_patience'],
-                                                             verbose=True)
-
-            epoch_train_losses, epoch_val_losses = [], []
-            epoch_train_accs, epoch_val_accs = [], [] 
-
-            # batching exception for Diffpool
-            drop_last = True if MODEL_NAME == 'DiffPool' else False
-            # drop_last = False
-
-            
-            if MODEL_NAME in ['RingGNN', '3WLGNN']:
-                # import train functions specific for WL-GNNs
-                from train.train_CSL_graph_classification import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
-                from functools import partial # util function to pass pos_enc flag to collate function
-
-                train_loader = DataLoader(trainset, shuffle=True, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
-                val_loader = DataLoader(valset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
-                test_loader = DataLoader(testset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
-
-            else:
-                # import train functions for all other GCNs
-                from train.train_CSL_graph_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
-
-                train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
-                val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
-                test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
-
-
-            best_test_acc = -1.0
-            best_train_acc = -1.0
-            for epoch in range(params['epochs']):
-
-                logger.info(f'Epoch {epoch}')    
-
-                start = time.time()
-
-                if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
-                else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
-
-                #epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-                epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
-
-                _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
-
-                if epoch_test_acc > best_test_acc:
-                    best_test_acc = epoch_test_acc
-                    best_train_acc = epoch_train_acc
-
-                epoch_train_losses.append(epoch_train_loss)
-                epoch_val_losses.append(epoch_val_loss)
-                epoch_train_accs.append(epoch_train_acc)
-                epoch_val_accs.append(epoch_val_acc)
-
-                writer.add_scalar('train/_loss', epoch_train_loss, epoch)
-                writer.add_scalar('val/_loss', epoch_val_loss, epoch)
-                writer.add_scalar('train/_acc', epoch_train_acc, epoch)
-                writer.add_scalar('val/_acc', epoch_val_acc, epoch)
-                writer.add_scalar('test/_acc', epoch_test_acc, epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-
-                t = time.time() - start
-                lr = optimizer.param_groups[0]['lr']
-                train_loss = epoch_train_loss
-                val_loss = epoch_val_loss
-                train_acc = epoch_train_acc
-                val_acc = epoch_val_acc
-                test_acc = epoch_test_acc
-
-                logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
-                            Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
-
-                epoch_train_acc = 100.* epoch_train_acc
-                epoch_test_acc = 100.* epoch_test_acc
+                trainset, valset, testset = dataset.train[split_number], dataset.val[split_number], dataset.test[split_number]
                 
-                per_epoch_time.append(time.time()-start)
+                model = gnn_model(MODEL_NAME, net_params)
+                model = model.to(device)
 
-                # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_" + str(split_number))
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+                if net_params.get('rand_pos_enc', False):
+                    if net_params.get('n_gape', 1) > 1:
+                        logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
+                        trainset.lists = add_multiple_automaton_encodings_CSL(trainset.lists, model)
+                        valset.lists = add_multiple_automaton_encodings_CSL(valset.lists, model)
+                        testset.lists = add_multiple_automaton_encodings_CSL(testset.lists, model)
+                    else:
+                        logger.info("[!] Adding random automaton encodings")
+                        trainset.lists = add_automaton_encodings_CSL(trainset.lists, model)
+                        valset.lists = add_automaton_encodings_CSL(valset.lists, model)
+                        testset.lists = add_automaton_encodings_CSL(testset.lists, model)
+                
+                if MODEL_NAME in ['SAGraphTransformer']:
+                    logger.info("[!] Adding Laplacian decompositions for spectral attention.")
+                    trainset.lists = add_spectral_decomposition_CSL(trainset.lists, net_params['pos_enc_dim'])
+                    valset.lists = add_spectral_decomposition_CSL(valset.lists, net_params['pos_enc_dim'])
+                    testset.lists = add_spectral_decomposition_CSL(testset.lists, net_params['pos_enc_dim'])
+                    logger.info(f'Time PE:{time.time()-t0}')
 
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
-
-                scheduler.step(epoch_val_loss)
-
-                if optimizer.param_groups[0]['lr'] < params['min_lr']:
-                    logger.info("\n!! LR EQUAL TO MIN LR SET.")
-                    break
-
-                # Stop training after params['max_time'] hours
-                if time.time()-t0_split > params['max_time']*3600/10:       # Dividing max_time by 10, since there are 10 runs in TUs
-                    logger.info('-' * 89)
-                    logger.info(f"Max_time for one train-val-test split experiment elapsed {params['max_time']/10:.3f} hours, so stopping")
-                    break
-
-            _, test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)   
-            _, train_acc = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)    
-            avg_test_acc.append(test_acc)   
-            avg_train_acc.append(train_acc)
-            avg_epochs.append(epoch)
-
-            logger.info("Test Accuracy: {:.4f}".format(test_acc))
-            logger.info("Best Test Accuracy: {:.4f}".format(best_test_acc))
-            logger.info("Train Accuracy: {:.4f}".format(train_acc))
-            logger.info("Best Train Accuracy Corresponding to Best Test Accuracy: {:.4f}".format(best_train_acc))
-            logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
-            writer.close()
-
-    except KeyboardInterrupt:
-        logger.info('-' * 90)
-        logger.info('Exiting from training early because of KeyboardInterrupt')
+                if MODEL_NAME in ['PseudoGraphormer']:
+                    logger.info("[!] Adding shortest path distance encodings using the Floyd-Warshall algorithm.")
+                    trainset.lists = add_spd_encoding_CSL(trainset.lists)
+                    valset.lists = add_spd_encoding_CSL(valset.lists)
+                    testset.lists = add_spd_encoding_CSL(testset.lists)
+                
+                if net_params.get('rw_pos_enc', False) or net_params.get('partial_rw_pos_enc', False):
+                    trainset.lists = add_random_walk_encoding_CSL(trainset.lists, net_params.get('pos_enc_dim'))
+                    valset.lists = add_random_walk_encoding_CSL(valset.lists, net_params.get('pos_enc_dim'))
+                    testset.lists = add_random_walk_encoding_CSL(testset.lists, net_params.get('pos_enc_dim'))
 
 
-    logger.info(f"TOTAL TIME TAKEN: {((time.time()-t0)/3600):.4f}hrs")
-    logger.info(f"AVG TIME PER EPOCH: {np.mean(per_epoch_time):.4f}s")
+                logger.info(f"Training Graphs: {len(trainset)}")
+                logger.info(f"Validation Graphs: {len(valset)}")
+                logger.info(f"Test Graphs: {len(testset)}")
+                logger.info(f"Number of Classes: {net_params['n_classes']}")
 
-    # Final test accuracy value averaged over 5-fold
-    logger.info(f"""\n\n\nFINAL RESULTS\n\nTEST ACCURACY averaged: {np.mean(np.array(avg_test_acc))*100:.4f} with s.d. {(np.std(avg_test_acc)*100):.4f}""")
-    logger.info(f"\nAll splits Test Accuracies: {avg_test_acc}\n")
-    logger.info(f"""\n\n\nFINAL RESULTS\n\nTRAIN ACCURACY averaged: {(np.mean(np.array(avg_train_acc))*100):.4f} with s.d. {np.std(avg_train_acc)*100:.4f}""")
-    logger.info(f"\nAll splits Train Accuracies: {avg_train_acc}\n")
+                optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
+                scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
+                                                                factor=params['lr_reduce_factor'],
+                                                                patience=params['lr_schedule_patience'],
+                                                                verbose=True)
 
-    writer.close()
+                epoch_train_losses, epoch_val_losses = [], []
+                epoch_train_accs, epoch_val_accs = [], [] 
+
+                # batching exception for Diffpool
+                drop_last = True if MODEL_NAME == 'DiffPool' else False
+                # drop_last = False
+
+                
+                if MODEL_NAME in ['RingGNN', '3WLGNN']:
+                    # import train functions specific for WL-GNNs
+                    from train.train_CSL_graph_classification import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
+                    from functools import partial # util function to pass pos_enc flag to collate function
+
+                    train_loader = DataLoader(trainset, shuffle=True, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
+                    val_loader = DataLoader(valset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
+                    test_loader = DataLoader(testset, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, pos_enc=net_params['pos_enc']))
+
+                else:
+                    # import train functions for all other GCNs
+                    from train.train_CSL_graph_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
+
+                    train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
+                    val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+                    test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+
+
+                best_test_acc = -1.0
+                best_train_acc = -1.0
+                for epoch in range(params['epochs']):
+
+                    logger.info(f'Epoch {epoch}')    
+
+                    start = time.time()
+
+                    if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
+                        epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
+                    else:   # for all other models common train function
+                        epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+
+                    #epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
+                    epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
+
+                    _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
+
+                    if epoch_test_acc > best_test_acc:
+                        best_test_acc = epoch_test_acc
+                        best_train_acc = epoch_train_acc
+
+                    epoch_train_losses.append(epoch_train_loss)
+                    epoch_val_losses.append(epoch_val_loss)
+                    epoch_train_accs.append(epoch_train_acc)
+                    epoch_val_accs.append(epoch_val_acc)
+
+                    writer.add_scalar('train/_loss', epoch_train_loss, epoch)
+                    writer.add_scalar('val/_loss', epoch_val_loss, epoch)
+                    writer.add_scalar('train/_acc', epoch_train_acc, epoch)
+                    writer.add_scalar('val/_acc', epoch_val_acc, epoch)
+                    writer.add_scalar('test/_acc', epoch_test_acc, epoch)
+                    writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+
+                    t = time.time() - start
+                    lr = optimizer.param_groups[0]['lr']
+                    train_loss = epoch_train_loss
+                    val_loss = epoch_val_loss
+                    train_acc = epoch_train_acc
+                    val_acc = epoch_val_acc
+                    test_acc = epoch_test_acc
+
+                    logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f},
+                                Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}""")
+
+                    epoch_train_acc = 100.* epoch_train_acc
+                    epoch_test_acc = 100.* epoch_test_acc
+                    
+                    per_epoch_time.append(time.time()-start)
+
+                    # Saving checkpoint
+                    ckpt_dir = os.path.join(root_ckpt_dir, "RUN_" + str(split_number))
+                    if not os.path.exists(ckpt_dir):
+                        os.makedirs(ckpt_dir)
+                    torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+
+                    files = glob.glob(ckpt_dir + '/*.pkl')
+                    for file in files:
+                        epoch_nb = file.split('_')[-1]
+                        epoch_nb = int(epoch_nb.split('.')[0])
+                        if epoch_nb < epoch-1:
+                            os.remove(file)
+
+                    scheduler.step(epoch_val_loss)
+
+                    if optimizer.param_groups[0]['lr'] < params['min_lr']:
+                        logger.info("\n!! LR EQUAL TO MIN LR SET.")
+                        break
+
+                    # Stop training after params['max_time'] hours
+                    if time.time()-t0_split > params['max_time']*3600/10:       # Dividing max_time by 10, since there are 10 runs in TUs
+                        logger.info('-' * 89)
+                        logger.info(f"Max_time for one train-val-test split experiment elapsed {params['max_time']/10:.3f} hours, so stopping")
+                        break
+
+                _, test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)   
+                _, train_acc = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)    
+                avg_test_acc.append(test_acc)   
+                avg_train_acc.append(train_acc)
+                avg_epochs.append(epoch)
+
+                logger.info("Test Accuracy: {:.4f}".format(test_acc))
+                logger.info("Best Test Accuracy: {:.4f}".format(best_test_acc))
+                logger.info("Train Accuracy: {:.4f}".format(train_acc))
+                logger.info("Best Train Accuracy Corresponding to Best Test Accuracy: {:.4f}".format(best_train_acc))
+                logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
+                writer.close()
+
+        except KeyboardInterrupt:
+            logger.info('-' * 90)
+            logger.info('Exiting from training early because of KeyboardInterrupt')
+
+
+        logger.info(f"TOTAL TIME TAKEN: {((time.time()-t0)/3600):.4f}hrs")
+        logger.info(f"AVG TIME PER EPOCH: {np.mean(per_epoch_time):.4f}s")
+
+        # Final test accuracy value averaged over 5-fold
+        logger.info(f"""\n\n\nFINAL RESULTS\n\nTEST ACCURACY averaged: {np.mean(np.array(avg_test_acc))*100:.4f} with s.d. {(np.std(avg_test_acc)*100):.4f}""")
+        logger.info(f"\nAll splits Test Accuracies: {avg_test_acc}\n")
+        logger.info(f"""\n\n\nFINAL RESULTS\n\nTRAIN ACCURACY averaged: {(np.mean(np.array(avg_train_acc))*100):.4f} with s.d. {np.std(avg_train_acc)*100:.4f}""")
+        logger.info(f"\nAll splits Train Accuracies: {avg_train_acc}\n")
+
+        test_history.append(avg_test_acc)
+        train_history.append(avg_train_acc)
+
+        writer.close()
+
+    logger.info(f"train history: {train_history}")
+    logger.info(f"test history: {test_history}")
 
     """
         Write the results in out/results folder

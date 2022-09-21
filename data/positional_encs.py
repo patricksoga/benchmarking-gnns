@@ -7,8 +7,6 @@ import scipy.sparse as sp
 import numpy as np
 import torch.nn.functional as F
 import pyximport
-import networkx as nx
-from tqdm import tqdm
 
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
@@ -147,7 +145,7 @@ def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vecto
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
-def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, storage=None, idx=0):
+def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix='A', ret_pe=False, storage=None, idx=0, model=None):
     # g = random_orientation(g)
     """
     Graph positional encoding w/ automaton weights
@@ -286,7 +284,10 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         k_RW_power = k_RW_power.toarray()
         mat = k_RW_power
 
+
+    # if model is None:
     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
+    # else: initial_vector = model.pe_layer.stack_strategy(g)
     # import random
     # if idx == 0:
     #     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
@@ -341,7 +342,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     g.ndata['pos_enc'] = pe
     return g
 
-def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A'):
+def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=False, matrix='A', model=None):
     # Graph positional encoding w/ pre-computed automaton encoding
     storage = {
         'before': {
@@ -392,9 +393,9 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # dataset.train.graph_lists = train
     # dataset.val.graph_lists = train
     # dataset.test.graph_lists = train
-    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.train.graph_lists]
-    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False) for g in dataset.test.graph_lists]
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
@@ -406,9 +407,16 @@ def add_random_walk_encoding_CSL(splits, pos_enc_dim):
     return new_split
 
 def add_spd_encoding_CSL(splits):
+    spatial_pos_list = []
+    for split in splits[0]:
+        spatial_pos_list.append(spd_encoding(split))
+    new_split = (splits[0], splits[1], spatial_pos_list)
+    return new_split
+
+def add_spectral_decomposition_CSL(splits, pos_enc_dim):
     graphs = []
     for split in splits[0]:
-        graphs.append(spd_encoding(split))
+        graphs.append(spectral_decomposition(split, pos_enc_dim))
     new_split = (graphs, splits[1])
     return new_split
 
@@ -431,12 +439,13 @@ def add_multiple_automaton_encodings_CSL(splits, model):
     # dump_encodings(dataset, transition_matrix.shape[0])
     return new_split
 
-def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, idx=0):
+def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, idx=0, model=None):
     transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
     matrix = g.adjacency_matrix().to_dense().cpu().numpy()
 
     if idx == 0:
-        initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+        # initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+        initial_vector = model.pe_layer.stack_strategy(g.number_of_nodes())
     else:
         import random
         pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
@@ -460,7 +469,7 @@ def add_automaton_encodings_CSL(splits, model):
     for i, split in enumerate(splits[0]):
         # initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
         initial_vector = model.pe_layer.pos_initials[0]
-        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i))
+        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i, model))
 
     new_split = (graphs, splits[1])
     return new_split
