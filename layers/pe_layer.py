@@ -127,11 +127,6 @@ class PELayer(nn.Module):
         if self.rw_pos_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim) 
 
-        in_dim = 1
-        if self.dataset in ("SBM_PATTERN", "MNIST", "CIFAR10", "cornell", "Cora"):
-            in_dim = net_params['in_dim']
-        # self.embedding_h = nn.Linear(in_dim, hidden_dim)
-
         self.use_pos_enc = self.pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc or self.rand_sketchy_pos_enc
         if self.use_pos_enc:
             self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
@@ -207,7 +202,7 @@ class PELayer(nn.Module):
 
 
     def forward(self, g, h, pos_enc=None):
-        pe = None
+        pe = pos_enc
         if not self.use_pos_enc:
             return h
 
