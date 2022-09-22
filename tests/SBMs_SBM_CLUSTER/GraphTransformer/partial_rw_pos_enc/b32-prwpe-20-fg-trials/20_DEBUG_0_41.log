@@ -1,1 +1,423 @@
 2022-09-22 06:03:59,927:main_utils.py:62 -            gpu_setup(): cuda available with GPU: Quadro RTX 6000
+2022-09-22 06:04:22,456:main_SBMs_node_classification.py:385 -                 main(): {'L': 10, 'n_heads': 8, 'hidden_dim': 80, 'out_dim': 80, 'residual': True, 'readout': 'mean', 'in_feat_dropout': 0.0, 'dropout': 0.0, 'layer_norm': False, 'batch_norm': True, 'self_loop': False, 'wl_pos_enc': False, 'full_graph': True, 'gpu_id': 0, 'batch_size': 32, 'pos_enc': False, 'rw_pos_enc': False, 'partial_rw_pos_enc': True, 'power_method': False, 'diag': False, 'pow_of_mat': 1, 'adj_enc': False, 'dataset': 'SBM_CLUSTER', 'matrix_type': 'A', 'spectral_attn': False, 'cat_gape': False, 'gape_softmax_after': False, 'gape_softmax_before': False, 'gape_individual': False, 'random_orientation': False, 'gape_clamp': False, 'rand_sketchy_pos_enc': False, 'eigen_bartels_stewart': False, 'log_file': '/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/tests/SBMs_SBM_CLUSTER/GraphTransformer/partial_rw_pos_enc/b32-prwpe-20-fg-trials/20_DEBUG_0_41.log', 'device': device(type='cuda'), 'pos_enc_dim': 20, 'in_dim': 7, 'n_classes': 6}
+2022-09-22 06:04:22,456:main_SBMs_node_classification.py:386 -                 main(): {'seed': 41, 'epochs': 1000, 'batch_size': 32, 'init_lr': 0.0005, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 10, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [41], 'job_num': 20}
+2022-09-22 06:04:22,458:pe_layer.py:67 -             __init__(): partial_rw_pos_enc
+2022-09-22 06:04:22,458:pe_layer.py:132 -             __init__(): Using 20 dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)
+2022-09-22 06:04:22,458:pe_layer.py:137 -             __init__(): Using matrix: A
+2022-09-22 06:04:22,458:pe_layer.py:138 -             __init__(): Matrix power: 1
+2022-09-22 06:04:22,473:main_utils.py:76 -     view_model_param(): MODEL DETAILS:
+
+2022-09-22 06:04:22,474:main_utils.py:81 -     view_model_param(): MODEL/Total parameters: GraphTransformer, 525246
+2022-09-22 06:04:22,475:main_SBMs_node_classification.py:48 -   train_val_pipeline(): [!] Starting seed: 41 in [41]...
+2022-09-22 06:04:22,475:pe_layer.py:67 -             __init__(): partial_rw_pos_enc
+2022-09-22 06:04:22,476:pe_layer.py:132 -             __init__(): Using 20 dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)
+2022-09-22 06:04:22,476:pe_layer.py:137 -             __init__(): Using matrix: A
+2022-09-22 06:04:22,476:pe_layer.py:138 -             __init__(): Matrix power: 1
+2022-09-22 06:04:24,298:main_SBMs_node_classification.py:87 -   train_val_pipeline(): [!] Adding partial random walk graph positional encoding.
+2022-09-22 06:10:40,275:main_SBMs_node_classification.py:89 -   train_val_pipeline(): Time PE:375.9773283004761
+2022-09-22 06:11:40,190:main_SBMs_node_classification.py:115 -   train_val_pipeline(): [!] Loaded full graph dataset
+2022-09-22 06:11:40,401:main_SBMs_node_classification.py:167 -   train_val_pipeline(): Training Graphs: 10000
+2022-09-22 06:11:40,405:main_SBMs_node_classification.py:168 -   train_val_pipeline(): Validation Graphs: 1000
+2022-09-22 06:11:40,410:main_SBMs_node_classification.py:169 -   train_val_pipeline(): Test Graphs: 1000
+2022-09-22 06:11:40,415:main_SBMs_node_classification.py:170 -   train_val_pipeline(): Number of Classes: 6
+2022-09-22 06:11:40,484:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 1/1000
+2022-09-22 06:13:32,166:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 21.0287 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 06:13:32,166:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 111.68s, LR: 0.00050, Train Loss: 1.7048, Train Acc: 20.8610,
+                            Val Loss: 1.7005, Val Acc: 21.0360, Test Acc: 21.0287
+2022-09-22 06:13:32,167:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 2/1000
+2022-09-22 06:15:23,510:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 21.0726 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 06:15:23,510:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 111.34s, LR: 0.00050, Train Loss: 1.7000, Train Acc: 20.9246,
+                            Val Loss: 1.7004, Val Acc: 21.0267, Test Acc: 21.0726
+2022-09-22 06:15:23,510:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 3/1000
+2022-09-22 06:17:14,204:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 110.69s, LR: 0.00050, Train Loss: 1.7000, Train Acc: 20.9741,
+                            Val Loss: 1.7005, Val Acc: 20.9620, Test Acc: 20.9098
+2022-09-22 06:17:14,205:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 4/1000
+2022-09-22 06:19:08,249:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 21.1747 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 06:19:08,250:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 114.05s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 21.0040,
+                            Val Loss: 1.7005, Val Acc: 20.8889, Test Acc: 21.1747
+2022-09-22 06:19:08,250:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 5/1000
+2022-09-22 06:21:08,482:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 120.23s, LR: 0.00050, Train Loss: 1.7000, Train Acc: 20.9238,
+                            Val Loss: 1.7004, Val Acc: 20.9079, Test Acc: 21.1348
+2022-09-22 06:21:08,482:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 6/1000
+2022-09-22 06:23:07,163:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.68s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9982,
+                            Val Loss: 1.7004, Val Acc: 20.9776, Test Acc: 20.8539
+2022-09-22 06:23:07,163:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 7/1000
+2022-09-22 06:25:05,601:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.44s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9366,
+                            Val Loss: 1.7004, Val Acc: 21.0771, Test Acc: 21.0705
+2022-09-22 06:25:05,601:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 8/1000
+2022-09-22 06:27:03,664:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.06s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9255,
+                            Val Loss: 1.7004, Val Acc: 20.9178, Test Acc: 20.8282
+2022-09-22 06:27:03,664:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 9/1000
+2022-09-22 06:29:01,824:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.16s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9735,
+                            Val Loss: 1.7005, Val Acc: 20.9240, Test Acc: 21.0734
+2022-09-22 06:29:01,824:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 10/1000
+2022-09-22 06:31:00,407:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.58s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9892,
+                            Val Loss: 1.7003, Val Acc: 20.7927, Test Acc: 21.0541
+2022-09-22 06:31:00,408:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 11/1000
+2022-09-22 06:32:59,204:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.80s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9476,
+                            Val Loss: 1.7004, Val Acc: 20.9754, Test Acc: 20.7812
+2022-09-22 06:32:59,204:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 12/1000
+2022-09-22 06:34:58,214:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.01s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 21.0010,
+                            Val Loss: 1.7004, Val Acc: 21.0352, Test Acc: 21.0480
+2022-09-22 06:34:58,215:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 13/1000
+2022-09-22 06:36:55,482:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.27s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9743,
+                            Val Loss: 1.7004, Val Acc: 20.9336, Test Acc: 20.9956
+2022-09-22 06:36:55,483:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 14/1000
+2022-09-22 06:38:53,081:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.60s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 21.0005,
+                            Val Loss: 1.7005, Val Acc: 20.8943, Test Acc: 21.0468
+2022-09-22 06:38:53,081:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 15/1000
+2022-09-22 06:40:51,894:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.81s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9712,
+                            Val Loss: 1.7004, Val Acc: 20.8421, Test Acc: 20.9569
+2022-09-22 06:40:51,895:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 16/1000
+2022-09-22 06:42:50,813:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.92s, LR: 0.00050, Train Loss: 1.6999, Train Acc: 20.9540,
+                            Val Loss: 1.7004, Val Acc: 20.9425, Test Acc: 20.9961
+2022-09-22 06:42:50,813:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 17/1000
+2022-09-22 06:44:49,310:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.50s, LR: 0.00025, Train Loss: 1.6999, Train Acc: 21.0010,
+                            Val Loss: 1.7004, Val Acc: 21.1893, Test Acc: 20.9187
+2022-09-22 06:44:49,310:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 18/1000
+2022-09-22 06:46:48,076:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.77s, LR: 0.00025, Train Loss: 1.6999, Train Acc: 21.0530,
+                            Val Loss: 1.7013, Val Acc: 20.9392, Test Acc: 20.9959
+2022-09-22 06:46:48,076:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 19/1000
+2022-09-22 06:48:46,371:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 21.2416 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 06:48:46,371:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.29s, LR: 0.00025, Train Loss: 1.6978, Train Acc: 22.1321,
+                            Val Loss: 1.6994, Val Acc: 21.1487, Test Acc: 21.2416
+2022-09-22 06:48:46,371:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 20/1000
+2022-09-22 06:50:44,853:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.48s, LR: 0.00025, Train Loss: 1.6924, Train Acc: 22.8534,
+                            Val Loss: 1.7950, Val Acc: 20.7040, Test Acc: 20.8102
+2022-09-22 06:50:44,853:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 21/1000
+2022-09-22 06:52:43,531:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.68s, LR: 0.00025, Train Loss: 1.6899, Train Acc: 23.0277,
+                            Val Loss: 1.7992, Val Acc: 20.8786, Test Acc: 20.9521
+2022-09-22 06:52:43,532:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 22/1000
+2022-09-22 06:54:42,622:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 22.1956 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 06:54:42,622:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.09s, LR: 0.00025, Train Loss: 1.6888, Train Acc: 23.1699,
+                            Val Loss: 1.6993, Val Acc: 22.3595, Test Acc: 22.1956
+2022-09-22 06:54:42,622:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 23/1000
+2022-09-22 06:56:41,474:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.85s, LR: 0.00025, Train Loss: 1.6872, Train Acc: 23.3029,
+                            Val Loss: 1.7272, Val Acc: 22.2905, Test Acc: 21.9453
+2022-09-22 06:56:41,474:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 24/1000
+2022-09-22 06:58:40,454:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.98s, LR: 0.00025, Train Loss: 1.6839, Train Acc: 23.6738,
+                            Val Loss: 2.0109, Val Acc: 20.7146, Test Acc: 20.7941
+2022-09-22 06:58:40,455:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 25/1000
+2022-09-22 07:00:39,717:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 23.9022 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 07:00:39,718:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.26s, LR: 0.00025, Train Loss: 1.6827, Train Acc: 23.8539,
+                            Val Loss: 1.6820, Val Acc: 23.6148, Test Acc: 23.9022
+2022-09-22 07:00:39,718:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 26/1000
+2022-09-22 07:02:38,739:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.02s, LR: 0.00025, Train Loss: 1.6826, Train Acc: 23.7941,
+                            Val Loss: 2.0024, Val Acc: 21.0330, Test Acc: 20.9684
+2022-09-22 07:02:38,740:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 27/1000
+2022-09-22 07:04:37,429:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.69s, LR: 0.00025, Train Loss: 1.6824, Train Acc: 23.8605,
+                            Val Loss: 1.7057, Val Acc: 20.5704, Test Acc: 20.6620
+2022-09-22 07:04:37,430:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 28/1000
+2022-09-22 07:06:36,340:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.91s, LR: 0.00025, Train Loss: 1.6820, Train Acc: 23.9890,
+                            Val Loss: 1.7031, Val Acc: 21.8801, Test Acc: 21.5313
+2022-09-22 07:06:36,340:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 29/1000
+2022-09-22 07:08:35,059:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.72s, LR: 0.00025, Train Loss: 1.6820, Train Acc: 23.9726,
+                            Val Loss: 2.5419, Val Acc: 20.9571, Test Acc: 20.9953
+2022-09-22 07:08:35,060:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 30/1000
+2022-09-22 07:10:34,658:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.60s, LR: 0.00025, Train Loss: 1.6822, Train Acc: 23.9216,
+                            Val Loss: 1.7015, Val Acc: 22.1172, Test Acc: 22.0967
+2022-09-22 07:10:34,659:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 31/1000
+2022-09-22 07:12:33,988:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.33s, LR: 0.00025, Train Loss: 1.6822, Train Acc: 23.9083,
+                            Val Loss: 2.0599, Val Acc: 20.8587, Test Acc: 20.8697
+2022-09-22 07:12:33,989:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 32/1000
+2022-09-22 07:14:33,814:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.83s, LR: 0.00025, Train Loss: 1.6820, Train Acc: 23.8817,
+                            Val Loss: 1.8494, Val Acc: 20.7359, Test Acc: 20.7321
+2022-09-22 07:14:33,815:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 33/1000
+2022-09-22 07:16:33,075:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.26s, LR: 0.00025, Train Loss: 1.6819, Train Acc: 24.0253,
+                            Val Loss: 2.0354, Val Acc: 20.6807, Test Acc: 20.8213
+2022-09-22 07:16:33,075:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 34/1000
+2022-09-22 07:18:31,855:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.78s, LR: 0.00025, Train Loss: 1.6823, Train Acc: 23.9379,
+                            Val Loss: 1.7712, Val Acc: 21.0836, Test Acc: 20.9414
+2022-09-22 07:18:31,856:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 35/1000
+2022-09-22 07:20:30,714:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.86s, LR: 0.00025, Train Loss: 1.6819, Train Acc: 23.9805,
+                            Val Loss: 1.7510, Val Acc: 20.9796, Test Acc: 21.1360
+2022-09-22 07:20:30,714:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 36/1000
+2022-09-22 07:22:29,309:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.59s, LR: 0.00025, Train Loss: 1.6819, Train Acc: 23.9586,
+                            Val Loss: 1.8166, Val Acc: 20.7295, Test Acc: 20.6687
+2022-09-22 07:22:29,310:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 37/1000
+2022-09-22 07:24:29,624:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 120.31s, LR: 0.00013, Train Loss: 1.6813, Train Acc: 24.0562,
+                            Val Loss: 1.7636, Val Acc: 20.8870, Test Acc: 20.5710
+2022-09-22 07:24:29,625:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 38/1000
+2022-09-22 07:26:28,566:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.94s, LR: 0.00013, Train Loss: 1.6811, Train Acc: 24.1082,
+                            Val Loss: 1.9521, Val Acc: 20.8389, Test Acc: 20.8878
+2022-09-22 07:26:28,566:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 39/1000
+2022-09-22 07:28:27,900:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.33s, LR: 0.00013, Train Loss: 1.6791, Train Acc: 24.7090,
+                            Val Loss: 3.4476, Val Acc: 21.2632, Test Acc: 20.9426
+2022-09-22 07:28:27,901:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 40/1000
+2022-09-22 07:30:27,329:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.43s, LR: 0.00013, Train Loss: 1.6675, Train Acc: 25.6157,
+                            Val Loss: 1.8072, Val Acc: 21.5930, Test Acc: 21.4886
+2022-09-22 07:30:27,329:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 41/1000
+2022-09-22 07:32:26,533:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.20s, LR: 0.00013, Train Loss: 1.6643, Train Acc: 25.8213,
+                            Val Loss: 2.0192, Val Acc: 22.5228, Test Acc: 22.6542
+2022-09-22 07:32:26,533:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 42/1000
+2022-09-22 07:34:26,219:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.69s, LR: 0.00013, Train Loss: 1.6624, Train Acc: 25.9018,
+                            Val Loss: 1.7415, Val Acc: 22.7886, Test Acc: 23.0439
+2022-09-22 07:34:26,220:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 43/1000
+2022-09-22 07:36:25,790:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.57s, LR: 0.00013, Train Loss: 1.6621, Train Acc: 25.9355,
+                            Val Loss: 2.6022, Val Acc: 21.0010, Test Acc: 20.9250
+2022-09-22 07:36:25,791:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 44/1000
+2022-09-22 07:38:24,141:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.35s, LR: 0.00013, Train Loss: 1.6620, Train Acc: 25.9413,
+                            Val Loss: 1.8033, Val Acc: 22.0648, Test Acc: 21.7872
+2022-09-22 07:38:24,141:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 45/1000
+2022-09-22 07:40:22,868:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.73s, LR: 0.00013, Train Loss: 1.6616, Train Acc: 25.9872,
+                            Val Loss: 1.7265, Val Acc: 23.0909, Test Acc: 23.2121
+2022-09-22 07:40:22,868:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 46/1000
+2022-09-22 07:42:22,990:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 120.12s, LR: 0.00013, Train Loss: 1.6612, Train Acc: 26.0158,
+                            Val Loss: 1.8988, Val Acc: 23.2506, Test Acc: 23.3555
+2022-09-22 07:42:22,991:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 47/1000
+2022-09-22 07:44:22,523:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.53s, LR: 0.00013, Train Loss: 1.6609, Train Acc: 26.0643,
+                            Val Loss: 1.7743, Val Acc: 21.0243, Test Acc: 20.9527
+2022-09-22 07:44:22,523:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 48/1000
+2022-09-22 07:46:21,775:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.25s, LR: 0.00006, Train Loss: 1.6603, Train Acc: 26.1149,
+                            Val Loss: 1.8924, Val Acc: 21.1480, Test Acc: 21.1155
+2022-09-22 07:46:21,775:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 49/1000
+2022-09-22 07:48:20,799:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.02s, LR: 0.00006, Train Loss: 1.6603, Train Acc: 26.0855,
+                            Val Loss: 1.9422, Val Acc: 20.9349, Test Acc: 20.7927
+2022-09-22 07:48:20,800:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 50/1000
+2022-09-22 07:50:20,361:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.56s, LR: 0.00006, Train Loss: 1.6601, Train Acc: 26.1049,
+                            Val Loss: 2.0954, Val Acc: 21.7427, Test Acc: 22.0341
+2022-09-22 07:50:20,362:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 51/1000
+2022-09-22 07:52:20,179:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.82s, LR: 0.00006, Train Loss: 1.6602, Train Acc: 26.1216,
+                            Val Loss: 1.9124, Val Acc: 21.9556, Test Acc: 22.1056
+2022-09-22 07:52:20,179:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 52/1000
+2022-09-22 07:54:20,157:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.98s, LR: 0.00006, Train Loss: 1.6598, Train Acc: 26.0889,
+                            Val Loss: 1.9222, Val Acc: 22.1835, Test Acc: 22.4520
+2022-09-22 07:54:20,157:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 53/1000
+2022-09-22 07:56:18,682:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.52s, LR: 0.00006, Train Loss: 1.6601, Train Acc: 26.1038,
+                            Val Loss: 1.8873, Val Acc: 22.5485, Test Acc: 22.5207
+2022-09-22 07:56:18,683:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 54/1000
+2022-09-22 07:58:17,960:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.28s, LR: 0.00006, Train Loss: 1.6598, Train Acc: 26.0665,
+                            Val Loss: 2.0205, Val Acc: 21.3407, Test Acc: 21.2415
+2022-09-22 07:58:17,961:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 55/1000
+2022-09-22 08:00:16,887:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.93s, LR: 0.00006, Train Loss: 1.6596, Train Acc: 26.0861,
+                            Val Loss: 1.8506, Val Acc: 20.9120, Test Acc: 20.9488
+2022-09-22 08:00:16,888:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 56/1000
+2022-09-22 08:02:16,218:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.33s, LR: 0.00006, Train Loss: 1.6596, Train Acc: 26.1039,
+                            Val Loss: 1.6873, Val Acc: 23.7290, Test Acc: 23.8568
+2022-09-22 08:02:16,218:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 57/1000
+2022-09-22 08:04:16,196:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.98s, LR: 0.00006, Train Loss: 1.6601, Train Acc: 26.1156,
+                            Val Loss: 2.0881, Val Acc: 20.8344, Test Acc: 20.8913
+2022-09-22 08:04:16,196:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 58/1000
+2022-09-22 08:06:16,079:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.88s, LR: 0.00006, Train Loss: 1.6598, Train Acc: 26.1050,
+                            Val Loss: 1.7904, Val Acc: 21.3279, Test Acc: 21.1099
+2022-09-22 08:06:16,079:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 59/1000
+2022-09-22 08:08:14,953:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.87s, LR: 0.00003, Train Loss: 1.6594, Train Acc: 26.1720,
+                            Val Loss: 1.9317, Val Acc: 21.0566, Test Acc: 20.9754
+2022-09-22 08:08:14,954:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 60/1000
+2022-09-22 08:10:13,981:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.03s, LR: 0.00003, Train Loss: 1.6596, Train Acc: 26.0907,
+                            Val Loss: 1.8052, Val Acc: 20.7820, Test Acc: 20.5948
+2022-09-22 08:10:13,981:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 61/1000
+2022-09-22 08:12:13,779:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.80s, LR: 0.00003, Train Loss: 1.6594, Train Acc: 26.1754,
+                            Val Loss: 1.6995, Val Acc: 23.9397, Test Acc: 23.3207
+2022-09-22 08:12:13,779:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 62/1000
+2022-09-22 08:14:13,434:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.65s, LR: 0.00003, Train Loss: 1.6596, Train Acc: 26.1894,
+                            Val Loss: 1.7249, Val Acc: 22.3669, Test Acc: 22.1081
+2022-09-22 08:14:13,434:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 63/1000
+2022-09-22 08:16:12,459:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.03s, LR: 0.00003, Train Loss: 1.6592, Train Acc: 26.2109,
+                            Val Loss: 1.7258, Val Acc: 23.0701, Test Acc: 22.6487
+2022-09-22 08:16:12,460:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 64/1000
+2022-09-22 08:18:11,508:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 24.0320 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 08:18:11,509:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.05s, LR: 0.00003, Train Loss: 1.6593, Train Acc: 26.1322,
+                            Val Loss: 1.7019, Val Acc: 24.3279, Test Acc: 24.0320
+2022-09-22 08:18:11,509:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 65/1000
+2022-09-22 08:20:10,040:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.53s, LR: 0.00003, Train Loss: 1.6592, Train Acc: 26.1559,
+                            Val Loss: 1.8542, Val Acc: 23.2391, Test Acc: 23.1632
+2022-09-22 08:20:10,041:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 66/1000
+2022-09-22 08:22:09,675:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.63s, LR: 0.00003, Train Loss: 1.6592, Train Acc: 26.1395,
+                            Val Loss: 1.8523, Val Acc: 21.3724, Test Acc: 21.2481
+2022-09-22 08:22:09,675:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 67/1000
+2022-09-22 08:24:09,130:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.45s, LR: 0.00003, Train Loss: 1.6587, Train Acc: 26.1300,
+                            Val Loss: 1.9604, Val Acc: 20.7555, Test Acc: 20.8552
+2022-09-22 08:24:09,131:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 68/1000
+2022-09-22 08:26:08,248:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 25.2179 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 08:26:08,249:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.12s, LR: 0.00003, Train Loss: 1.6592, Train Acc: 26.1751,
+                            Val Loss: 1.6713, Val Acc: 25.2029, Test Acc: 25.2179
+2022-09-22 08:26:08,249:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 69/1000
+2022-09-22 08:28:06,696:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.45s, LR: 0.00003, Train Loss: 1.6593, Train Acc: 26.1434,
+                            Val Loss: 1.7705, Val Acc: 22.1826, Test Acc: 22.1818
+2022-09-22 08:28:06,697:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 70/1000
+2022-09-22 08:30:06,167:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.47s, LR: 0.00003, Train Loss: 1.6587, Train Acc: 26.1835,
+                            Val Loss: 1.8602, Val Acc: 21.5685, Test Acc: 21.6075
+2022-09-22 08:30:06,168:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 71/1000
+2022-09-22 08:32:09,030:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 122.86s, LR: 0.00003, Train Loss: 1.6591, Train Acc: 26.1480,
+                            Val Loss: 1.7300, Val Acc: 22.3081, Test Acc: 21.8949
+2022-09-22 08:32:09,030:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 72/1000
+2022-09-22 08:34:11,643:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 122.61s, LR: 0.00003, Train Loss: 1.6592, Train Acc: 26.1486,
+                            Val Loss: 1.8335, Val Acc: 21.5984, Test Acc: 21.3170
+2022-09-22 08:34:11,644:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 73/1000
+2022-09-22 08:36:10,931:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 119.29s, LR: 0.00003, Train Loss: 1.6590, Train Acc: 26.1685,
+                            Val Loss: 1.7730, Val Acc: 23.2312, Test Acc: 23.3720
+2022-09-22 08:36:10,932:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 74/1000
+2022-09-22 08:38:08,947:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.02s, LR: 0.00003, Train Loss: 1.6591, Train Acc: 26.2027,
+                            Val Loss: 1.6934, Val Acc: 24.2242, Test Acc: 24.3497
+2022-09-22 08:38:08,948:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 75/1000
+2022-09-22 08:40:05,715:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 116.77s, LR: 0.00003, Train Loss: 1.6590, Train Acc: 26.1652,
+                            Val Loss: 1.7127, Val Acc: 23.1618, Test Acc: 22.8944
+2022-09-22 08:40:05,716:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 76/1000
+2022-09-22 08:42:04,301:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.59s, LR: 0.00003, Train Loss: 1.6590, Train Acc: 26.1373,
+                            Val Loss: 1.6880, Val Acc: 24.4050, Test Acc: 24.3176
+2022-09-22 08:42:04,302:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 77/1000
+2022-09-22 08:44:02,411:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.11s, LR: 0.00003, Train Loss: 1.6584, Train Acc: 26.2240,
+                            Val Loss: 1.7972, Val Acc: 21.2450, Test Acc: 21.2211
+2022-09-22 08:44:02,412:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 78/1000
+2022-09-22 08:45:59,946:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.53s, LR: 0.00003, Train Loss: 1.6589, Train Acc: 26.1647,
+                            Val Loss: 1.6896, Val Acc: 24.4068, Test Acc: 24.3848
+2022-09-22 08:45:59,947:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 79/1000
+2022-09-22 08:47:58,126:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.18s, LR: 0.00003, Train Loss: 1.6589, Train Acc: 26.1341,
+                            Val Loss: 1.6974, Val Acc: 24.1697, Test Acc: 24.1821
+2022-09-22 08:47:58,127:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 80/1000
+2022-09-22 08:49:55,642:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.52s, LR: 0.00002, Train Loss: 1.6583, Train Acc: 26.2240,
+                            Val Loss: 1.6973, Val Acc: 23.8330, Test Acc: 23.4749
+2022-09-22 08:49:55,642:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 81/1000
+2022-09-22 08:51:53,858:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.22s, LR: 0.00002, Train Loss: 1.6581, Train Acc: 26.2525,
+                            Val Loss: 1.7020, Val Acc: 24.3665, Test Acc: 24.3414
+2022-09-22 08:51:53,859:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 82/1000
+2022-09-22 08:53:51,734:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.87s, LR: 0.00002, Train Loss: 1.6581, Train Acc: 26.2289,
+                            Val Loss: 1.6970, Val Acc: 23.7934, Test Acc: 23.9995
+2022-09-22 08:53:51,734:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 83/1000
+2022-09-22 08:55:50,453:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.72s, LR: 0.00002, Train Loss: 1.6577, Train Acc: 26.3468,
+                            Val Loss: 1.7354, Val Acc: 22.7062, Test Acc: 22.2609
+2022-09-22 08:55:50,453:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 84/1000
+2022-09-22 08:57:47,816:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 25.5911 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 08:57:47,816:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.36s, LR: 0.00002, Train Loss: 1.6568, Train Acc: 26.3349,
+                            Val Loss: 1.6709, Val Acc: 25.5272, Test Acc: 25.5911
+2022-09-22 08:57:47,816:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 85/1000
+2022-09-22 08:59:45,528:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.71s, LR: 0.00002, Train Loss: 1.6544, Train Acc: 26.5293,
+                            Val Loss: 1.6923, Val Acc: 23.5634, Test Acc: 24.0753
+2022-09-22 08:59:45,529:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 86/1000
+2022-09-22 09:01:43,905:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.38s, LR: 0.00002, Train Loss: 1.6523, Train Acc: 26.7215,
+                            Val Loss: 1.6723, Val Acc: 25.1039, Test Acc: 25.5388
+2022-09-22 09:01:43,906:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 87/1000
+2022-09-22 09:03:41,834:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.93s, LR: 0.00002, Train Loss: 1.6505, Train Acc: 26.8974,
+                            Val Loss: 1.7932, Val Acc: 23.5895, Test Acc: 23.6973
+2022-09-22 09:03:41,835:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 88/1000
+2022-09-22 09:05:39,635:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.80s, LR: 0.00002, Train Loss: 1.6492, Train Acc: 26.9356,
+                            Val Loss: 1.7048, Val Acc: 24.0843, Test Acc: 23.9077
+2022-09-22 09:05:39,636:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 89/1000
+2022-09-22 09:07:37,582:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 26.0707 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:07:37,582:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.95s, LR: 0.00002, Train Loss: 1.6476, Train Acc: 27.0348,
+                            Val Loss: 1.6701, Val Acc: 25.8985, Test Acc: 26.0707
+2022-09-22 09:07:37,582:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 90/1000
+2022-09-22 09:09:34,973:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.39s, LR: 0.00002, Train Loss: 1.6463, Train Acc: 27.1679,
+                            Val Loss: 1.7255, Val Acc: 24.0614, Test Acc: 24.2681
+2022-09-22 09:09:34,973:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 91/1000
+2022-09-22 09:11:33,111:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.14s, LR: 0.00002, Train Loss: 1.6458, Train Acc: 27.2110,
+                            Val Loss: 1.6736, Val Acc: 25.2833, Test Acc: 25.6421
+2022-09-22 09:11:33,112:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 92/1000
+2022-09-22 09:13:30,929:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 27.1629 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:13:30,930:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.82s, LR: 0.00002, Train Loss: 1.6448, Train Acc: 27.2688,
+                            Val Loss: 1.6533, Val Acc: 26.4154, Test Acc: 27.1629
+2022-09-22 09:13:30,930:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 93/1000
+2022-09-22 09:15:27,761:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 116.83s, LR: 0.00002, Train Loss: 1.6451, Train Acc: 27.2405,
+                            Val Loss: 1.7242, Val Acc: 23.1173, Test Acc: 23.3091
+2022-09-22 09:15:27,762:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 94/1000
+2022-09-22 09:17:25,757:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.99s, LR: 0.00002, Train Loss: 1.6443, Train Acc: 27.2447,
+                            Val Loss: 1.6916, Val Acc: 25.2597, Test Acc: 26.1713
+2022-09-22 09:17:25,757:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 95/1000
+2022-09-22 09:19:22,782:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.02s, LR: 0.00002, Train Loss: 1.6440, Train Acc: 27.3308,
+                            Val Loss: 1.7103, Val Acc: 25.1671, Test Acc: 25.6606
+2022-09-22 09:19:22,782:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 96/1000
+2022-09-22 09:21:20,447:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.66s, LR: 0.00002, Train Loss: 1.6435, Train Acc: 27.4003,
+                            Val Loss: 1.7049, Val Acc: 24.5852, Test Acc: 25.2167
+2022-09-22 09:21:20,447:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 97/1000
+2022-09-22 09:23:17,894:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.45s, LR: 0.00002, Train Loss: 1.6431, Train Acc: 27.3543,
+                            Val Loss: 1.6767, Val Acc: 25.6728, Test Acc: 25.3852
+2022-09-22 09:23:17,895:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 98/1000
+2022-09-22 09:25:15,889:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.99s, LR: 0.00002, Train Loss: 1.6426, Train Acc: 27.4437,
+                            Val Loss: 1.6722, Val Acc: 25.5488, Test Acc: 25.8203
+2022-09-22 09:25:15,890:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 99/1000
+2022-09-22 09:27:13,324:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 27.1646 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:27:13,325:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.43s, LR: 0.00002, Train Loss: 1.6418, Train Acc: 27.5779,
+                            Val Loss: 1.6632, Val Acc: 26.4952, Test Acc: 27.1646
+2022-09-22 09:27:13,325:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 100/1000
+2022-09-22 09:29:10,524:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.20s, LR: 0.00002, Train Loss: 1.6412, Train Acc: 27.6734,
+                            Val Loss: 1.6833, Val Acc: 25.1242, Test Acc: 25.8153
+2022-09-22 09:29:10,525:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 101/1000
+2022-09-22 09:31:08,202:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.68s, LR: 0.00002, Train Loss: 1.6402, Train Acc: 27.7959,
+                            Val Loss: 1.6768, Val Acc: 25.3107, Test Acc: 25.4292
+2022-09-22 09:31:08,203:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 102/1000
+2022-09-22 09:33:05,931:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.73s, LR: 0.00002, Train Loss: 1.6388, Train Acc: 27.8449,
+                            Val Loss: 1.7304, Val Acc: 23.5383, Test Acc: 23.9706
+2022-09-22 09:33:05,932:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 103/1000
+2022-09-22 09:35:04,269:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.34s, LR: 0.00002, Train Loss: 1.6355, Train Acc: 27.9382,
+                            Val Loss: 1.7433, Val Acc: 25.6524, Test Acc: 25.5284
+2022-09-22 09:35:04,269:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 104/1000
+2022-09-22 09:37:02,298:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 27.2962 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:37:02,298:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.03s, LR: 0.00001, Train Loss: 1.6329, Train Acc: 28.0631,
+                            Val Loss: 1.6533, Val Acc: 26.7307, Test Acc: 27.2962
+2022-09-22 09:37:02,298:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 105/1000
+2022-09-22 09:39:00,039:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.74s, LR: 0.00001, Train Loss: 1.6311, Train Acc: 28.0924,
+                            Val Loss: 1.6729, Val Acc: 26.1895, Test Acc: 26.4703
+2022-09-22 09:39:00,039:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 106/1000
+2022-09-22 09:40:58,282:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 27.8640 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:40:58,282:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.24s, LR: 0.00001, Train Loss: 1.6312, Train Acc: 28.0958,
+                            Val Loss: 1.6451, Val Acc: 27.6054, Test Acc: 27.8640
+2022-09-22 09:40:58,282:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 107/1000
+2022-09-22 09:42:55,745:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.46s, LR: 0.00001, Train Loss: 1.6303, Train Acc: 28.1440,
+                            Val Loss: 1.6518, Val Acc: 26.9658, Test Acc: 27.3969
+2022-09-22 09:42:55,745:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 108/1000
+2022-09-22 09:44:53,136:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 28.0592 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:44:53,137:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.39s, LR: 0.00001, Train Loss: 1.6296, Train Acc: 28.2105,
+                            Val Loss: 1.6389, Val Acc: 27.4162, Test Acc: 28.0592
+2022-09-22 09:44:53,137:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 109/1000
+2022-09-22 09:46:51,017:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.88s, LR: 0.00001, Train Loss: 1.6287, Train Acc: 28.1474,
+                            Val Loss: 1.6597, Val Acc: 26.3415, Test Acc: 26.9575
+2022-09-22 09:46:51,018:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 110/1000
+2022-09-22 09:48:48,354:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.34s, LR: 0.00001, Train Loss: 1.6284, Train Acc: 28.2329,
+                            Val Loss: 1.6394, Val Acc: 27.5376, Test Acc: 28.0339
+2022-09-22 09:48:48,354:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 111/1000
+2022-09-22 09:50:45,446:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.09s, LR: 0.00001, Train Loss: 1.6278, Train Acc: 28.1739,
+                            Val Loss: 1.6473, Val Acc: 27.4780, Test Acc: 27.7567
+2022-09-22 09:50:45,447:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 112/1000
+2022-09-22 09:52:43,239:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.79s, LR: 0.00001, Train Loss: 1.6282, Train Acc: 28.2894,
+                            Val Loss: 1.6590, Val Acc: 27.1429, Test Acc: 27.6713
+2022-09-22 09:52:43,240:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 113/1000
+2022-09-22 09:54:41,218:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 28.1611 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:54:41,219:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.98s, LR: 0.00001, Train Loss: 1.6272, Train Acc: 28.2521,
+                            Val Loss: 1.6358, Val Acc: 27.6522, Test Acc: 28.1611
+2022-09-22 09:54:41,219:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 114/1000
+2022-09-22 09:56:39,629:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 28.1810 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 09:56:39,629:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.41s, LR: 0.00001, Train Loss: 1.6272, Train Acc: 28.2487,
+                            Val Loss: 1.6345, Val Acc: 27.8109, Test Acc: 28.1810
+2022-09-22 09:56:39,629:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 115/1000
+2022-09-22 09:58:37,803:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.17s, LR: 0.00001, Train Loss: 1.6266, Train Acc: 28.2454,
+                            Val Loss: 1.6550, Val Acc: 26.9208, Test Acc: 27.2027
+2022-09-22 09:58:37,804:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 116/1000
+2022-09-22 10:00:35,188:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.38s, LR: 0.00001, Train Loss: 1.6266, Train Acc: 28.2866,
+                            Val Loss: 1.6774, Val Acc: 25.3474, Test Acc: 25.7322
+2022-09-22 10:00:35,188:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 117/1000
+2022-09-22 10:02:33,004:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.82s, LR: 0.00001, Train Loss: 1.6261, Train Acc: 28.3158,
+                            Val Loss: 1.6523, Val Acc: 27.0864, Test Acc: 27.4139
+2022-09-22 10:02:33,005:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 118/1000
+2022-09-22 10:04:31,139:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.13s, LR: 0.00001, Train Loss: 1.6257, Train Acc: 28.2834,
+                            Val Loss: 1.6550, Val Acc: 26.5569, Test Acc: 26.7758
+2022-09-22 10:04:31,139:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 119/1000
+2022-09-22 10:06:29,458:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 28.3298 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 10:06:29,459:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 118.32s, LR: 0.00001, Train Loss: 1.6257, Train Acc: 28.3186,
+                            Val Loss: 1.6335, Val Acc: 27.9429, Test Acc: 28.3298
+2022-09-22 10:06:29,459:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 120/1000
+2022-09-22 10:08:26,916:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.46s, LR: 0.00001, Train Loss: 1.6255, Train Acc: 28.3271,
+                            Val Loss: 1.6528, Val Acc: 26.9443, Test Acc: 27.0082
+2022-09-22 10:08:26,917:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 121/1000
+2022-09-22 10:10:24,576:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.66s, LR: 0.00001, Train Loss: 1.6262, Train Acc: 28.3012,
+                            Val Loss: 1.6968, Val Acc: 25.1475, Test Acc: 25.4409
+2022-09-22 10:10:24,577:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 122/1000
+2022-09-22 10:12:22,151:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.57s, LR: 0.00001, Train Loss: 1.6256, Train Acc: 28.2592,
+                            Val Loss: 1.6480, Val Acc: 26.9459, Test Acc: 27.7275
+2022-09-22 10:12:22,152:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 123/1000
+2022-09-22 10:14:19,560:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.41s, LR: 0.00001, Train Loss: 1.6251, Train Acc: 28.3112,
+                            Val Loss: 1.6849, Val Acc: 25.9214, Test Acc: 26.5483
+2022-09-22 10:14:19,561:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 124/1000
+2022-09-22 10:16:16,116:main_SBMs_node_classification.py:224 -   train_val_pipeline(): Saving best model with test accuracy: 28.4747 to out/SBMs_node_classification_b32-prwpe-20-fg-trialscheckpoints/GraphTransformer_SBM_CLUSTER_GPU0_20_20_06h04m22s_on_Sep_22_2022/MODELS_
+2022-09-22 10:16:16,116:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 116.56s, LR: 0.00001, Train Loss: 1.6252, Train Acc: 28.3544,
+                            Val Loss: 1.6313, Val Acc: 28.0364, Test Acc: 28.4747
+2022-09-22 10:16:16,116:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 125/1000
+2022-09-22 10:18:13,649:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.53s, LR: 0.00001, Train Loss: 1.6247, Train Acc: 28.2866,
+                            Val Loss: 1.6419, Val Acc: 27.1271, Test Acc: 27.9936
+2022-09-22 10:18:13,650:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 126/1000
+2022-09-22 10:20:11,298:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.65s, LR: 0.00001, Train Loss: 1.6243, Train Acc: 28.3839,
+                            Val Loss: 1.6357, Val Acc: 27.8049, Test Acc: 28.1084
+2022-09-22 10:20:11,299:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 127/1000
+2022-09-22 10:22:09,160:main_SBMs_node_classification.py:246 -   train_val_pipeline(): 	Time: 117.86s, LR: 0.00001, Train Loss: 1.6242, Train Acc: 28.3781,
+                            Val Loss: 1.6333, Val Acc: 27.7944, Test Acc: 28.4699
+2022-09-22 10:22:09,161:main_SBMs_node_classification.py:204 -   train_val_pipeline(): Epoch 128/1000
