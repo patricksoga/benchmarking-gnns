@@ -16,7 +16,7 @@ def dataset_to_graph_task(dataset):
         dataset = "SBMs"
     if dataset in ("COLLAB", "TSP"):
         return "edge_classification"
-    elif dataset in ("CSL", "CYCLES", "PLANARITY", "K3Colorable", "TUs", "superpixels"):
+    elif dataset in ("CSL", "CYCLES", "Planarity", "K3Colorable", "TUs", "superpixels"):
         return "graph_classification"
     elif dataset in ("GraphTheoryProp"):
         return "multitask"
