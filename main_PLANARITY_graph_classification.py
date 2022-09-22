@@ -84,7 +84,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         # if net_params['num_train_data'] is not None:
         #     # net_params['num_train_data'] is the number of train samples to use
         #     from data.planarity import DGLFormDataset
-        #     trainset = DGLFormDataset(trainset[:net_params['num_train_data']][0], trainset[:net_params['num_train_data']][1], )
+        #     trainset = DGLFormDataset(trainset[:net_params['num_train_data']][0], trainset[:net_params['num_train_data']][1])
         
         root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
         
