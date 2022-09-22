@@ -136,8 +136,8 @@ class MultiHeadAttentionLayer(nn.Module):
         # g.ndata['pos_enc'] = g.ndata['pos_enc'].view(-1, self.num_heads, self.out_dim)
         
         self.propagate_attention(g, spatial_pos_bias)
-        
         head_out = g.ndata['wV']/g.ndata['z']
+        head_out[head_out != head_out] = 0
         
         return head_out
     
