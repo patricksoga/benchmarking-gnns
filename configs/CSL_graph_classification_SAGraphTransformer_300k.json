@@ -3,13 +3,13 @@
         "use": true,
         "id": 0
     },
-    "model": "GraphTransformer",
-    "dataset": "Planarity",
-    "out_dir": "out/PLANARITY_graph_classification/",
+    "model": "SAGraphTransformer",
+    "dataset": "CSL",
+    "out_dir": "out/CSL_sparse_SA_BN/",
     "params": {
         "seed": 41,
         "epochs": 1000,
-        "batch_size": 10,
+        "batch_size": 5,
         "init_lr": 0.0005,
         "lr_reduce_factor": 0.5,
         "lr_schedule_patience": 10,
@@ -19,9 +19,9 @@
         "max_time": 24
     },
     "net_params": {
-        "num_train_data": 7000,
-        "L": 10,
-        "n_heads": 8,
+        "num_train_data": 200,
+        "L": 6,
+        "n_heads": 10,
         "hidden_dim": 80,
         "out_dim": 80,
         "residual": true,
@@ -31,9 +31,14 @@
         "layer_norm": false,
         "batch_norm": true,
         "self_loop": false,
-        "pos_enc": false,
-        "pos_enc_dim": 20,
         "wl_pos_enc": false,
-        "full_graph": false
+        "full_graph": false,
+        "lpe_layers": 1,
+        "pos_enc_dim": 20,
+        "lpe_n_heads": 1,
+        "edge_feat": false,
+        "pos_enc": false,
+        "spectral_attn": true,
+        "lpe_dim": 8
     }
 }

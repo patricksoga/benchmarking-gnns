@@ -31,9 +31,9 @@ class PlanarityDGL(torch.utils.data.Dataset):
         shuffle(data)
         self.data = data
 
-        print(torch.load(os.path.join(self.data_dir, "planarity.pkl")))
         self.graph_lists = []
         self.graph_labels = []
+        self.spatial_pos_lists = []
         self._prepare()
     
     def get_proportions(self, data, split=(0.7, 0.15, 0.15)):
@@ -64,6 +64,7 @@ class PlanarityDGL(torch.utils.data.Dataset):
 
         self.graph_lists = graphs[lower_bound:upper_bound]
         self.graph_labels = labels[lower_bound:upper_bound]
+        self.spatial_pos_lists = []
 
         print("preparing %d graphs for the %s set..." % (n_graphs, self.split.upper()))
 
@@ -86,7 +87,12 @@ class PlanarityDGL(torch.utils.data.Dataset):
                 DGLGraph with node feature stored in `feat` field
                 And its label.
         """
-        return self.graph_lists[idx], self.graph_labels[idx]
+        try:
+            spatial_pos_list = self.spatial_pos_lists[idx]
+        except:
+            spatial_pos_list = None
+
+        return self.graph_lists[idx], self.graph_labels[idx], spatial_pos_list
     
     
 class PlanarityDatasetDGL(torch.utils.data.Dataset):
@@ -129,6 +135,42 @@ def positional_encoding(g, pos_enc_dim):
 
     return g
 
+def make_full_graph(g):
+    """
+        Converting the given graph to fully connected
+        This function just makes full connections
+        removes available edge features 
+    """
+
+    full_g = dgl.from_networkx(nx.complete_graph(g.number_of_nodes()))
+    full_g.ndata['feat'] = g.ndata['feat']
+    full_g.edata['feat'] = torch.zeros(full_g.number_of_edges()).long()
+    
+    try:
+        full_g.ndata['pos_enc'] = g.ndata['pos_enc']
+    except:
+        pass
+
+    try:
+        count = 0
+        while True:
+            full_g.ndata[f'pos_enc_{count}'] = g.ndata[f'pos_enc_{count}']
+            count += 1
+    except:
+        pass
+
+    try:
+        full_g.ndata['EigVals'] = g.ndata['EigVals']
+        full_g.ndata['EigVecs'] = g.ndata['EigVecs']
+    except:
+        pass
+
+    try:
+        full_g.ndata['wl_pos_enc'] = g.ndata['wl_pos_enc']
+    except:
+        pass    
+    
+    return full_g
 
 class PlanarityDataset(torch.utils.data.Dataset):
 
@@ -156,6 +198,24 @@ class PlanarityDataset(torch.utils.data.Dataset):
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
+        graphs, labels, spatial_pos_biases = map(list, zip(*samples))
+        labels = torch.tensor(labels)
+        #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
+        #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
+        #snorm_n = torch.cat(tab_snorm_n).sqrt()  
+        #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
+        #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
+        #snorm_e = torch.cat(tab_snorm_e).sqrt()
+
+        batched_graph = dgl.batch(graphs)
+        # if all(bool(x) for x in spatial_pos_biases):
+        if all([x is not None for x in spatial_pos_biases]):
+            batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+        else:
+            batched_spatial_pos_biases = None
+
+        return batched_graph, labels, batched_spatial_pos_biases
+
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         # labels = torch.tensor(np.array(labels))
@@ -170,6 +230,14 @@ class PlanarityDataset(torch.utils.data.Dataset):
         self.val.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
         self.test.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
 
+    def _make_full_graph(self):
+        
+        # function for converting graphs to full graphs
+        # this function will be called only if full_graph flag is True
+        self.train.graph_lists = [make_full_graph(g) for g in self.train.graph_lists]
+        self.val.graph_lists = [make_full_graph(g) for g in self.val.graph_lists]
+        self.test.graph_lists = [make_full_graph(g) for g in self.test.graph_lists]
+
 
 
 class DGLFormDataset(torch.utils.data.Dataset):
@@ -178,10 +246,21 @@ class DGLFormDataset(torch.utils.data.Dataset):
         *lists (list): lists of 'graphs' and 'labels' with same len().
     """
     def __init__(self, *lists):
-        assert all(len(lists[0]) == len(li) for li in lists)
+        print(lists)
+        if lists[2] is not None and lists[2] != []:
+            assert len(lists[0]) == len(lists[1])
+        else:
+            lists = [lists[0], lists[1]]
+            assert all(len(lists[0]) == len(li) for li in lists)
+
         self.lists = lists
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
+
+        try:
+            self.spatial_pos_lists = lists[2]
+        except:
+            self.spatial_pos_lists = [None]
 
     def __getitem__(self, index):
         return tuple(li[index] for li in self.lists)

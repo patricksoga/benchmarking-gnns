@@ -48,7 +48,7 @@ class PseudoGraphormerNet(nn.Module):
     def forward(self, g, h, e, spatial_pos_bias):
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
-        h = h + self.in_degree_encoder(g.in_degrees())
+        h = h + self.in_degree_encoder(g.in_degrees()) + self.out_degree_encoder(g.out_degrees())
 
         spatial_pos_bias = self.spatial_pos_encoder(spatial_pos_bias)
         # g.ndata['spatial_pos_bias'] = spatial_pos_bias.permute(2, 0, 1) # (num_heads, V, V)
