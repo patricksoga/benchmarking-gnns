@@ -28,7 +28,7 @@ python3 main_Planarity_graph_classification.py --config tests/test-configs/Graph
 #                 'dropout': 0.0,
 #                 'eigen_bartels_stewart': False,
 #                 'full_graph': False,
-#                 'gape_clamp': False,
+#                 'gape_clamp': True,
 #                 'gape_individual': False,
 #                 'gape_rand': False,
 #                 'gape_softmax_after': False,
@@ -69,4 +69,4 @@ python3 main_Planarity_graph_classification.py --config tests/test-configs/Graph
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/PLANARITY_graph_classification_GraphTransformer_500k_sparse_graph_BN.json --pos_enc True --job_note b32-lape-20--trials --seed_array 41 95 22 35 --param_values 20 --batch_size 32
+#python3 configure_tests.py --config ../configs/PLANARITY_graph_classification_GraphTransformer_500k_sparse_graph_BN.json --pos_enc True --job_note b32-lape-20--trials --seed_array 41 95 22 35 --param_values 20 --batch_size 32 --gape_clamp True
