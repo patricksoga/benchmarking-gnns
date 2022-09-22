@@ -7,7 +7,7 @@ fname=$(pwd)/6_DEBUG_0_41.log
 touch $fname
 fsync -d 10 $fname &
 
-conda activate gnn
-cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
-
+conda activate gnn;
+cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns;
+CUDA_LAUNCH_BLOCKING=1;
 python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_ZINC_b128-bnorm-alt-noedge-500k-ngape3-6-trials.json --job_num 6 --pos_enc_dim 6 --log_file $fname --seed_array 41
