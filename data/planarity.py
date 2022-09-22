@@ -34,6 +34,7 @@ class PlanarityDGL(torch.utils.data.Dataset):
         print(torch.load(os.path.join(self.data_dir, "planarity.pkl")))
         self.graph_lists = []
         self.graph_labels = []
+        self.spatial_pos_biases = []
         self._prepare()
     
     def get_proportions(self, data, split=(0.7, 0.15, 0.15)):
@@ -86,6 +87,12 @@ class PlanarityDGL(torch.utils.data.Dataset):
                 DGLGraph with node feature stored in `feat` field
                 And its label.
         """
+        try:
+            spatial_pos_list = self.spatial_pos_lists[idx]
+        except:
+            spatial_pos_list = None
+
+        return self.graph_lists[idx], self.graph_labels[idx], spatial_pos_list
         return self.graph_lists[idx], self.graph_labels[idx]
     
     
@@ -192,6 +199,23 @@ class PlanarityDataset(torch.utils.data.Dataset):
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
+        graphs, labels, spatial_pos_biases = map(list, zip(*samples))
+        labels = torch.cat(labels).long()
+        #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
+        #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
+        #snorm_n = torch.cat(tab_snorm_n).sqrt()  
+        #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
+        #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
+        #snorm_e = torch.cat(tab_snorm_e).sqrt()
+        batched_graph = dgl.batch(graphs)
+        # if all(bool(x) for x in spatial_pos_biases):
+        if all([x is not None for x in spatial_pos_biases]):
+            batched_spatial_pos_biases = torch.block_diag(*spatial_pos_biases)
+        else:
+            batched_spatial_pos_biases = None
+
+        return batched_graph, labels, batched_spatial_pos_biases
+
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         # labels = torch.tensor(np.array(labels))

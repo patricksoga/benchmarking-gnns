@@ -17,7 +17,17 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name)
     epoch_train_acc = 0
     nb_data = 0
     gpu_mem = 0
-    for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+    for iter, data in enumerate(data_loader):
+        batch_graphs = data[0]
+        batch_labels = data[1]
+
+        if model_name == 'PseudoGraphormer':
+            try:
+                batch_spatial_baises = data[2]
+                batch_spatial_baises = batch_spatial_baises.to(device)
+            except:
+                raise Exception('No spatial biases for model{}'.format(model_name))
+    
         batch_graphs = batch_graphs.to(device)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
@@ -28,6 +38,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name)
                 eigvals = batch_graphs.ndata['EigVals'].to(device)
                 eigvecs = batch_graphs.ndata['EigVecs'].to(device)
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+            elif model_name == 'PseudoGraphormer':
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_spatial_baises)
             elif model.pe_layer.pos_enc:
                 batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
                 sign_flip = torch.rand(batch_pos_enc.size(1)).to(device)
@@ -60,7 +72,17 @@ def evaluate_network_sparse(model, device, data_loader, epoch, model_name):
     epoch_test_acc = 0
     nb_data = 0
     with torch.no_grad():
-        for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+        for iter, data in enumerate(data_loader):
+            batch_graphs = data[0]
+            batch_labels = data[1]
+
+            if model_name == 'PseudoGraphormer':
+                try:
+                    batch_spatial_biases = data[2]
+                    batch_spatial_biases = batch_spatial_biases.to(device)
+                except:
+                    raise Exception('No spatial biases for model: {}'.format(model_name))
+
             batch_graphs = batch_graphs.to(device)
             batch_x = batch_graphs.ndata['feat'].to(device)
             batch_e = batch_graphs.edata['feat'].to(device)
@@ -70,6 +92,8 @@ def evaluate_network_sparse(model, device, data_loader, epoch, model_name):
                     eigvals = batch_graphs.ndata['EigVals'].to(device)
                     eigvecs = batch_graphs.ndata['EigVecs'].to(device)
                     batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+                elif model_name == 'PseudoGraphormer':
+                    batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_spatial_biases)
                 else:
                     batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
                     batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
