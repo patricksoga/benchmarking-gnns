@@ -79,6 +79,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             dataset = add_spd_encodings(dataset)
             logger.info(f'Time PE:{time.time()-start0}')
         
+
+        if net_params.get('full_graph', False):
+            logger.info("[!] Converting graphs to full graphs")
+            dataset._make_full_graph()
+            logger.info(f'Time: {time.time()-start0}')
+
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
         
         # if net_params['num_train_data'] is not None:
