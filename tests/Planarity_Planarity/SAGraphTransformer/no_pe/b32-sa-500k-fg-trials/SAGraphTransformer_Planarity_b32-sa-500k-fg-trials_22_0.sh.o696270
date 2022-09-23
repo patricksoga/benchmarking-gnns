@@ -5,13 +5,18 @@
 [I] Loading dataset Planarity...
 train, test, val sizes : 7000 1500 1500
 [I] Finished loading.
-[I] Data load time: 6.5079s
-Epoch 00022: reducing learning rate of group 0 to 2.5000e-04.
-Epoch 00046: reducing learning rate of group 0 to 1.2500e-04.
-Epoch 00061: reducing learning rate of group 0 to 6.2500e-05.
-Epoch 00072: reducing learning rate of group 0 to 3.1250e-05.
-Epoch 00083: reducing learning rate of group 0 to 1.5625e-05.
-Epoch 00094: reducing learning rate of group 0 to 7.8125e-06.
-Epoch 00105: reducing learning rate of group 0 to 3.9063e-06.
-Epoch 00116: reducing learning rate of group 0 to 1.9531e-06.
-Epoch 00127: reducing learning rate of group 0 to 9.7656e-07.
+[I] Data load time: 7.1387s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py", line 320, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py", line 317, in main
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/utils/main_utils.py", line 74, in view_model_param
+    model = gnn_model(MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/PLANARITY_graph_classification/load_net.py", line 46, in gnn_model
+    return models[MODEL_NAME](net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/PLANARITY_graph_classification/load_net.py", line 30, in SAGraphTransformer
+    return SAGraphTransformerNet(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/PLANARITY_graph_classification/sa_graph_transformer.py", line 29, in __init__
+    lpe_dim = net_params['lpe_dim']
+KeyError: 'lpe_dim'
