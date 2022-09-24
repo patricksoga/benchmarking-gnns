@@ -182,7 +182,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             # import train functions specific for WL-GNNs
             from train.train_SBMs_node_classification import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
             
-            train_loader = DataLoader(trainset, shuffle=True, collate_fn=dataset.collate_dense_gnn)
+            train_loader = DataLoader(trainset, shuffle=True, collate_fn=dataset.collate_dense_gnn, num_workers=1)
             val_loader = DataLoader(valset, shuffle=False, collate_fn=dataset.collate_dense_gnn)
             test_loader = DataLoader(testset, shuffle=False, collate_fn=dataset.collate_dense_gnn)
             
