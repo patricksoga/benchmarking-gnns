@@ -1,12 +1,17 @@
+/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py:3719: DGLWarning: DGLGraph.adjacency_matrix_scipy is deprecated. Please replace it with:
+
+	DGLGraph.adjacency_matrix(transpose, scipy_fmt="csr").
+
+  dgl_warning('DGLGraph.adjacency_matrix_scipy is deprecated. '
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/SBMs.py:149: UserWarning: Casting complex values to real discards the imaginary part (Triggered internally at  /opt/conda/conda-bld/pytorch_1656352645774/work/aten/src/ATen/native/Copy.cpp:250.)
+  g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float()
 [I] Loading dataset SBM_CLUSTER...
 train, test, val sizes : 10000 1000 1000
 [I] Finished loading.
-[I] Data load time: 18.8116s
-using 1 automata/automaton
-using 1 automata/automaton
+[I] Data load time: 15.0690s
 Traceback (most recent call last):
-  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 56, in train_epoch_sparse
-    batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_graphs.ndata['pos_enc'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_SBMs_node_classification.py", line 50, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
   File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/SBMs_node_classification/graph_transformer.py", line 82, in forward
     h = conv(g, h)
   File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
@@ -25,13 +30,7 @@ Traceback (most recent call last):
     return func(ebatch)
   File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/graph_transformer_layer.py", line 20, in func
     return {out_field: (edges.src[src_field] * edges.dst[dst_field])}
-  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/frame.py", line 523, in __getitem__
-    return self._columns[name].data
-  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/frame.py", line 226, in data
-    self.storage = F.gather_row(self.storage, self.index)
-  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/backend/pytorch/tensor.py", line 192, in gather_row
-    return th.index_select(data, 0, row_index.long())
-RuntimeError: CUDA out of memory. Tried to allocate 44.00 MiB (GPU 0; 10.92 GiB total capacity; 9.34 MiB already allocated; 24.44 MiB free; 24.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+RuntimeError: CUDA out of memory. Tried to allocate 46.00 MiB (GPU 0; 10.92 GiB total capacity; 97.88 MiB already allocated; 18.44 MiB free; 116.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
 
 During handling of the above exception, another exception occurred:
 
@@ -48,8 +47,8 @@ Traceback (most recent call last):
     pe = self.pe_layer(g, h, pos_enc)
   File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
     return forward_call(*input, **kwargs)
-  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 330, in forward
-    pe = self.embedding_pos_encs[0](pos_enc)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 214, in forward
+    pe = self.embedding_pos_enc(pos_enc)
   File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
     return forward_call(*input, **kwargs)
   File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 114, in forward
