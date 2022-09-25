@@ -2,9 +2,9 @@
 #$ -N GraphTransformer_SBM_CLUSTER_b32-bnorm-alt-fg-lr35e5
 #$ -q gpu
 #$ -l gpu_card=1
-#$ -t 1-5:1
+#$ -t 1-1:1
 
-pos_enc_dim=(0 10 16 32 64 128)
+pos_enc_dim=(0 64)
 fname=$(pwd)/b32-bnorm-alt-fg-lr35e5_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
@@ -63,10 +63,10 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #             'min_lr': 1e-06,
 #             'print_epoch_interval': 5,
 #             'seed': 41,
-#             'seed_array': [41],
+#             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
 
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-fg-lr35e5 --param_values 10 16 32 64 128 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --partial_rw_pos_enc False --rw_pos_enc False --pos_enc False --init_lr 0.00035 --full_graph True
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b32-bnorm-alt-fg-lr35e5 --param_values 64 --batch_size 32 --rand_pos_enc True --batch_norm True --layer_norm False --partial_rw_pos_enc False --rw_pos_enc False --pos_enc False --init_lr 0.00035 --full_graph True --seed_array 41 95 22 35
