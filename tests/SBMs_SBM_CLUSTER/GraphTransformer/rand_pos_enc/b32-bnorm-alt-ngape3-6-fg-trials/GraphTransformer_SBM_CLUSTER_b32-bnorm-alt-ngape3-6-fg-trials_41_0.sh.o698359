@@ -30,11 +30,11 @@ Call stack:
   File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 146, in train_val_pipeline
     logger.info('Time taken to convert to full graphs:',time.time()-st)
 Message: 'Time taken to convert to full graphs:'
-Arguments: (1064.93874502182,)
+Arguments: (972.0002446174622,)
 [I] Loading dataset SBM_CLUSTER...
 train, test, val sizes : 10000 1000 1000
 [I] Finished loading.
-[I] Data load time: 24.1854s
+[I] Data load time: 15.2454s
 using 3 automata/automaton
 using 3 automata/automaton
 Traceback (most recent call last):
@@ -73,17 +73,17 @@ Traceback (most recent call last):
   File "dgl/_ffi/_cython/./function.pxi", line 287, in dgl._ffi._cy3.core.FunctionBase.__call__
   File "dgl/_ffi/_cython/./function.pxi", line 232, in dgl._ffi._cy3.core.FuncCall
   File "dgl/_ffi/_cython/./base.pxi", line 155, in dgl._ffi._cy3.core.CALL
-dgl._ffi.base.DGLError: [01:53:35] /opt/dgl/src/runtime/cuda/cuda_device_api.cc:97: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: out of memory
+dgl._ffi.base.DGLError: [02:22:12] /opt/dgl/src/runtime/cuda/cuda_device_api.cc:97: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA: out of memory
 Stack trace:
-  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x1492f1e295ff]
-  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::CUDADeviceAPI::AllocDataSpace(DLContext, unsigned long, unsigned long, DLDataType)+0x108) [0x1492f22f8c28]
-  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray::Empty(std::vector<long, std::allocator<long> >, DLDataType, DLContext)+0x351) [0x1492f21707f1]
-  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::NewIdArray(long, DLContext, unsigned char)+0x6d) [0x1492f1dfaafd]
-  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(std::pair<dgl::runtime::NDArray, dgl::runtime::NDArray> dgl::aten::impl::Sort<(DLDeviceType)2, long>(dgl::runtime::NDArray, int)+0x68) [0x1492f23218a8]
-  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::Sort(dgl::runtime::NDArray, int)+0x21a) [0x1492f1e0d74a]
-  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(void dgl::aten::impl::COOSort_<(DLDeviceType)2, long>(dgl::aten::COOMatrix*, bool)+0x5b) [0x1492f232c00b]
-  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOSort_(dgl::aten::COOMatrix*, bool)+0x344) [0x1492f1e09144]
-  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOSort(dgl::aten::COOMatrix, bool)+0x48c) [0x1492f1e52f0c]
+  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x14a149e295ff]
+  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::CUDADeviceAPI::AllocDataSpace(DLContext, unsigned long, unsigned long, DLDataType)+0x108) [0x14a14a2f8c28]
+  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray::Empty(std::vector<long, std::allocator<long> >, DLDataType, DLContext)+0x351) [0x14a14a1707f1]
+  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOSort(dgl::aten::COOMatrix, bool)+0x324) [0x14a149e52da4]
+  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::CSRMatrix dgl::aten::impl::COOToCSR<(DLDeviceType)2, long>(dgl::aten::COOMatrix)+0xc8) [0x14a14a329cb8]
+  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::COOToCSR(dgl::aten::COOMatrix)+0x3f3) [0x14a149e080c3]
+  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::GetInCSR(bool) const+0xc0) [0x14a14a2be110]
+  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::GetCSCMatrix(unsigned long) const+0x16) [0x14a14a2be726]
+  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::HeteroGraph::GetCSCMatrix(unsigned long) const+0x23) [0x14a14a1bfe63]
 
 
 
@@ -124,16 +124,16 @@ Traceback (most recent call last):
   File "dgl/_ffi/_cython/./function.pxi", line 222, in dgl._ffi._cy3.core.FuncCall
   File "dgl/_ffi/_cython/./function.pxi", line 211, in dgl._ffi._cy3.core.FuncCall3
   File "dgl/_ffi/_cython/./base.pxi", line 155, in dgl._ffi._cy3.core.CALL
-dgl._ffi.base.DGLError: [01:53:35] /opt/dgl/src/array/cuda/array_op_impl.cu:256: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA kernel launch error: out of memory
+dgl._ffi.base.DGLError: [02:22:13] /opt/dgl/src/array/cuda/array_op_impl.cu:256: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: CUDA kernel launch error: out of memory
 Stack trace:
-  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x1492f1e295ff]
-  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray dgl::aten::impl::Range<(DLDeviceType)2, long>(long, long, DLContext)+0x1d4) [0x1492f2313694]
-  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::Range(long, long, unsigned char, DLContext)+0x1fd) [0x1492f1dfae8d]
-  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::COO::Edges(unsigned long, std::string const&) const+0x9b) [0x1492f22c57fb]
-  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::Edges(unsigned long, std::string const&) const+0xa1) [0x1492f22c04c1]
-  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::HeteroGraph::Edges(unsigned long, std::string const&) const+0x2a) [0x1492f21bfeca]
-  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(+0x6ae1bc) [0x1492f21c91bc]
-  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(DGLFuncCall+0x48) [0x1492f214eb48]
-  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/_ffi/_cy3/core.cpython-310-x86_64-linux-gnu.so(+0x16d92) [0x1493b94c4d92]
+  [bt] (0) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dmlc::LogMessageFatal::~LogMessageFatal()+0x4f) [0x14a149e295ff]
+  [bt] (1) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::runtime::NDArray dgl::aten::impl::Range<(DLDeviceType)2, long>(long, long, DLContext)+0x1d4) [0x14a14a313694]
+  [bt] (2) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::aten::Range(long, long, unsigned char, DLContext)+0x1fd) [0x14a149dfae8d]
+  [bt] (3) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::COO::Edges(unsigned long, std::string const&) const+0x9b) [0x14a14a2c57fb]
+  [bt] (4) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::UnitGraph::Edges(unsigned long, std::string const&) const+0xa1) [0x14a14a2c04c1]
+  [bt] (5) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(dgl::HeteroGraph::Edges(unsigned long, std::string const&) const+0x2a) [0x14a14a1bfeca]
+  [bt] (6) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(+0x6ae1bc) [0x14a14a1c91bc]
+  [bt] (7) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/libdgl.so(DGLFuncCall+0x48) [0x14a14a14eb48]
+  [bt] (8) /afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/_ffi/_cy3/core.cpython-310-x86_64-linux-gnu.so(+0x16d92) [0x14a218229d92]
 
 
