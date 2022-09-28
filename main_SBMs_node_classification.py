@@ -208,7 +208,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for dense GNNs
                     epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
                 else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, MODEL_NAME, epoch)
+                    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, MODEL_NAME, epoch, net_params)
                     
                 epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
                 _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)        
@@ -381,6 +381,8 @@ def main():
 
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
+
+    net_params['seed_array'] = params['seed_array']
 
     logger.info(net_params)
     logger.info(params)

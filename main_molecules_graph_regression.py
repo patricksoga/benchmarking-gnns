@@ -67,7 +67,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                     logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
                     dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
                 else:
-                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
                     logger.info(f'Time PE:{time.time()-t0}')
             if net_params.get('rw_pos_enc', False):
                 logger.info(f"[!] Adding random walk graph positional encoding ({net_params['pos_enc_dim']}).")
@@ -162,7 +162,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 if MODEL_NAME in ['RingGNN', '3WLGNN']: # since different batch training function for RingGNN
                     epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, params['batch_size'])
                 else:   # for all other models common train function
-                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+                    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
                     
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
                 _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
@@ -348,6 +348,8 @@ def main():
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
+
+    net_params['seed_array'] = params['seed_array']
 
     logger.info(net_params)
     logger.info(params)
