@@ -11,13 +11,22 @@ from tqdm import tqdm
 """
     For GCNs
 """
-def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name):
+def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name, net_params):
     model.train()
     epoch_loss = 0
     epoch_train_mae = 0
     nb_data = 0
     gpu_mem = 0
+
+    if net_params.get('experiment_1', False):
+        limit = 200
+    else:
+        limit = -1
+
     for iter, data in tqdm(enumerate(data_loader)):
+        if iter == limit:
+            exit()
+
         batch_graphs = data[0].to(device)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)

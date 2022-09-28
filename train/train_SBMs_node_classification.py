@@ -12,14 +12,23 @@ from train.metrics import accuracy_SBM as accuracy
 """
     For GCNs
 """
-def train_epoch_sparse(model, optimizer, device, data_loader, model_name, epoch):
+def train_epoch_sparse(model, optimizer, device, data_loader, model_name, epoch, net_params):
 
     model.train()
     epoch_loss = 0
     epoch_train_acc = 0
     nb_data = 0
     gpu_mem = 0
+
+    if net_params.get('experiment_1', False):
+        limit = 1000
+    else:
+        limit = -1
+
     for iter, data in enumerate(data_loader):
+        if iter == limit:
+            exit()
+
         batch_graphs = data[0]
         batch_labels = data[1]
 
