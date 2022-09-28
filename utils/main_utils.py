@@ -150,6 +150,10 @@ def add_args(parser):
     parser.add_argument('--random_orientation', help="Add a random orientation to the graphs")
     parser.add_argument('--rand_sketchy_pos_enc', help="Add rand_sketchy_pos_enc")
     parser.add_argument('--eigen_bartels_stewart', help="Use eigendecomposition-based Bartels-Stewart (needs diag)")
+    parser.add_argument('--gape_rand')
+    parser.add_argument('--experiment_1', help="Experiment - view PEs")
+    parser.add_argument('--gape_normalization', help="Normalization method for GAPE")
+    parser.add_argument('--gape_squash', help="Squash method for GAPE")
 
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
@@ -395,5 +399,33 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['eigen_bartels_stewart'] = False
+    
+    if args.gape_rand is not None:
+        net_params['gape_rand'] = True if args.gape_rand == 'True' else False
+    elif 'gape_rand' in net_params:
+        pass
+    else:
+        net_params['gape_rand'] = False
+
+    if args.experiment_1 is not None:
+        net_params['experiment_1'] = True if args.experiment_1 == 'True' else False
+    elif 'experiment_1' in net_params:
+        pass
+    else:
+        net_params['experiment_1'] = False
+
+    if args.gape_normalization is not None:
+        net_params['gape_normalization'] = args.gape_normalization
+    elif 'gape_normalization' in net_params:
+        pass
+    else:
+        net_params['gape_rand'] = False
+
+    if args.gape_squash is not None:
+        net_params['gape_squash'] = args.gape_squash
+    elif 'gape_squash' in net_params:
+        pass
+    else:
+        net_params['gape_rand'] = 'none'
 
     return net_params

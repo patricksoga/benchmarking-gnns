@@ -57,6 +57,11 @@ class PELayer(nn.Module):
         self.matrix_type = net_params['matrix_type']
         self.logger = get_logger(net_params['log_file'])
 
+        self.experiment_1 = net_params.get('experiment_1', False)
+        self.gape_normalization = net_params.get('gape_normalization', 'none')
+        self.gape_squash = net_params.get('gape_squash', 'none')
+        self.seed_array = net_params['seed_array']
+
         self.power_method = net_params.get('power_method', False)
         self.power_method_iters = net_params.get('power_iters', 50)
 
@@ -154,10 +159,12 @@ class PELayer(nn.Module):
                 by default, we repeat each initial weight vector n//k times
                 and stack them together with final n-(n//k) weight vectors.
         """
+        try:
+            num_nodes = num_nodes.number_of_nodes()
+        except: pass
         num_pos_initials = len(self.pos_initials)
         if num_pos_initials == 1:
             return torch.cat([self.pos_initials[0] for _ in range(num_nodes)], dim=1)
-
         remainder = num_nodes % num_pos_initials
         capacity = num_nodes - remainder
         out = torch.cat([self.pos_initials[i] for i in range(num_pos_initials)], dim=1)
@@ -326,6 +333,33 @@ class PELayer(nn.Module):
                     pe = self.embedding_pos_encs[0](pe)
 
             else:
+
+                pre_modified = pe
+                # experimenting with normalization/squashing
+                if self.gape_squash == 'softplus':
+                    pe = torch.nn.functional.softplus(pe)
+                if self.gape_squash == 'exp':
+                    pe = torch.exp(pe)
+                if self.gape_squash == 'square':
+                    pe = torch.mul(pe, pe)
+                if self.gape_squash == 'tanh':
+                    pe = torch.tanh(pe)
+
+                if self.gape_normalization == 'max':
+                    pe /= pe.max()
+                if self.gape_normalization == 'softmax_0':
+                    pe = torch.softmax(pe, dim=0)
+                if self.gape_normalization == 'softmax_1':
+                    pe = torch.softmax(pe, dim=1)
+
+                if self.experiment_1:
+                    try:
+                        pes = torch.load(f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
+                        pes.append((pe, pre_modified))
+                    except:
+                        pes = [(pe, pre_modified)]
+                    torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
+
                 if not self.cat:
                     pe = self.embedding_pos_encs[0](pos_enc)
 
