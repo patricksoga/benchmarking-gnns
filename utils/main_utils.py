@@ -419,13 +419,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     elif 'gape_normalization' in net_params:
         pass
     else:
-        net_params['gape_rand'] = False
+        net_params['gape_normalization'] = False
 
     if args.gape_squash is not None:
         net_params['gape_squash'] = args.gape_squash
     elif 'gape_squash' in net_params:
         pass
     else:
-        net_params['gape_rand'] = 'none'
+        net_params['gape_squash'] = 'none'
 
     return net_params

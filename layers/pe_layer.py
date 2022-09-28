@@ -336,6 +336,7 @@ class PELayer(nn.Module):
 
                 pre_modified = pe
                 # experimenting with normalization/squashing
+                print(self.gape_squash)
                 if self.gape_squash == 'softplus':
                     pe = torch.nn.functional.softplus(pe)
                 if self.gape_squash == 'exp':
