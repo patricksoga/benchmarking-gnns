@@ -31,11 +31,11 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'full_graph': False,
 #                 'gape_clamp': False,
 #                 'gape_individual': False,
-#                 'gape_normalization': False,
+#                 'gape_normalization': 'softmax_1',
 #                 'gape_rand': False,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
-#                 'gape_squash': 'softmax_1',
+#                 'gape_squash': 'none',
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
 #                 'in_feat_dropout': 0.0,
@@ -70,4 +70,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-bnorm-alt-64-softmax_1-trials --param_values 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_squash softmax_1
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-bnorm-alt-64-softmax_1-trials --param_values 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_normalization softmax_1
