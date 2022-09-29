@@ -78,9 +78,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
                     logger.info("[!] Using diagonal weight matrix.")
                 if net_params.get('n_gape', 1) > 1:
                     logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
-                    dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
+                    dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'], model)
                 else:
-                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
                 logger.info(f'Time PE:{time.time()-t0}')
         elif net_params.get('partial_rw_pos_enc', False):
             logger.info(f"[!] Adding partial random walk graph positional encoding ({net_params['pos_enc_dim']}).")
@@ -158,7 +158,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
                 logger.info(f'Epoch {epoch + 1}/{params["epochs"]}')
                 start = time.time()
 
-                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME)
+                epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
 
                 epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
                 _, epoch_test_acc = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
@@ -349,6 +349,8 @@ def main(args):
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
+
+    net_params['seed_array'] = params['seed_array']
 
     logger.info(net_params)
     logger.info(params)
