@@ -5,7 +5,7 @@ import numpy as np
 import networkx as nx
 import dgl
 import scipy
-
+import time
 from utils.main_utils import get_logger
 
 def type_of_enc(net_params):
@@ -150,6 +150,8 @@ class PELayer(nn.Module):
         nn.init.normal_(self.pos_adder)
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
+        if self.eigen_bartels_stewart:
+            self.pos_transition_inv = nn.Parameter(torch.linalg.inv(self.pos_transitions[0]))
 
     def stack_strategy(self, num_nodes):
         """
@@ -182,25 +184,31 @@ class PELayer(nn.Module):
         m = B.shape[-1]
         n = A.shape[-1]
         R, U = torch.linalg.eig(A)
-        S, V = torch.linalg.eig(B)
+        S, V = torch.linalg.eigh(B)
+        # S, V = B
+        # t1 = time.time()
         F = torch.linalg.solve(U, (C + 0j) @ V)
-        Y = F / R[..., : , None] - S[..., None, :]
-        X = U[..., :n, :n] @ Y[..., :n, :m] @ torch.linalg.inv(V)[..., :m, :m]
-        if all(torch.isreal(x.flatten()[0]) for x in [A, B, C]):
-            return X.isreal
-        else:
-            return X
+        # print(time.time()-t1)
+        W = R[..., :, None] - S[..., None, :]
+        Y = F / W
+        X = U[...,:n,:n] @ Y[...,:n,:m] @ torch.linalg.inv(V)[...,:m,:m]
+        return X
 
-    def learned_forward(self, g):
+    def learned_forward(self, g, graph_spectra):
         # if not self.diag:
         #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
         #     exit()
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
-        transition = torch.diag(self.pos_transitions[0])
-        transition_inverse = torch.linalg.inv(transition).to(self.device)
-        mat_product = transition_inverse @ vec_init
-        pe = self.sylvester(transition_inverse, -mat, mat_product)
+        # transition = torch.diag(self.pos_transitions[0])
+        # transition = self.pos_transitions[0]
+        # transition_inverse = torch.linalg.inv(transition).to(self.device)
+        # mat_product = transition_inverse @ vec_init
+        mat_product = self.pos_transition_inv @ vec_init
+        # pe = self.sylvester(transition_inverse, -mat, mat_product)
+        pe = self.sylvester(self.pos_transition_inv, -mat, mat_product)
+        # eigvals, eigvecs = g.EigVals, g.EigVecs
+        # pe = self.sylvester(self.pos_transition_inv, (eigvals, eigvecs), mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
         pe = self.embedding_pos_encs[0](pe)
         if self.clamp:
@@ -208,7 +216,7 @@ class PELayer(nn.Module):
         return pe
 
 
-    def forward(self, g, h, pos_enc=None):
+    def forward(self, g, h, pos_enc=None, graph_spectra=None):
         pe = pos_enc
         if not self.use_pos_enc:
             return h
@@ -221,7 +229,7 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             if self.eigen_bartels_stewart:
-                return self.learned_forward(g)
+                return self.learned_forward(g, graph_spectra)
 
             mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g.num_nodes())
@@ -334,32 +342,31 @@ class PELayer(nn.Module):
 
             else:
 
-                pre_modified = pe
                 # experimenting with normalization/squashing
-                print(self.gape_squash)
-                if self.gape_squash == 'softplus':
-                    pe = torch.nn.functional.softplus(pe)
-                if self.gape_squash == 'exp':
-                    pe = torch.exp(pe)
-                if self.gape_squash == 'square':
-                    pe = torch.mul(pe, pe)
-                if self.gape_squash == 'tanh':
-                    pe = torch.tanh(pe)
+                # pre_modified = pe
+                # if self.gape_squash == 'softplus':
+                #     pe = torch.nn.functional.softplus(pe)
+                # if self.gape_squash == 'exp':
+                #     pe = torch.exp(pe)
+                # if self.gape_squash == 'square':
+                #     pe = torch.mul(pe, pe)
+                # if self.gape_squash == 'tanh':
+                #     pe = torch.tanh(pe)
 
-                if self.gape_normalization == 'max':
-                    pe /= pe.max()
-                if self.gape_normalization == 'softmax_0':
-                    pe = torch.softmax(pe, dim=0)
-                if self.gape_normalization == 'softmax_1':
-                    pe = torch.softmax(pe, dim=1)
+                # if self.gape_normalization == 'max':
+                #     pe /= pe.max()
+                # if self.gape_normalization == 'softmax_0':
+                #     pe = torch.softmax(pe, dim=0)
+                # if self.gape_normalization == 'softmax_1':
+                #     pe = torch.softmax(pe, dim=1)
 
-                if self.experiment_1:
-                    try:
-                        pes = torch.load(f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
-                        pes.append((pe, pre_modified))
-                    except:
-                        pes = [(pe, pre_modified)]
-                    torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
+                # if self.experiment_1:
+                #     try:
+                #         pes = torch.load(f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
+                #         pes.append((pe, pre_modified))
+                #     except:
+                #         pes = [(pe, pre_modified)]
+                #     torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
                 if not self.cat:
                     pe = self.embedding_pos_encs[0](pos_enc)
@@ -369,6 +376,32 @@ class PELayer(nn.Module):
 
             if self.clamp:
                 pe = torch.tanh(pe)
+
+            pre_modified = pe
+
+            if self.gape_squash == 'softplus':
+                pe = torch.nn.functional.softplus(pe)
+            if self.gape_squash == 'exp':
+                pe = torch.exp(pe)
+            if self.gape_squash == 'square':
+                pe = torch.mul(pe, pe)
+            if self.gape_squash == 'tanh':
+                pe = torch.tanh(pe)
+
+            if self.gape_normalization == 'max':
+                pe /= pe.max()
+            if self.gape_normalization == 'softmax_0':
+                pe = torch.softmax(pe, dim=0)
+            if self.gape_normalization == 'softmax_1':
+                pe = torch.softmax(pe, dim=1)
+
+            if self.experiment_1:
+                try:
+                    pes = torch.load(f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
+                    pes.append((pe, pre_modified))
+                except:
+                    pes = [(pe, pre_modified)]
+                torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
             return pe
 
