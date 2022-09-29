@@ -29,7 +29,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'edge_feat': False,
 #                 'eigen_bartels_stewart': False,
 #                 'experiment_1': False,
-#                 'full_graph': True,
+#                 'full_graph': False,
 #                 'gape_clamp': False,
 #                 'gape_individual': False,
 #                 'gape_normalization': False,
@@ -75,4 +75,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-lr25 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --batch_norm True --layer_norm False --edge_feat False --full_graph True --init_lr 0.00025 --min_lr 1e-7
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-lr25 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --batch_norm True --layer_norm False --edge_feat False --full_graph False --init_lr 0.00025 --min_lr 1e-7
