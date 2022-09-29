@@ -11,14 +11,22 @@ from train.metrics import accuracy_TU as accuracy
 """
     For GCNs
 """
-def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name):
+def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name, net_params):
     model.train()
     epoch_loss = 0
     epoch_train_acc = 0
     nb_data = 0
     gpu_mem = 0
-    import tqdm
-    for iter, data in tqdm.tqdm(enumerate(data_loader)):
+
+    if net_params.get('experiment_1', False):
+        limit = 1000
+    else:
+        limit = -1
+
+    for iter, data in enumerate(data_loader):
+        if iter == limit:
+            exit()
+
         batch_graphs = data[0].to(device)
         batch_labels = data[1].to(device)
 
