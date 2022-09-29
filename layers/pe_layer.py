@@ -94,7 +94,7 @@ class PELayer(nn.Module):
 
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
-                for _ in range(self.n_gape)
+                for _ in range(self.num_initials)
             )
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
@@ -389,7 +389,7 @@ class PELayer(nn.Module):
                 pe = torch.tanh(pe)
 
             if self.gape_normalization == 'max':
-                pe /= pe.max()
+                pe = pe / pe.max()
             if self.gape_normalization == 'softmax_0':
                 pe = torch.softmax(pe, dim=0)
             if self.gape_normalization == 'softmax_1':
@@ -417,6 +417,7 @@ class PELayer(nn.Module):
                 return h
             pe = self.embedding_h(h)
 
+        pe = torch.dropout(pe, p=0.05)
         return pe
 
     def get_normalized_laplacian(self, g):
