@@ -67,6 +67,9 @@ class PELayer(nn.Module):
 
         self.rand_sketchy_pos_enc = net_params.get('rand_sketchy_pos_enc', False)
 
+        self.gape_norm = net_params.get('gape_norm', False)
+        self.gape_div = net_params.get('gape_div', False)
+
         hidden_dim = net_params['hidden_dim']
 
         self.logger.info(type_of_enc(net_params))
@@ -110,6 +113,11 @@ class PELayer(nn.Module):
                     nn.init.normal_(pos_transition)
                 else:
                     nn.init.orthogonal_(pos_transition)
+                    if self.gape_div:
+                        pos_transition = pos_transition/self.pos_enc_dim
+                    elif self.gape_norm:
+                        pos_transition = pos_transition/torch.linalg.norm(pos_transition)
+
             # init linear layers for reshaping to hidden dim
             if self.gape_individual:
                 self.embedding_pos_encs = nn.ModuleList(nn.Linear(self.pos_enc_dim, hidden_dim) for _ in range(self.n_gape))

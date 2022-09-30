@@ -154,6 +154,8 @@ def add_args(parser):
     parser.add_argument('--experiment_1', help="Experiment - view PEs")
     parser.add_argument('--gape_normalization', help="Normalization method for GAPE")
     parser.add_argument('--gape_squash', help="Squash method for GAPE")
+    parser.add_argument('--gape_norm', help="Divide transition weights by norm of weight matrix")
+    parser.add_argument('--gape_div', help="Divide transition weights by k")
 
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
@@ -427,5 +429,19 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_squash'] = 'none'
+
+    if args.gape_div is not None:
+        net_params['gape_div'] = True if args.gape_div == 'True' else False
+    elif 'gape_div' in net_params:
+        pass
+    else:
+        net_params['gape_div'] = False
+
+    if args.gape_norm is not None:
+        net_params['gape_norm'] = True if args.gape_norm == 'True' else False
+    elif 'gape_norm' in net_params:
+        pass
+    else:
+        net_params['gape_norm'] = False
 
     return net_params
