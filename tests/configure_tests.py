@@ -10,6 +10,7 @@ sys.path.append('..')
 
 from utils.main_utils import add_args, get_net_params, get_parameters
 from layers.pe_layer import type_of_enc
+from script_gen import generate
 
 def dataset_to_graph_task(dataset):
     if dataset in ("SBM_PATTERN", "SBM_CLUSTER"):
@@ -195,6 +196,8 @@ def main(args):
             f.write(script_string)
 
         print("Script written to: ", script_path)
+
+        generate(script_path)
 
     except Exception as e:
         print(f"Could not write script to {script_path}")

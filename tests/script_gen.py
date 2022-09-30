@@ -19,8 +19,7 @@ cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 """
     return text
 
-def main(args):
-    file = args.file
+def generate(file):
     dir = os.path.dirname(file)
 
     # parse file into text format
@@ -53,4 +52,4 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--file", type=str, help="Path to script to split")
-    main(parser.parse_args())
+    generate(parser.parse_args().file)
