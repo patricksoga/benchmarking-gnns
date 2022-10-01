@@ -127,6 +127,7 @@ class PELayer(nn.Module):
             if self.gape_norm:
                 normed_transitions = []
                 for transition in transitions:
+                    torch.nn.init.normal_(transition)
                     normed_transition = transition / torch.linalg.norm(transition)
                     normed_transitions.append(normed_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
@@ -134,10 +135,24 @@ class PELayer(nn.Module):
             if self.gape_div:
                 divd_tansitions = []
                 for transition in transitions:
+                    torch.nn.init.normal_(transition)
                     divd_transition = transition / torch.linalg.norm(transition)
                     divd_tansitions.append(divd_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(divd_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for divd_transition in divd_tansitions)
-            # symm_transitions = []
+
+            if not self.gape_norm and not self.gape_div:
+                shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
+
+                self.pos_transitions = nn.ParameterList(
+                    nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+                    for _ in range(self.n_gape)
+                )
+                for pos_transition in self.pos_transitions:
+                    if net_params['diag']:
+                        nn.init.normal_(pos_transition)
+                    else:
+                        nn.init.orthogonal_(pos_transition)
+                    # nn.init.constant_(pos_transition, 50)
 
             # for transition in transitions:
             #     values = torch.zeros(*shape)
