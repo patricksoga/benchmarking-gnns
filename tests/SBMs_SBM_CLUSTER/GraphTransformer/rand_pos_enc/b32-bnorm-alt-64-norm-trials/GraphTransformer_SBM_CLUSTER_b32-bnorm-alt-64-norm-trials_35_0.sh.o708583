@@ -1,0 +1,20 @@
+[I] Loading dataset SBM_CLUSTER...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 14.2336s
+using 1 automata/automaton
+using 1 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 399, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 397, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 98, in train_val_pipeline
+    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 416, in add_automaton_encodings
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 416, in <listcomp>
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 183, in automaton_encoding
+    transition_inv = torch.inverse(transition_matrix).cpu().numpy()
+torch._C._LinAlgError: torch.linalg.inv: The diagonal element 1 is zero, the inversion could not be completed because the input matrix is singular.
