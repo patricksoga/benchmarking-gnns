@@ -38,6 +38,22 @@ def add_spd_encodings(dataset):
     dataset.test.spatial_pos_lists = [spd_encoding(g) for g in dataset.test.graph_lists]
     return dataset
 
+def simple_spectral_decomp(g):
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    EigVals, EigVecs = np.linalg.eigh(A.toarray())
+    setattr(g, 'EigVecs', torch.from_numpy(EigVecs))
+    setattr(g, 'EigVals', torch.from_numpy(EigVals))
+    # g.ndata['EigVecs'] = torch.from_numpy(EigVecs).float()
+    # g.ndata['EigVals'] = torch.from_numpy(EigVals).float()
+    return g
+
+def add_simple_spectral_decomp(dataset):
+    dataset.train.graph_lists = [simple_spectral_decomp(g) for g in dataset.train.graph_lists]
+    dataset.val.graph_lists = [simple_spectral_decomp(g) for g in dataset.val.graph_lists]
+    dataset.test.graph_lists = [simple_spectral_decomp(g) for g in dataset.test.graph_lists]
+    return dataset
+
+
 def spectral_decomposition(g, pos_enc_dim):
     # Laplacian
     n = g.number_of_nodes()
@@ -80,7 +96,7 @@ def add_spectral_decomposition(dataset, pos_enc_dim):
     dataset.test.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.test.graph_lists]
     return dataset
 
-def random_walk_encoding(g, pos_enc_dim, type='partial'):
+def random_walk_encoding(g, pos_enc_dim, type='partial', ret_pe=False):
     """
     Graph positional encoding w/ random walk
     """
@@ -101,6 +117,9 @@ def random_walk_encoding(g, pos_enc_dim, type='partial'):
         else:
             PE.append(torch.from_numpy(M_power).float())
     PE = torch.stack(PE,dim=-1)
+    if ret_pe:
+        return PE
+
     g.ndata['pos_enc'] = PE  
 
     return g
@@ -157,7 +176,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # torch.einsum('ij, kj -> ij', a, b) for matrix
         # torch.einsum('ij, j->ij', a, b) for vector
         # torch.einsum('ij, i->ij', a, b), a is a matrix, b is a vector
-
+    transition_matrix = torch.nan_to_num(transition_matrix)
     if diag:
         transition_inv = transition_matrix**-1
     else:
