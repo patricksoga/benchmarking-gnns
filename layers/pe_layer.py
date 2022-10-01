@@ -1,3 +1,4 @@
+from concurrent.futures.process import _system_limits_checked
 import torch
 import torch.nn as nn
 import scipy as sp
@@ -104,19 +105,66 @@ class PELayer(nn.Module):
 
             # init transition weights
             shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
-            self.pos_transitions = nn.ParameterList(
-                nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
-                for _ in range(self.n_gape)
-            )
-            for pos_transition in self.pos_transitions:
-                if net_params['diag']:
-                    nn.init.normal_(pos_transition)
-                else:
-                    nn.init.orthogonal_(pos_transition)
-                    if self.gape_div:
-                        pos_transition = pos_transition/self.pos_enc_dim
-                    elif self.gape_norm:
-                        pos_transition = pos_transition/torch.linalg.norm(pos_transition)
+
+            # self.pos_transitions = nn.ParameterList(
+            #     nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+            #     for _ in range(self.n_gape)
+            # )
+            # for pos_transition in self.pos_transitions:
+            #     if net_params['diag']:
+            #         nn.init.normal_(pos_transition)
+            #     else:
+            #         nn.init.orthogonal_(pos_transition)
+            #         if self.gape_div:
+            #             pos_transition = pos_transition/self.pos_enc_dim
+            #         elif self.gape_norm:
+            #             pos_transition = pos_transition/torch.linalg.norm(pos_transition)
+
+            shape = (int(self.pos_enc_dim*(self.pos_enc_dim + 1)/2),)
+
+            transitions = [torch.empty(self.pos_enc_dim, self.pos_enc_dim) for _ in range(self.n_gape)]
+
+            if self.gape_norm:
+                normed_transitions = []
+                for transition in transitions:
+                    normed_transition = transition / torch.linalg.norm(transition)
+                    normed_transitions.append(normed_transition)
+                self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
+
+            if self.gape_div:
+                divd_tansitions = []
+                for transition in transitions:
+                    divd_transition = transition / torch.linalg.norm(transition)
+                    divd_tansitions.append(divd_transition)
+                self.pos_transitions = nn.ParameterList(nn.Parameter(divd_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for divd_transition in divd_tansitions)
+            # symm_transitions = []
+
+            # for transition in transitions:
+            #     values = torch.zeros(*shape)
+            #     torch.nn.init.normal_(values)
+
+            #     i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
+            #     symm_transition = transition.detach()
+            #     symm_transition[i, j] = values
+            #     symm_transition.T[i, j] = values
+            #     symm_transition = symm_transition / torch.linalg.norm(symm_transition)
+            #     symm_transitions.append(symm_transition)
+            
+            # self.pos_transitions = nn.ParameterList(nn.Parameter(symm_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for symm_transition in symm_transitions)
+
+            # self.pos_transitions = nn.ParameterList(
+            #     nn.Parameter(torch.empty(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+            #     for _ in range(self.n_gape)
+            # )
+            
+            # for pos_transition in self.pos_transitions:
+            #     i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
+            #     A = torch.zeros(self.pos_enc_dim, self.pos_enc_dim)
+            #     torch.nn.init.normal_(pos_transition)
+            #     values = pos_transition.clone()
+            #     A[i, j] = values
+            #     A.T[i, j] = values
+            #     pos_transition = A
 
             # init linear layers for reshaping to hidden dim
             if self.gape_individual:
@@ -209,12 +257,11 @@ class PELayer(nn.Module):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
-        # transition = self.pos_transitions[0]
-        # transition_inverse = torch.linalg.inv(transition).to(self.device)
-        # mat_product = transition_inverse @ vec_init
-        mat_product = self.pos_transition_inv @ vec_init
-        # pe = self.sylvester(transition_inverse, -mat, mat_product)
-        pe = self.sylvester(self.pos_transition_inv, -mat, mat_product)
+        transition = self.pos_transitions[0]
+        transition_inverse = torch.linalg.inv(transition).to(self.device)
+        mat_product = transition_inverse @ vec_init
+        # mat_product = self.pos_transition_inv @ vec_init
+        pe = self.sylvester(transition_inverse, -mat, mat_product)
         # eigvals, eigvecs = g.EigVals, g.EigVecs
         # pe = self.sylvester(self.pos_transition_inv, (eigvals, eigvecs), mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
