@@ -17,7 +17,7 @@ from data.WikiCS import WikiCSDataset
 from .webkb import WebKBDataset
 
 
-def LoadData(DATASET_NAME):
+def LoadData(DATASET_NAME, **kwargs):
     """
         This function is called in the main.py file 
         returns:
@@ -55,7 +55,7 @@ def LoadData(DATASET_NAME):
     
     # handling for the CYCLES Dataset from https://github.com/cvignac/SMP
     if DATASET_NAME == 'CYCLES': 
-        return CyclesDataset(DATASET_NAME)
+        return CyclesDataset(DATASET_NAME, k=kwargs['cycles_k'])
     
     # handling for the GraphTheoryProp Dataset, which is the multitask dataset from https://github.com/lukecavabarrett/pna
     if DATASET_NAME == 'GraphTheoryProp' or DATASET_NAME == 'GRAPHTHEORYPROP':

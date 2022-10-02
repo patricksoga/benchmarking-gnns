@@ -176,15 +176,13 @@ def make_full_graph(g):
 
 class CyclesDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name):
+    def __init__(self, name, n=56, k=6):
         """
             Loading Cycles datasets
         """
         start = time.time()
         print("[I] Loading dataset %s..." % (name))
         self.name = name
-        n = 56
-        k = 6
         data_dir = 'data/cycles/'
         try:
             with open(data_dir+name+'_'+str(k)+'_'+str(n)+'.pkl',"rb") as f:

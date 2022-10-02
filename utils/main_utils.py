@@ -156,7 +156,10 @@ def add_args(parser):
     parser.add_argument('--gape_squash', help="Squash method for GAPE")
     parser.add_argument('--gape_norm', help="Divide transition weights by norm of weight matrix")
     parser.add_argument('--gape_div', help="Divide transition weights by k")
+    parser.add_argument('--gape_symmetric', help="Initialize transition weights as symmetric")
+    parser.add_argument('--gape_weight_gen', help="Initialize transition weights using random eigenvalues < 1")
 
+    parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
     parser.add_argument('--lpe_layers', help="Number of layers for graph transformer (spectral attention)")
@@ -443,5 +446,19 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_norm'] = False
+
+    if args.gape_symmetric is not None:
+        net_params['gape_symmetric'] = True if args.gape_symmetric == 'True' else False
+    elif 'gape_symmetric' in net_params:
+        pass
+    else:
+        net_params['gape_symmetric'] = False
+
+    if args.gape_weight_gen is not None:
+        net_params['gape_weight_gen'] = True if args.gape_weight_gen == 'True' else False
+    elif 'gape_weight_gen' in net_params:
+        pass
+    else:
+        net_params['gape_weight_gen'] = False
 
     return net_params

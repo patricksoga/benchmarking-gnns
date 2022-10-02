@@ -8,6 +8,7 @@ import scipy
 import time
 from utils.main_utils import get_logger
 from random import choices
+import scipy.stats as sps
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
@@ -70,6 +71,7 @@ class PELayer(nn.Module):
 
         self.gape_norm = net_params.get('gape_norm', False)
         self.gape_div = net_params.get('gape_div', False)
+        self.gape_weight_gen = net_params.get('gape_weight_gen', False)
 
         hidden_dim = net_params['hidden_dim']
 
@@ -132,15 +134,24 @@ class PELayer(nn.Module):
                     normed_transitions.append(normed_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
 
-            if self.gape_div:
+            elif self.gape_div:
                 divd_tansitions = []
                 for transition in transitions:
                     torch.nn.init.normal_(transition)
                     divd_transition = transition / torch.linalg.norm(transition)
                     divd_tansitions.append(divd_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(divd_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for divd_transition in divd_tansitions)
+            elif self.gape_weight_gen:
+                transition_matrices = []
+                for transition in transitions:
+                    random_matrix = torch.from_numpy(sps.ortho_group.rvs(self.pos_enc_dim))
+                    random_eigvals = torch.rand(self.pos_enc_dim,)
+                    random_matrix_inv = torch.linalg.inv(random_matrix)
 
-            if not self.gape_norm and not self.gape_div:
+                    transition_matrix = random_matrix @ torch.diag(random_eigvals).type(torch.double) @ random_matrix_inv
+                    transition_matrices.append(transition_matrix)
+                self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
+            else:
                 shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
 
                 self.pos_transitions = nn.ParameterList(

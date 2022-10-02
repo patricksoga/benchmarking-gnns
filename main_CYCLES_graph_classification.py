@@ -303,7 +303,9 @@ def main(args):
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = LoadData(DATASET_NAME)
+    
+
+    dataset = LoadData(DATASET_NAME, cycles_k=args.cycles_k)
 
     if args.out_dir is not None:
         out_dir = args.out_dir
