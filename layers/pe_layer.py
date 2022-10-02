@@ -1,4 +1,3 @@
-from concurrent.futures.process import _system_limits_checked
 import torch
 import torch.nn as nn
 import scipy as sp
@@ -8,6 +7,7 @@ import dgl
 import scipy
 import time
 from utils.main_utils import get_logger
+from random import choices
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
@@ -195,7 +195,6 @@ class PELayer(nn.Module):
             # self.mat_pows = nn.ParameterList([nn.Parameter(torch.Tensor(size=(1,))) for _ in range(self.pow_of_mat)])
             # for mat_pow in self.mat_pows:
             #     nn.init.constant_(mat_pow, 1)
-            # self.adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
 
         elif self.pagerank:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
@@ -225,6 +224,13 @@ class PELayer(nn.Module):
             self.pos_transition_inv = nn.Parameter(torch.linalg.inv(self.pos_transitions[0]))
 
     def stack_strategy(self, num_nodes):
+        num_pos_initials = len(self.pos_initials)
+        num_nodes = num_nodes.number_of_nodes()
+
+        options = [i for i in range(num_pos_initials)]
+        indices = choices(options, k=num_nodes)
+        out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
+        return out
         """
             Given more than one initial weight vector, define the stack strategy.
 
@@ -468,9 +474,9 @@ class PELayer(nn.Module):
             if self.experiment_1:
                 try:
                     pes = torch.load(f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
-                    pes.append((pe, pre_modified))
+                    pes.append((pe, pre_modified, g))
                 except:
-                    pes = [(pe, pre_modified)]
+                    pes = [(pe, pre_modified, g)]
                 torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
             return pe
@@ -487,7 +493,7 @@ class PELayer(nn.Module):
                 return h
             pe = self.embedding_h(h)
 
-        pe = torch.dropout(pe, p=0.05)
+        # pe = torch.dropout(pe, p=0.05)
         return pe
 
     def get_normalized_laplacian(self, g):
