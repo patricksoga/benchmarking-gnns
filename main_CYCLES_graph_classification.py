@@ -305,8 +305,6 @@ def main(args):
         DATASET_NAME = config['dataset']
     
 
-    dataset = LoadData(DATASET_NAME, cycles_k=args.cycles_k)
-
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -316,6 +314,7 @@ def main(args):
     # network parameters
     # net_params = config['net_params']
     net_params = get_net_params(config, args, device, params, DATASET_NAME)
+    dataset = LoadData(DATASET_NAME, cycles_k=net_params['cycles_k'])
 
     if args.sage_aggregator is not None:
         net_params['sage_aggregator'] = args.sage_aggregator

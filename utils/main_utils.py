@@ -460,5 +460,12 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_weight_gen'] = False
+    
+    if args.cycles_k is not None:
+        net_params['cycles_k'] = args.cycles_k
+    elif 'cycles_k' in net_params:
+        pass
+    else:
+        net_params['cycles_k'] = 6
 
     return net_params

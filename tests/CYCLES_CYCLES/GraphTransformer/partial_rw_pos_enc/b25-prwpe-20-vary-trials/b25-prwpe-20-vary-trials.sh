@@ -23,6 +23,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'batch_norm': True,
 #                 'batch_size': 25,
 #                 'cat_gape': False,
+#                 'cycles_k': '-1',
 #                 'dataset': 'CYCLES',
 #                 'diag': False,
 #                 'dropout': 0.0,
