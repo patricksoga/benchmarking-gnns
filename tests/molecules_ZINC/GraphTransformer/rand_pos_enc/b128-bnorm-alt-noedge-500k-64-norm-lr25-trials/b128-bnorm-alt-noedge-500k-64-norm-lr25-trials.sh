@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_ZINC_b128-bnorm-alt-noedge-500k-64-norm-lr35-trials
+#$ -N GraphTransformer_ZINC_b128-bnorm-alt-noedge-500k-64-norm-lr25-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 64)
-fname=$(pwd)/b128-bnorm-alt-noedge-500k-64-norm-lr35-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b128-bnorm-alt-noedge-500k-64-norm-lr25-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_ZINC_b128-bnorm-alt-noedge-500k-64-norm-lr35-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_ZINC_b128-bnorm-alt-noedge-500k-64-norm-lr25-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'ZINC',
@@ -60,10 +60,10 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/molecules_graph_regression_b128-bnorm-alt-noedge-500k-64-norm-lr35-trials',
+#  'out_dir': 'out/molecules_graph_regression_b128-bnorm-alt-noedge-500k-64-norm-lr25-trials',
 #  'params': {'batch_size': 128,
 #             'epochs': 1000,
-#             'init_lr': 0.00035,
+#             'init_lr': 0.00025,
 #             'lr_reduce_factor': 0.5,
 #             'lr_schedule_patience': 15,
 #             'max_time': 24,
@@ -77,4 +77,4 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k-64-norm-lr35-trials --batch_norm True --layer_norm False --rand_pos_enc True --param_values 64 --seed_array 41 95 22 35 --edge_feat False --init_lr 0.00035 --min_lr 1e-7 --save_name b128-bnorm-alt-noedge-500k-clamped-8-trials --L 10 --hidden_dim 80 --out_dim 80 --gape_clamp False --gape_norm True
+#python3 configure_tests.py --config ../configs/molecules_graph_regression_GraphTransformer_ZINC_500k.json --batch_size 128 --job_note b128-bnorm-alt-noedge-500k-64-norm-lr25-trials --batch_norm True --layer_norm False --rand_pos_enc True --param_values 64 --seed_array 41 95 22 35 --edge_feat False --init_lr 0.00025 --min_lr 1e-7 --save_name b128-bnorm-alt-noedge-500k-clamped-8-trials --L 10 --hidden_dim 80 --out_dim 80 --gape_clamp False --gape_norm True
