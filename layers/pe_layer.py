@@ -288,7 +288,7 @@ class PELayer(nn.Module):
         # S, V = B
         # t1 = time.time()
         # F = torch.linalg.solve(U, (C + 0j) @ V)
-        F = torch.linalg.solve(U, C@ V)
+        F = torch.linalg.solve(U, C @ V)
         # print(time.time()-t1)
         W = R[..., :, None] - S[..., None, :]
         Y = F / W
@@ -299,6 +299,10 @@ class PELayer(nn.Module):
         # if not self.diag:
         #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
         #     exit()
+        nxg = dgl.to_networkx(g)
+        nxg = nx.to_undirected(nxg)
+        print(list(nx.connected_components(nxg)))
+
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
