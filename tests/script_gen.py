@@ -40,11 +40,11 @@ def generate(file):
     seeds = test_config['params']['seed_array']
 
     for idx, value in enumerate(values):
-        for seed in seeds:
+        for i, seed in enumerate(seeds):
             command[job_num_idx] = f'{value}'
             command[pos_enc_dim_idx] = f'{value}'
             command.append(f'--seed_array {seed}')
-            with open(f'{dir}/{job_name}_{seed}_{idx}.sh', 'w') as f:
+            with open(f'{dir}/{job_name}_{seed}_{idx}_{i}.sh', 'w') as f:
                 f.write(get_script_text(job_name, value, ' '.join(command), idx=idx, seed=seed))
             command.pop(-1)
 
