@@ -299,7 +299,7 @@ class PELayer(nn.Module):
         # if not self.diag:
         #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
         #     exit()
-        nxg = dgl.to_networkx(g)
+        nxg = dgl.to_networkx(g.cpu())
         nxg = nx.to_undirected(nxg)
         print(list(nx.connected_components(nxg)))
 
