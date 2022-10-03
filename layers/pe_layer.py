@@ -301,7 +301,7 @@ class PELayer(nn.Module):
         #     exit()
         nxg = dgl.to_networkx(g.cpu())
         nxg = nx.to_undirected(nxg)
-        print(list(nx.connected_components(nxg)))
+        print(list(nx.is_connected(nxg)))
 
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
