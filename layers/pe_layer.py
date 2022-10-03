@@ -283,13 +283,12 @@ class PELayer(nn.Module):
         n = A.shape[-1]
         R, U = torch.linalg.eig(A)
         S, V = torch.linalg.eig(B)
-        R, U = torch.real(R), torch.real(U)
-        S, V = torch.real(S), torch.real(V)
+        # R, U = torch.real(R), torch.real(U)
+        # S, V = torch.real(S), torch.real(V)
         # S, V = B
         # t1 = time.time()
-        # F = torch.linalg.solve(U, (C + 0j) @ V)
-        F = torch.linalg.solve(U, C @ V)
-        # print(time.time()-t1)
+        F = torch.linalg.solve(U, (C + 0j) @ V)
+        # F = torch.linalg.solve(U, C @ V)
         W = R[..., :, None] - S[..., None, :]
         Y = F / W
         X = U[...,:n,:n] @ Y[...,:n,:m] @ torch.linalg.inv(V)[...,:m,:m]
@@ -299,10 +298,6 @@ class PELayer(nn.Module):
         # if not self.diag:
         #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
         #     exit()
-        nxg = dgl.to_networkx(g.cpu())
-        nxg = nx.to_undirected(nxg)
-        print(nx.is_connected(nxg))
-
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
@@ -324,6 +319,7 @@ class PELayer(nn.Module):
         # eigvals, eigvecs = g.EigVals, g.EigVecs
         # pe = self.sylvester(self.pos_transition_inv, (eigvals, eigvecs), mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
+        pe = torch.real(pe)
         pe = self.embedding_pos_encs[0](pe)
         if self.clamp:
             pe = torch.tanh(pe)
