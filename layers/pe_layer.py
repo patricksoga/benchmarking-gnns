@@ -73,6 +73,8 @@ class PELayer(nn.Module):
         self.gape_div = net_params.get('gape_div', False)
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
 
+        self.gape_symmetric = net_params.get('gape_symmetric', False)
+
         hidden_dim = net_params['hidden_dim']
 
         self.logger.info(type_of_enc(net_params))
@@ -133,6 +135,12 @@ class PELayer(nn.Module):
                     normed_transition = transition / torch.linalg.norm(transition)
                     normed_transitions.append(normed_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
+            # elif self.gape_symmetric and self.learned_pos_enc: # enforce symmetric transition matrix so that eigenvalues stay real
+            #     self.pos_transitions = nn.ParameterList(
+            #         nn.Parameter(torch.empty(self.pos_enc_dim-i) for i in range(self.pos_enc_dim))
+            #     )
+            #     for transition in self.pos_transitions:
+            #         torch.nn.init.normal_(transition)
 
             elif self.gape_div:
                 divd_tansitions = []
@@ -236,7 +244,9 @@ class PELayer(nn.Module):
 
     def stack_strategy(self, num_nodes):
         num_pos_initials = len(self.pos_initials)
-        num_nodes = num_nodes.number_of_nodes()
+        try:
+            num_nodes = num_nodes.number_of_nodes()
+        except: pass
 
         options = [i for i in range(num_pos_initials)]
         indices = choices(options, k=num_nodes)
@@ -289,7 +299,17 @@ class PELayer(nn.Module):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
-        transition = self.pos_transitions[0]
+
+        if self.gape_symmetric:
+            triu = torch.triu(self.pos_transitions[0])
+            values = triu[triu != 0]
+            i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
+            triu[i, j] = values
+            triu.T[i, j] = values
+            transition = triu
+        else:
+            transition = self.pos_transitions[0]
+
         transition_inverse = torch.linalg.inv(transition).to(self.device)
         mat_product = transition_inverse @ vec_init
         # mat_product = self.pos_transition_inv @ vec_init
