@@ -146,7 +146,7 @@ class PELayer(nn.Module):
                 scaled_transitions= []
                 for transition in transitions:
                     torch.nn.init.normal_(transition)
-                    scaled_transition = transition / 0.99
+                    scaled_transition = 0.99 * transition
                     scaled_transitions.append(scaled_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(scaled_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for scaled_transition in scaled_transitions)
             elif self.gape_div:
