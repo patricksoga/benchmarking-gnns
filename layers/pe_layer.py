@@ -71,6 +71,7 @@ class PELayer(nn.Module):
 
         self.gape_norm = net_params.get('gape_norm', False)
         self.gape_div = net_params.get('gape_div', False)
+        self.gape_scale = net_params.get('gape_scale', False)
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
@@ -141,7 +142,13 @@ class PELayer(nn.Module):
             #     )
             #     for transition in self.pos_transitions:
             #         torch.nn.init.normal_(transition)
-
+            elif self.gape_scale:
+                scaled_transitions= []
+                for transition in transitions:
+                    torch.nn.init.normal_(transition)
+                    normed_transition = transition / 0.99
+                    scaled_transitions.append(normed_transition)
+                self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
             elif self.gape_div:
                 divd_tansitions = []
                 for transition in transitions:
