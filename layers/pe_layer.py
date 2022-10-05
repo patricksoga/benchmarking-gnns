@@ -100,6 +100,9 @@ class PELayer(nn.Module):
             # )
             # for pos_initial in self.pos_initials:
             #     nn.init.normal_(pos_initial)
+            # block = torch.empty(self.pos_enc_dim, self.num_initials)
+            # torch.nn.init.orthogonal_(block)
+            # vecs = block.split(1, dim=1)
 
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
@@ -107,6 +110,9 @@ class PELayer(nn.Module):
             )
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
+            self.pos_initials = nn.ParameterList(
+                nn.Parameter(vec, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for vec in vecs
+            )
 
             # init transition weights
             shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
@@ -132,7 +138,7 @@ class PELayer(nn.Module):
             if self.gape_norm:
                 normed_transitions = []
                 for transition in transitions:
-                    torch.nn.init.normal_(transition)
+                    torch.nn.init.orthogonal_(transition)
                     normed_transition = transition / torch.linalg.norm(transition)
                     normed_transitions.append(normed_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(normed_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for normed_transition in normed_transitions)
@@ -145,8 +151,8 @@ class PELayer(nn.Module):
             elif self.gape_scale:
                 scaled_transitions= []
                 for transition in transitions:
-                    torch.nn.init.normal_(transition)
-                    scaled_transition = 0.99 * transition
+                    torch.nn.init.orthogonal_(transition)
+                    scaled_transition = (1/40) * transition
                     scaled_transitions.append(scaled_transition)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(scaled_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for scaled_transition in scaled_transitions)
             elif self.gape_div:
