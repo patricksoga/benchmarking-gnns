@@ -7,7 +7,7 @@ fname=$(pwd)/64_DEBUG_0_41.log
 touch $fname
 fsync -d 10 $fname &
 
-conda activate gnn
+conda activate gnn_bartels
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
 python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTransformer_molecules_ZINC_b128-bnorm-alt-noedge-500k-64-initials20-bartels-trials.json --job_num 64 --pos_enc_dim 64 --log_file $fname --seed_array 41
