@@ -52,10 +52,9 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         DATASET_NAME = dataset.name
 
 
-        if MODEL_NAME in ['GCN', 'GAT']:
-            if net_params.get('self_loop', False):
-                logger.info("[!] Adding graph self-loops for GCN/GAT models (central node trick).")
-                dataset._add_self_loops()
+        if net_params.get('self_loop', False):
+            logger.info("[!] Adding graph self-loops.")
+            dataset._add_self_loops()
 
         # l = 10
         # dataset.train.graph_lists = dataset.train.graph_lists[:l]
@@ -137,6 +136,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         #             except Exception as e:
         #                 raise e
         #     except:
+
         if net_params.get('full_graph', False):
             st = time.time()
             logger.info("[!] Converting the given graphs to full graphs..")
