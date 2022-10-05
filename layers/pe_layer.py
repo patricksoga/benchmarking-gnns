@@ -110,9 +110,9 @@ class PELayer(nn.Module):
             )
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
-            self.pos_initials = nn.ParameterList(
-                nn.Parameter(vec, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for vec in vecs
-            )
+            # self.pos_initials = nn.ParameterList(
+            #     nn.Parameter(vec, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for vec in vecs
+            # )
 
             # init transition weights
             shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
