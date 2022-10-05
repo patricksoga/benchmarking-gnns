@@ -6,20 +6,16 @@
 """
     IMPORTING LIBS
 """
-from cgi import print_arguments
 import numpy as np
 import os
 import time
 import random
-import glob
 import argparse, json
-import pickle
 
 import torch
 
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from pprint import pprint
 
 # from tensorboardX import SummaryWriter
 from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spd_encodings, add_spectral_decomposition
@@ -108,43 +104,45 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
             dataset = add_spd_encodings(dataset)
             logger.info(f'Time PE:{time.time()-start0}')
 
+        # if net_params.get('full_graph', False):
+        #     st = time.time()
+        #     try:
+        #         loaded_dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
+        #         logger.info("[!] Loaded full graph dataset")
+        #         if MODEL_NAME == 'SAGraphTransformer':
+        #             for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
+        #                 full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+        #                 full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+        #             for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
+        #                 full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+        #                 full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+        #             for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
+        #                 full_graph.ndata['EigVals'] = graph.ndata['EigVals']
+        #                 full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
+        #             dataset = loaded_dataset
+        #         elif MODEL_NAME ==  'PseudoGraphormer':
+        #             loaded_dataset.train.spatial_pos_lists = dataset.train.spatial_pos_lists
+        #             loaded_dataset.val.spatial_pos_lists = dataset.val.spatial_pos_lists
+        #             loaded_dataset.test.spatial_pos_lists = dataset.test.spatial_pos_lists
+        #             dataset = loaded_dataset
+        #         else:
+        #             try:
+        #                 for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
+        #                     full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+        #                 for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
+        #                     full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+        #                 for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
+        #                     full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
+        #                 dataset = loaded_dataset
+        #             except Exception as e:
+        #                 raise e
+        #     except:
         if net_params.get('full_graph', False):
             st = time.time()
-            try:
-                loaded_dataset = pickle.load(open(f'./{DATASET_NAME}', 'rb'))
-                logger.info("[!] Loaded full graph dataset")
-                if MODEL_NAME == 'SAGraphTransformer':
-                    for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
-                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
-                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
-                    for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
-                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
-                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
-                    for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
-                        full_graph.ndata['EigVals'] = graph.ndata['EigVals']
-                        full_graph.ndata['EigVecs'] = graph.ndata['EigVecs']
-                    dataset = loaded_dataset
-                elif MODEL_NAME ==  'PseudoGraphormer':
-                    loaded_dataset.train.spatial_pos_lists = dataset.train.spatial_pos_lists
-                    loaded_dataset.val.spatial_pos_lists = dataset.val.spatial_pos_lists
-                    loaded_dataset.test.spatial_pos_lists = dataset.test.spatial_pos_lists
-                    dataset = loaded_dataset
-                else:
-                    try:
-                        for graph, full_graph in zip(dataset.train.graph_lists, loaded_dataset.train.graph_lists):
-                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                        for graph, full_graph in zip(dataset.val.graph_lists, loaded_dataset.val.graph_lists):
-                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                        for graph, full_graph in zip(dataset.test.graph_lists, loaded_dataset.test.graph_lists):
-                            full_graph.ndata['pos_enc'] = graph.ndata['pos_enc']
-                        dataset = loaded_dataset
-                    except Exception as e:
-                        raise e
-            except:
-                logger.info("[!] Converting the given graphs to full graphs..")
-                dataset._make_full_graph()
-                logger.info('Time taken to convert to full graphs:',time.time()-st)    
-                pickle.dump(dataset, open(f'./{DATASET_NAME}', 'wb'))
+            logger.info("[!] Converting the given graphs to full graphs..")
+            dataset._make_full_graph()
+            logger.info('Time taken to convert to full graphs:',time.time()-st)    
+            # pickle.dump(dataset, open(f'./{DATASET_NAME}', 'wb'))
 
         trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
