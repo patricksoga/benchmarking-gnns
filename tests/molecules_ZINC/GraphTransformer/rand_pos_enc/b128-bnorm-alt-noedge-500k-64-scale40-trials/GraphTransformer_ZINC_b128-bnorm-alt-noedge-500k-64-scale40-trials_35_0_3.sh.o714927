@@ -1,0 +1,21 @@
+[I] Loading dataset ZINC, fold 1...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 10.4196s
+using 1 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 373, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 370, in main
+    net_params['total_param'] = view_model_param(MODEL_NAME, net_params, gnn_model, logger)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/utils/main_utils.py", line 74, in view_model_param
+    model = gnn_model(MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/molecules_graph_regression/load_net.py", line 71, in gnn_model
+    return models[MODEL_NAME](net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/molecules_graph_regression/load_net.py", line 47, in GraphTransformer
+    return GraphTransformerNet(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/molecules_graph_regression/graph_transformer.py", line 30, in __init__
+    self.pe_layer = PELayer(net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 114, in __init__
+    nn.Parameter(vec, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for vec in vecs
+NameError: name 'vecs' is not defined
