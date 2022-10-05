@@ -471,10 +471,10 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['cycles_k'] = 6
 
     if args.gape_scale is not None:
-        net_params['gape_scale'] = True if args.gape_scale == 'True' else False
+        net_params['gape_scale'] = args.gape_scale
     elif 'gape_scale' in net_params:
         pass
     else:
-        net_params['gape_scale'] = False
+        net_params['gape_scale'] = 1/40
 
     return net_params
