@@ -297,6 +297,7 @@ def main():
     net_params['in_dim_edge'] = dataset.train[0][0].edata['feat'][0].size(0)
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
+    net_params['seed_array'] = params['seed_array']
 
     logger.info(net_params)
     logger.info(params)
