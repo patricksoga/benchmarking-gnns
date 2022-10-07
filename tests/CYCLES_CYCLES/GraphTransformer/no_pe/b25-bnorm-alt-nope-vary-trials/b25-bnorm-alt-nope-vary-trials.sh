@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-vary-trials
+#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-nope-vary-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 1)
-fname=$(pwd)/b25-bnorm-alt-vary-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-bnorm-alt-nope-vary-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-vary-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-nope-vary-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -37,6 +37,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_norm': False,
 #                 'gape_normalization': False,
 #                 'gape_rand': False,
+#                 'gape_scale': 0.025,
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gape_squash': 'none',
@@ -64,7 +65,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-vary-trials',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-nope-vary-trials',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -80,4 +81,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-vary-trials --rand_pos_enc False --param_values 1 --batch_norm True --layer_norm False --edge_feat False --edge_feat False --pos_enc False --seed_array 41 95 22 35 --cycles_k -1
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-nope-vary-trials --rand_pos_enc False --param_values 1 --batch_norm True --layer_norm False --edge_feat False --edge_feat False --pos_enc False --seed_array 41 95 22 35 --cycles_k -1
