@@ -29,6 +29,7 @@ class GraphTransformerNet(nn.Module):
         self.residual = net_params['residual']
         self.edge_feat = net_params['edge_feat']
         self.device = net_params['device']
+        self.gape_per_layer = net_params['gape_per_layer']
         self.pe_layer = PELayer(net_params)
         self.cat = net_params.get('cat_gape', False)
 
@@ -79,6 +80,10 @@ class GraphTransformerNet(nn.Module):
         else:
             for conv in self.layers:
                 h = conv(g, h)
+
+                if self.gape_per_layer:
+                    h = h + pe
+
         g.ndata['h'] = h
         
         if self.readout == "sum":
