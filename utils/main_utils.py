@@ -484,6 +484,6 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     elif 'gape_per_layer' in net_params:
         pass
     else:
-        net_params['gape_per_layer'] = FAlse
+        net_params['gape_per_layer'] = False
 
     return net_params
