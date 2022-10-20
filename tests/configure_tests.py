@@ -118,91 +118,98 @@ def main(args):
     if args.job_note is None:
         raise ValueError('Must specify job note')
 
-    script_string = ""
+    scale_values = args.gape_scale
+    job_note = args.job_note
 
-    with open(args.config) as f:
-        config = json.load(f)
-    params = get_parameters(config, args)
-    device = gpu_setup(config['gpu']['use'], config['gpu']['id'])
+    for scale in scale_values:
+        args.gape_scale = scale
+        s = scale.replace('.', '')
+        args.job_note = job_note + f'-scale{s}'
+        script_string = ""
 
-    args.model = config["model"]
-    if args.dataset is None:
-        args.dataset = config["dataset"]
-    else:
-        config["dataset"] = args.dataset
+        with open(args.config) as f:
+            config = json.load(f)
+        params = get_parameters(config, args)
+        device = gpu_setup(config['gpu']['use'], config['gpu']['id'])
 
-    if args.dataset is not None:
-        DATASET_NAME = args.dataset
+        args.model = config["model"]
+        if args.dataset is None:
+            args.dataset = config["dataset"]
+        else:
+            config["dataset"] = args.dataset
 
-    net_params = get_net_params(config, args, device, params, DATASET_NAME)
+        if args.dataset is not None:
+            DATASET_NAME = args.dataset
 
-    model = args.model
-    dataset = parse_dataset(args)
+        net_params = get_net_params(config, args, device, params, DATASET_NAME)
 
-    config = {
-        "gpu": {
-            "use": config["gpu"]["use"],
-            "id": config["gpu"]["id"]
-        },
-        "model": config["model"],
-        "dataset": config["dataset"],
-        "out_dir": f"out/{dataset}_{dataset_to_graph_task(dataset)}_{args.job_note}",
-        "params": params,
-        "net_params": net_params,
-    }
+        model = args.model
+        dataset = parse_dataset(args)
 
-    del config["net_params"]["device"]
+        config = {
+            "gpu": {
+                "use": config["gpu"]["use"],
+                "id": config["gpu"]["id"]
+            },
+            "model": config["model"],
+            "dataset": config["dataset"],
+            "out_dir": f"out/{dataset}_{dataset_to_graph_task(dataset)}_{args.job_note}",
+            "params": params,
+            "net_params": net_params,
+        }
 
-    config_filename = f"./test-configs/{model}_{dataset}_{args.dataset}_{args.job_note}.json"
-    with open(config_filename, "w+") as f:
-        json.dump(config, f)
+        del config["net_params"]["device"]
 
-    config_filename = os.path.join('tests', '/'.join(config_filename.split('/')[1:]))
+        config_filename = f"./test-configs/{model}_{dataset}_{args.dataset}_{args.job_note}.json"
+        with open(config_filename, "w+") as f:
+            json.dump(config, f)
 
-    script_string += script_boilerplate(args)
+        config_filename = os.path.join('tests', '/'.join(config_filename.split('/')[1:]))
 
-    varying_param_str = f"{args.varying_param}=({' '.join(['0'] + args.param_values)})"
-    script_string += varying_param_str + "\n"
-    script_string += pre_run_boilerplate(args)
-    script_string += run_string(args, config_filename) + "\n\n"
-    script_string += config_string(config) + "\n"
+        script_string += script_boilerplate(args)
 
-    generating_command = "python3 " + ' '.join(sys.argv)
-    script_string += "\n\n# Generated with command:\n#" + generating_command + "\n"
+        varying_param_str = f"{args.varying_param}=({' '.join(['0'] + args.param_values)})"
+        script_string += varying_param_str + "\n"
+        script_string += pre_run_boilerplate(args)
+        script_string += run_string(args, config_filename) + "\n\n"
+        script_string += config_string(config) + "\n"
 
-    try:
-        out_dir = f"../{config['out_dir']}"
-        if not os.path.isdir(out_dir):
-            os.makedirs(out_dir)
+        generating_command = "python3 " + ' '.join(sys.argv)
+        script_string += "\n\n# Generated with command:\n#" + generating_command + "\n"
 
-        exp_dataset_dir = f"./{dataset}_{args.dataset}" 
-        if not os.path.isdir(exp_dataset_dir):
-            os.makedirs(exp_dataset_dir)
 
-        model_dataset_dir = f"{exp_dataset_dir}/{model}"
-        if not os.path.isdir(model_dataset_dir):
-            os.makedirs(model_dataset_dir)
+        try:
+            out_dir = f"../{config['out_dir']}"
+            if not os.path.isdir(out_dir):
+                os.makedirs(out_dir)
 
-        script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
-        if not os.path.isdir(script_folder_1):
-            os.makedirs(script_folder_1)
+            exp_dataset_dir = f"./{dataset}_{args.dataset}" 
+            if not os.path.isdir(exp_dataset_dir):
+                os.makedirs(exp_dataset_dir)
 
-        script_folder_2 = f"{script_folder_1}/{args.job_note}"
-        if not os.path.isdir(script_folder_2):
-            os.makedirs(script_folder_2)
+            model_dataset_dir = f"{exp_dataset_dir}/{model}"
+            if not os.path.isdir(model_dataset_dir):
+                os.makedirs(model_dataset_dir)
 
-        script_path = f"{script_folder_2}/{args.job_note}.sh"
-        with open(script_path, 'w') as f:
-            f.write(script_string)
+            script_folder_1 = f"{model_dataset_dir}/{type_of_enc(net_params)}"
+            if not os.path.isdir(script_folder_1):
+                os.makedirs(script_folder_1)
 
-        print("Script written to: ", script_path)
+            script_folder_2 = f"{script_folder_1}/{args.job_note}"
+            if not os.path.isdir(script_folder_2):
+                os.makedirs(script_folder_2)
 
-        generate(script_path)
+            script_path = f"{script_folder_2}/{args.job_note}.sh"
+            with open(script_path, 'w') as f:
+                f.write(script_string)
 
-    except Exception as e:
-        print(f"Could not write script to {script_path}")
-        print(e)
-        raise e
+            print("Script written to: ", script_path)
+
+            generate(script_path)
+
+        except Exception as e:
+            print(f"Could not write script to {script_path}")
+            raise e
 
 
 if __name__ == '__main__':
