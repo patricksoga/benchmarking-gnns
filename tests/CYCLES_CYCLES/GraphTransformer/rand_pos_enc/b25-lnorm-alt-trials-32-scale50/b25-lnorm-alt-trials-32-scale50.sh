@@ -20,7 +20,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #  'model': 'GraphTransformer',
 #  'net_params': {'L': 10,
 #                 'adj_enc': False,
-#                 'batch_norm': True,
+#                 'batch_norm': False,
 #                 'batch_size': 25,
 #                 'cat_gape': False,
 #                 'cycles_k': 6,
@@ -81,4 +81,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-lnorm-alt-trials-32-scale50 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm True --edge_feat False --full_graph False --gape_scale 0.02
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-lnorm-alt-trials-32-scale50 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm False --layer_norm True --edge_feat False --full_graph False --gape_scale 0.02
