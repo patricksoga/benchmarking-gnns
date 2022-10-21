@@ -121,10 +121,15 @@ def main(args):
     scale_values = args.gape_scale
     job_note = args.job_note
 
+    if not scale_values:
+        scale_values = ['0']
     for scale in scale_values:
         args.gape_scale = scale
         s = scale.replace('.', '')
-        args.job_note = job_note + f'-scale{s}'
+
+        to_add = f'-scale{s}' if scale != '0' else ''
+
+        args.job_note = job_note + to_add
         script_string = ""
 
         with open(args.config) as f:
