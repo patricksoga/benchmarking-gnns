@@ -82,4 +82,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --gape_scale 0.1 0.5 0.9 0.25
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --gape_scale 0.1 0.5 0.9 0.25 0.33 0.8

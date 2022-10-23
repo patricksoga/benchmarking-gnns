@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-trials-32-scale09
+#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-trials-32-scale033
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 32)
-fname=$(pwd)/b25-bnorm-alt-trials-32-scale09_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-bnorm-alt-trials-32-scale033_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-trials-32-scale09.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-trials-32-scale033.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -38,7 +38,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_normalization': False,
 #                 'gape_per_layer': False,
 #                 'gape_rand': False,
-#                 'gape_scale': '0.9',
+#                 'gape_scale': '0.33',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
 #                 'gape_squash': 'none',
@@ -66,7 +66,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-scale09',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-scale033',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
