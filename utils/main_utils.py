@@ -162,6 +162,8 @@ def add_args(parser):
     parser.add_argument('--gape_scale', nargs="+", help="Scale the transition weights by some strategy. Default is 0.99.")
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
+    parser.add_argument('--gape_scalar', help="Learnable scaler")
+
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
 
     parser.add_argument('--spectral_attn', help="Use spectral attention for graph transformer")
@@ -485,5 +487,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_per_layer'] = False
+
     
+    if args.gape_scalar is not None:
+        net_params['gape_scalar'] = args.gape_scalar
+    elif 'gape_scalar' in net_params:
+        pass
+    else:
+        net_params['gape_scalar'] = False
+
     return net_params

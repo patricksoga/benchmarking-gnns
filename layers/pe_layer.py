@@ -5,10 +5,10 @@ import numpy as np
 import networkx as nx
 import dgl
 import scipy
-import time
+import scipy.stats as sps
+
 from utils.main_utils import get_logger
 from random import choices
-import scipy.stats as sps
 
 def type_of_enc(net_params):
     learned_pos_enc = net_params.get('learned_pos_enc', False)
@@ -75,6 +75,11 @@ class PELayer(nn.Module):
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
+
+        self.gape_scalar = net_params.get('gape_scalar', False)
+        if self.gape_scalar:
+            self.scalar = nn.Parameter(torch.empty((1,)))
+            nn.init.normal_(self.scalar)
 
         hidden_dim = net_params['hidden_dim']
 
@@ -148,7 +153,7 @@ class PELayer(nn.Module):
             #     )
             #     for transition in self.pos_transitions:
             #         torch.nn.init.normal_(transition)
-            elif self.gape_scale is not None:
+            elif self.gape_scale is not None and self.gape_scale != '0':
                 scaled_transitions= []
                 for transition in transitions:
                     torch.nn.init.orthogonal_(transition)
@@ -173,6 +178,16 @@ class PELayer(nn.Module):
                     transition_matrices.append(transition_matrix)
                 self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
             else:
+                shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
+                self.pos_transitions = nn.ParameterList(
+                    nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+                    for _ in range(self.n_gape)
+                )
+                for pos_transition in self.pos_transitions:
+                    nn.init.orthogonal_(pos_transition)
+
+
+            if self.n_gape > 1:
                 shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
 
                 self.pos_transitions = nn.ParameterList(
@@ -236,7 +251,7 @@ class PELayer(nn.Module):
 
         self.use_pos_enc = self.pos_enc or self.learned_pos_enc or self.rand_pos_enc or self.adj_enc or self.rw_pos_enc or self.rand_sketchy_pos_enc
         if self.use_pos_enc:
-            self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding (# states if an automata enc, otherwise smallest k eigvecs)")
+            self.logger.info(f"Using {self.pos_enc_dim} dimension positional encoding")
 
         # if not self.use_pos_enc and self.dataset not in ('CYCLES', 'CIFAR10', 'MNIST', 'SBM_PATTERN', 'SBM_CLUSTER', 'Cora'):
         #     self.embedding_h = nn.Embedding(in_dim, hidden_dim)
@@ -254,6 +269,7 @@ class PELayer(nn.Module):
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         if self.eigen_bartels_stewart:
             self.pos_transition_inv = nn.Parameter(torch.linalg.inv(self.pos_transitions[0]))
+        self.out = {}
 
     def stack_strategy(self, num_nodes):
         num_pos_initials = len(self.pos_initials)
@@ -261,10 +277,20 @@ class PELayer(nn.Module):
             num_nodes = num_nodes.number_of_nodes()
         except: pass
 
-        options = [i for i in range(num_pos_initials)]
-        indices = choices(options, k=num_nodes)
-        out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
-        return out
+        # if self.out is None:
+        #     options = [i for i in range(num_pos_initials)]
+        #     indices = choices(options, k=num_nodes)
+        # else:
+        # options, indices = self.out[0], self.out[1]
+        indices = choices([i for i in range(num_pos_initials)], k=num_nodes)
+
+        if not num_nodes in self.out:
+            out = torch.cat([torch.clone(self.pos_initials[i]) for i in indices], dim=1)
+            self.out[num_nodes] = out
+            # return out
+        # self.out = [options, indices]
+        # return out
+        return self.out[num_nodes]
         """
             Given more than one initial weight vector, define the stack strategy.
 
@@ -277,10 +303,12 @@ class PELayer(nn.Module):
         except: pass
         num_pos_initials = len(self.pos_initials)
         if num_pos_initials == 1:
-            return torch.cat([self.pos_initials[0] for _ in range(num_nodes)], dim=1)
+            out = torch.cat([torch.clone(self.pos_initials[0]) for _ in range(num_nodes)], dim=1)
+            return out
         remainder = num_nodes % num_pos_initials
         capacity = num_nodes - remainder
-        out = torch.cat([self.pos_initials[i] for i in range(num_pos_initials)], dim=1)
+
+        out = torch.cat([torch.clone(self.pos_initials[i]) for i in range(num_pos_initials)], dim=1)
         out = torch.repeat_interleave(out, capacity//num_pos_initials, dim=1)
         if remainder != 0:
             remaining_stack = torch.cat([self.pos_initials[-1] for _ in range(remainder)], dim=1)
@@ -412,11 +440,11 @@ class PELayer(nn.Module):
 
                     # encs = encs.clamp(min=-1, max=1)
                 pe = pe.reshape(self.pos_enc_dim, -1).transpose(1, 0).to(self.device)
-            elif self.pow_of_mat > 1:
+            elif self.pow_of_mat > 1 or self.gape_scalar:
                 device = torch.device("cpu")
                 vec_init = self.stack_strategy(g.num_nodes())
                 mat = self.type_of_matrix(g, self.matrix_type)
-                transition_inv = torch.inverse(self.pos_transition).to(device)
+                transition_inv = torch.inverse(self.pos_transitions[0]).to(device)
 
                 # AX + XB = Q
                 transition_inv = transition_inv.numpy()
@@ -526,6 +554,7 @@ class PELayer(nn.Module):
                     pes = [(pe, pre_modified, g)]
                 torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
+            pe = self.scalar * pe
             return pe
 
         elif self.pagerank:
