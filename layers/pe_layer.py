@@ -554,7 +554,8 @@ class PELayer(nn.Module):
                     pes = [(pe, pre_modified, g)]
                 torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
-            pe = self.scalar * pe
+            if self.gape_scalar:
+                pe = self.scalar * pe
             return pe
 
         elif self.pagerank:
