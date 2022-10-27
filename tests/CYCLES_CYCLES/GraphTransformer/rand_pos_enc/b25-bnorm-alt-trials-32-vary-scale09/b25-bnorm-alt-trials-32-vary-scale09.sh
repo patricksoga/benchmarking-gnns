@@ -36,7 +36,9 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_individual': False,
 #                 'gape_norm': True,
 #                 'gape_normalization': False,
+#                 'gape_per_layer': False,
 #                 'gape_rand': False,
+#                 'gape_scalar': False,
 #                 'gape_scale': '0.9',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
@@ -81,4 +83,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-vary-scale09 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --gape_norm True --cycles_k -1 --gape_scale 0.9
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-vary --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --gape_norm True --cycles_k -1 --gape_scale 0.9
