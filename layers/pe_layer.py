@@ -191,7 +191,7 @@ class PELayer(nn.Module):
                 transition_matrices = []
                 for i, transition in enumerate(transitions):
                     torch.nn.init.orthogonal_(transition)
-                    transition_softmax = torch.softmax(transition, dim=0)
+                    transition_softmax = torch.softmax(transition, dim=1)
                     transition_matrices.append(transition_softmax)
 
                 self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
