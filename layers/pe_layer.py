@@ -75,6 +75,7 @@ class PELayer(nn.Module):
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
+        self.gape_stoch = net_params.get('gape_stoch', False)
 
         self.gape_scalar = net_params.get('gape_scalar', False)
         if self.gape_scalar:
@@ -111,7 +112,7 @@ class PELayer(nn.Module):
 
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
-                for _ in range(self.num_initials)
+                for _ in range(self.n_gape)
             )
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
@@ -186,19 +187,37 @@ class PELayer(nn.Module):
                 for pos_transition in self.pos_transitions:
                     nn.init.orthogonal_(pos_transition)
 
+            if self.gape_stoch:
+                transition_matrices = []
+                for i, transition in enumerate(transitions):
+                    torch.nn.init.orthogonal_(transition)
+                    transition_softmax = torch.softmax(transition, dim=0)
+                    transition_matrices.append(transition_softmax)
+
+                self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
 
             if self.n_gape > 1:
                 shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
+                scales = [0.02, 0.025, 0.05]
+                # scales = [0.9, 0.8, 0.5, 0.1]
 
-                self.pos_transitions = nn.ParameterList(
-                    nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
-                    for _ in range(self.n_gape)
-                )
-                for pos_transition in self.pos_transitions:
-                    if net_params['diag']:
-                        nn.init.normal_(pos_transition)
-                    else:
-                        nn.init.orthogonal_(pos_transition)
+                transition_matrices = []
+                for i, transition in enumerate(transitions):
+                    torch.nn.init.orthogonal_(transition)
+                    transition_matrix = scales[i] * transition
+                    transition_matrices.append(transition_matrix)
+
+                self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
+
+                # self.pos_transitions = nn.ParameterList(
+                #     nn.Parameter(torch.Tensor(*shape), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
+                #     for _ in range(self.n_gape)
+                # )
+                # for pos_transition in self.pos_transitions:
+                #     if net_params['diag']:
+                #         nn.init.normal_(pos_transition)
+                #     else:
+                #         nn.init.orthogonal_(pos_transition)
                     # nn.init.constant_(pos_transition, 50)
 
             # for transition in transitions:
@@ -269,7 +288,7 @@ class PELayer(nn.Module):
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         if self.eigen_bartels_stewart:
             self.pos_transition_inv = nn.Parameter(torch.linalg.inv(self.pos_transitions[0]))
-        self.out = {}
+        # self.out = {}
 
     def stack_strategy(self, num_nodes):
         num_pos_initials = len(self.pos_initials)
@@ -284,13 +303,13 @@ class PELayer(nn.Module):
         # options, indices = self.out[0], self.out[1]
         indices = choices([i for i in range(num_pos_initials)], k=num_nodes)
 
-        if not num_nodes in self.out:
-            out = torch.cat([torch.clone(self.pos_initials[i]) for i in indices], dim=1)
-            self.out[num_nodes] = out
+        # if not num_nodes in self.out:
+        #     out = torch.cat([torch.clone(self.pos_initials[i]) for i in indices], dim=1)
+        #     self.out[num_nodes] = out
             # return out
         # self.out = [options, indices]
-        # return out
-        return self.out[num_nodes]
+        return torch.cat([self.pos_initials[i] for i in indices], dim=1)
+        # return self.out[num_nodes]
         """
             Given more than one initial weight vector, define the stack strategy.
 
@@ -454,7 +473,6 @@ class PELayer(nn.Module):
                 pe = torch.from_numpy(pe.T).to(self.device)
             else:
                 pe = pos_enc
-
             if self.n_gape > 1:
                 pos_encs = [g.ndata[f'pos_enc_{i}'] for i in range(self.n_gape)]
                 
@@ -480,6 +498,12 @@ class PELayer(nn.Module):
                 #     pos_enc_block = torch.sum(pos_enc_block, 0, keepdim=False)
                 # elif self.gape_pooling == 'max':
                 #     pos_enc_block = torch.max(pos_enc_block, 0, keepdim=False)[0]
+                # import seaborn as sb
+                # import matplotlib.pyplot as plt
+                # import networkx as nx
+                # for i in range(pe.shape[2]):
+                #     plt.figure(f"{i}")
+                #     sb.heatmap(pe[:, :, i].detach().numpy())
 
                 pe = pe @ self.gape_pool_vec
 
@@ -487,6 +511,11 @@ class PELayer(nn.Module):
                     pe = torch.softmax(pe, dim=1)
 
                 pe = pe.squeeze(2)
+
+                # plt.figure("all")
+                # sb.heatmap(pe.detach().numpy())
+
+                # plt.show()
                 
                 if not self.gape_individual:
                     pe = self.embedding_pos_encs[0](pe)

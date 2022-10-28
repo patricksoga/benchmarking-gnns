@@ -162,6 +162,7 @@ def add_args(parser):
     parser.add_argument('--gape_scale', nargs="+", help="Scale the transition weights by some strategy. Default is 0.99.")
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
+    parser.add_argument('--gape_stoch', help="Stochastic gape, rw")
     parser.add_argument('--gape_scalar', help="Learnable scaler")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
@@ -482,7 +483,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
 
 
     if args.gape_per_layer is not None:
-        net_params['gape_per_layer'] = args.gape_per_layer
+        net_params['gape_per_layer'] = True if args.gape_per_layer == 'True' else False
     elif 'gape_per_layer' in net_params:
         pass
     else:
@@ -490,10 +491,17 @@ def get_net_params(config, args, device, params, DATASET_NAME):
 
     
     if args.gape_scalar is not None:
-        net_params['gape_scalar'] = args.gape_scalar
+        net_params['gape_scalar'] = True if args.gape_scalar == 'True' else False
     elif 'gape_scalar' in net_params:
         pass
     else:
         net_params['gape_scalar'] = False
+
+    if args.gape_stoch is not None:
+        net_params['gape_stoch'] = True if args.gape_stoch == 'True' else False
+    elif 'gape_stoch' in net_params:
+        pass
+    else:
+        net_params['gape_stoch'] = False
 
     return net_params
