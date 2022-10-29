@@ -103,7 +103,8 @@ class PELayer(nn.Module):
             transitions = [torch.empty(*shape, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for _ in range(self.n_gape)]
 
             for transition in transitions:
-                torch.nn.init.orthogonal_(transition)
+                # torch.nn.init.orthogonal_(transition)
+                torch.nn.init.normal_(transition)
 
             # divide transition weights by norm or scalar
             modified_transitions = []
