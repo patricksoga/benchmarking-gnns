@@ -72,6 +72,7 @@ class PELayer(nn.Module):
         self.gape_div = net_params.get('gape_div', False)
         self.gape_scale = net_params.get('gape_scale', 1/40)
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
+        self.gape_softmax_init = net_params.get('gape_softmax_init', False)
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
         self.gape_stoch = net_params.get('gape_stoch', False)
@@ -103,8 +104,7 @@ class PELayer(nn.Module):
             transitions = [torch.empty(*shape, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for _ in range(self.n_gape)]
 
             for transition in transitions:
-                # torch.nn.init.orthogonal_(transition)
-                torch.nn.init.normal_(transition)
+                torch.nn.init.orthogonal_(transition)
 
             # divide transition weights by norm or scalar
             modified_transitions = []
@@ -192,7 +192,11 @@ class PELayer(nn.Module):
         #     self.out[num_nodes] = out
             # return out
         # self.out = [options, indices]
-        return torch.cat([self.pos_initials[i] for i in indices], dim=1)
+        if self.gape_softmax_init:
+            out = torch.cat([self.pos_initials[i] for i in indices], dim=1).softmax(dim=0)
+        else: 
+            out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
+        return out
         # return self.out[num_nodes]
         """
             Given more than one initial weight vector, define the stack strategy.
