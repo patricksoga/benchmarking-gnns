@@ -211,8 +211,8 @@ class GraphTransformerLayer(nn.Module):
         if self.residual:
             h = h_in2 + h # residual connection
         
-        # if self.layer_norm:
-        #     h = self.layer_norm2(h)
+        if self.layer_norm:
+            h = self.layer_norm2(h)
             
         if self.batch_norm:
             h = self.batch_norm2(h)       

@@ -111,14 +111,12 @@ class PELayer(nn.Module):
                 mod_transition = transition
                 if self.gape_norm:
                     mod_transition = transition / torch.linalg.norm(transition)
-                    print('gape_norm: ', mod_transition)
                 elif self.gape_scalar is not None and self.gape_scale != '0':
                     mod_transition = float(self.gape_scale[0]) * transition
-                    print('gape scalar: ', mod_transition)
+
                 # option for normalizing weights
                 if self.gape_stoch:
                     mod_transition = torch.softmax(mod_transition, dim=0)
-                    print('stoch: ', torch.sum(mod_transition, dim=1))
                 modified_transitions.append(mod_transition)
 
             # store matrices or vectors depending whether diag
