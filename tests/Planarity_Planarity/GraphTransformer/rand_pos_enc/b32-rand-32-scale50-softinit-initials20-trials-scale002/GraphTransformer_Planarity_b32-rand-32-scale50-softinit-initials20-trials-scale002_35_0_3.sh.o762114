@@ -1,0 +1,24 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py:297: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py:297: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+[I] Loading dataset Planarity...
+train, test, val sizes : 7000 1500 1500
+[I] Finished loading.
+[I] Data load time: 6.5135s
+using 1 automata/automaton
+using 1 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py", line 321, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py", line 319, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_Planarity_graph_classification.py", line 69, in train_val_pipeline
+    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 416, in add_automaton_encodings
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 416, in <listcomp>
+    dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 183, in automaton_encoding
+    transition_inv = torch.inverse(transition_matrix).cpu().numpy()
+torch._C._LinAlgError: torch.linalg.inv: The diagonal element 1 is zero, the inversion could not be completed because the input matrix is singular.
