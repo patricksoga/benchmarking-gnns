@@ -113,7 +113,7 @@ class PELayer(nn.Module):
                 if self.gape_norm:
                     mod_transition = transition / torch.linalg.norm(transition)
                 elif self.gape_scalar is not None and self.gape_scale != '0':
-                    mod_transition = float(self.gape_scale[0]) * transition
+                    mod_transition = mod_transition * float(self.gape_scale)
 
                 # option for normalizing weights
                 if self.gape_stoch:
