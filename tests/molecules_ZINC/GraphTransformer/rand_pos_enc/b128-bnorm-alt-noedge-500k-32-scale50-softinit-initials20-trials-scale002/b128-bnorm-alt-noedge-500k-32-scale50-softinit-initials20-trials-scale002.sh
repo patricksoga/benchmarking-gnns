@@ -42,6 +42,7 @@ python3 main_molecules_graph_regression.py --config tests/test-configs/GraphTran
 #                 'gape_scale': '0.02',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
+#                 'gape_softmax_init': True,
 #                 'gape_squash': 'none',
 #                 'gape_stoch': False,
 #                 'gape_symmetric': False,
