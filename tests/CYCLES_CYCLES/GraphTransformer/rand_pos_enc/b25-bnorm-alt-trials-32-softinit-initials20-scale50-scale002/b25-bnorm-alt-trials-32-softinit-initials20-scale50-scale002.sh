@@ -42,6 +42,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_scale': '0.02',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
+#                 'gape_softmax_init': True,
 #                 'gape_squash': 'none',
 #                 'gape_stoch': False,
 #                 'gape_symmetric': False,
