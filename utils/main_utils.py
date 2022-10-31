@@ -504,5 +504,12 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_stoch'] = False
+    
+    if args.gape_softmax_init is not None:
+        net_params['gape_softmax_init'] = True if args.gape_softmax_init == 'True' else False
+    elif 'gape_softmax_init' in net_params:
+        pass
+    else:
+        net_params['gape_softmax_init'] = False
 
     return net_params
