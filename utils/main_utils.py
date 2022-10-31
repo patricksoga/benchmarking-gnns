@@ -162,7 +162,8 @@ def add_args(parser):
     parser.add_argument('--gape_scale', nargs="+", help="Scale the transition weights by some strategy. Default is 0.99.")
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
-    parser.add_argument('--gape_stoch', help="Stochastic gape, rw")
+    parser.add_argument('--gape_stoch', help="Stochastic gape")
+    parser.add_argument('--gape_softmax_init', help="Row-wise softmax on initial weight matrix")
     parser.add_argument('--gape_scalar', help="Learnable scaler")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
@@ -479,7 +480,7 @@ def get_net_params(config, args, device, params, DATASET_NAME):
     elif 'gape_scale' in net_params:
         pass
     else:
-        net_params['gape_scale'] = 1/40
+        net_params['gape_scale'] = 1
 
 
     if args.gape_per_layer is not None:
