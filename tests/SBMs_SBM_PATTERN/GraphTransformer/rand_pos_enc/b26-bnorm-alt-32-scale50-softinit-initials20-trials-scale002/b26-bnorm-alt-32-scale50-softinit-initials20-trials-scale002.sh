@@ -41,6 +41,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'gape_scale': '0.02',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
+#                 'gape_softmax_init': True,
 #                 'gape_squash': 'none',
 #                 'gape_stoch': False,
 #                 'gape_symmetric': False,
