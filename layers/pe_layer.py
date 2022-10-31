@@ -193,7 +193,7 @@ class PELayer(nn.Module):
             # return out
         # self.out = [options, indices]
         if self.gape_softmax_init:
-            out = torch.cat([self.pos_initials[i] for i in indices], dim=1).softmax(dim=0)
+            out = torch.cat([self.pos_initials[i] for i in indices], dim=1).softmax(dim=1)
         else: 
             out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
         return out
