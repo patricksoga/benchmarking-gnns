@@ -41,6 +41,7 @@ python3 main_Planarity_graph_classification.py --config tests/test-configs/Graph
 #                 'gape_scale': '0',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
+#                 'gape_softmax_init': True,
 #                 'gape_squash': 'none',
 #                 'gape_stoch': True,
 #                 'gape_symmetric': False,
