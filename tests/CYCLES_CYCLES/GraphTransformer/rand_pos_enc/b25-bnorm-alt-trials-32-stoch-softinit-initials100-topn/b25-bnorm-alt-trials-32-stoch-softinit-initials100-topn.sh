@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-trials-32-softinit-initials20
+#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-trials-32-stoch-softinit-initials100-topn
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 32)
-fname=$(pwd)/b25-bnorm-alt-trials-32-softinit-initials20_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-bnorm-alt-trials-32-stoch-softinit-initials100-topn_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-trials-32-softinit-initials20.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-trials-32-stoch-softinit-initials100-topn.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -44,8 +44,8 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_softmax_before': False,
 #                 'gape_softmax_init': True,
 #                 'gape_squash': 'none',
-#                 'gape_stack_strat': '2',
-#                 'gape_stoch': False,
+#                 'gape_stack_strat': '1',
+#                 'gape_stoch': True,
 #                 'gape_symmetric': False,
 #                 'gape_weight_gen': False,
 #                 'gpu_id': 0,
@@ -55,7 +55,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'learned_pos_enc': False,
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
-#                 'num_initials': 20,
+#                 'num_initials': 100,
 #                 'num_train_data': 200,
 #                 'out_dim': 80,
 #                 'pos_enc': False,
@@ -71,7 +71,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-softinit-initials20',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-stoch-softinit-initials100-topn',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -87,4 +87,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-softinit-initials20 --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --cycles_k 6 --gape_softmax_init True --num_initials 20
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-trials-32-stoch-softinit-initials100-topn --rand_pos_enc True --param_values 32 --seed_array 41 95 22 35 --gape_clamp False --batch_norm True --layer_norm False --edge_feat False --full_graph False --cycles_k 6 --gape_stoch True --gape_softmax_init True --num_initials 100 --gape_stack_strat 1
