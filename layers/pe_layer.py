@@ -73,6 +73,7 @@ class PELayer(nn.Module):
         self.gape_scale = net_params.get('gape_scale', 1/40)
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
         self.gape_softmax_init = net_params.get('gape_softmax_init', False)
+        self.gape_stack_strat = net_params.get('gape_stack_strat', '2')
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
         self.gape_stoch = net_params.get('gape_stoch', False)
@@ -94,7 +95,7 @@ class PELayer(nn.Module):
 
             self.pos_initials = nn.ParameterList(
                 nn.Parameter(torch.empty(self.pos_enc_dim, 1, device=self.device), requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc)
-                for _ in range(self.n_gape)
+                for _ in range(self.num_initials)
             )
             for pos_initial in self.pos_initials:
                 nn.init.normal_(pos_initial)
@@ -104,7 +105,10 @@ class PELayer(nn.Module):
             transitions = [torch.empty(*shape, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for _ in range(self.n_gape)]
 
             for transition in transitions:
-                torch.nn.init.orthogonal_(transition)
+                if self.diag:
+                    torch.nn.init.normal_(transition)
+                else:
+                    torch.nn.init.orthogonal_(transition)
 
             # divide transition weights by norm or scalar
             modified_transitions = []
@@ -121,10 +125,10 @@ class PELayer(nn.Module):
                 modified_transitions.append(mod_transition)
 
             # store matrices or vectors depending whether diag
-            if not self.diag:
-                self.pos_transitions = nn.ParameterList(
-                    nn.Parameter(mod_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for mod_transition in modified_transitions
-                )
+            # if not self.diag:
+            self.pos_transitions = nn.ParameterList(
+                nn.Parameter(mod_transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for mod_transition in modified_transitions
+            )
 
             if self.n_gape > 1:
                 shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
@@ -180,12 +184,17 @@ class PELayer(nn.Module):
             num_nodes = num_nodes.number_of_nodes()
         except: pass
 
+        if self.gape_stack_strat == "1":
+            out = torch.cat([tensor for tensor in self.pos_initials[:num_nodes]], dim=1)     # pick top n, num_initials > n
+            if self.gape_softmax_init:
+                out = out.softmax(dim=1)
+            return out
         # if self.out is None:
         #     options = [i for i in range(num_pos_initials)]
         #     indices = choices(options, k=num_nodes)
         # else:
         # options, indices = self.out[0], self.out[1]
-        indices = choices([i for i in range(num_pos_initials)], k=num_nodes)
+        indices = choices([i for i in range(num_pos_initials)], k=num_nodes)    # random n out of k
 
         # if not num_nodes in self.out:
         #     out = torch.cat([torch.clone(self.pos_initials[i]) for i in indices], dim=1)

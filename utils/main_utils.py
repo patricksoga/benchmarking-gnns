@@ -163,7 +163,8 @@ def add_args(parser):
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
     parser.add_argument('--gape_stoch', help="Stochastic gape")
-    parser.add_argument('--gape_softmax_init', help="Row-wise softmax on initial weight matrix")
+    parser.add_argument('--gape_softmax_init', help="Column-wise softmax on initial weight matrix")
+    parser.add_argument('--gape_stack_strat', help="Use 1 for taking top n of supplied num_initials (num_initials > largest graph) 2 for random")
     parser.add_argument('--gape_scalar', help="Learnable scaler")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
@@ -511,5 +512,12 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_softmax_init'] = False
+
+    if args.gape_stack_strat is not None:
+        net_params['gape_stack_strat'] = True if args.gape_stack_strat == 'True' else False
+    elif 'gape_stack_strat' in net_params:
+        pass
+    else:
+        net_params['gape_stack_strat'] = False
 
     return net_params
