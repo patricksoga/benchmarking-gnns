@@ -899,3 +899,938 @@
 2022-11-01 06:00:27,324:main_molecules_graph_regression.py:254 -   train_val_pipeline(): train history: [0.210118918856488]
 2022-11-01 06:00:27,324:main_molecules_graph_regression.py:255 -   train_val_pipeline(): test history: [0.4297276958823204]
 2022-11-01 06:00:27,324:main_molecules_graph_regression.py:256 -   train_val_pipeline(): val history: [0.4359566830098629]
+2022-11-01 23:12:35,697:main_utils.py:62 -            gpu_setup(): cuda available with GPU: NVIDIA GeForce GTX TITAN X
+2022-11-01 23:12:45,327:main_molecules_graph_regression.py:354 -                 main(): {'L': 10, 'n_heads': 8, 'hidden_dim': 80, 'out_dim': 80, 'edge_feat': False, 'residual': True, 'readout': 'mean', 'in_feat_dropout': 0.0, 'dropout': 0.0, 'layer_norm': False, 'batch_norm': True, 'self_loop': False, 'pos_enc_dim': 32, 'wl_pos_enc': False, 'full_graph': False, 'gpu_id': 0, 'batch_size': 128, 'rand_pos_enc': True, 'rw_pos_enc': False, 'num_initials': 20, 'power_method': False, 'diag': False, 'pow_of_mat': 1, 'adj_enc': False, 'dataset': 'ZINC', 'matrix_type': 'A', 'spectral_attn': False, 'cat_gape': False, 'gape_softmax_after': False, 'gape_softmax_before': False, 'gape_individual': False, 'random_orientation': False, 'gape_clamp': False, 'rand_sketchy_pos_enc': False, 'eigen_bartels_stewart': False, 'gape_rand': False, 'experiment_1': False, 'gape_normalization': False, 'gape_squash': 'none', 'gape_div': False, 'gape_norm': False, 'gape_symmetric': False, 'gape_weight_gen': False, 'cycles_k': 6, 'gape_scale': '0', 'gape_per_layer': False, 'gape_scalar': False, 'gape_stoch': True, 'gape_softmax_init': True, 'log_file': '/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/tests/molecules_ZINC/GraphTransformer/rand_pos_enc/b128-bnorm-alt-noedge-500k-32-stoch-softinit-initials20-trials/32_DEBUG_0_22.log', 'device': device(type='cuda'), 'num_atom_type': 28, 'num_bond_type': 4, 'seed_array': [22]}
+2022-11-01 23:12:45,333:main_molecules_graph_regression.py:355 -                 main(): {'seed': 41, 'epochs': 1000, 'batch_size': 128, 'init_lr': 0.0007, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 15, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [22], 'save_name': 'b128-bnorm-alt-noedge-500k-clamped-8-trials', 'job_num': 32}
+2022-11-01 23:12:45,341:pe_layer.py:87 -             __init__(): rand_pos_enc
+2022-11-01 23:12:46,415:pe_layer.py:160 -             __init__(): Using 32 dimension positional encoding
+2022-11-01 23:12:46,415:pe_layer.py:162 -             __init__(): Using matrix: A
+2022-11-01 23:12:46,415:pe_layer.py:163 -             __init__(): Matrix power: 1
+2022-11-01 23:12:46,427:main_utils.py:76 -     view_model_param(): MODEL DETAILS:
+
+2022-11-01 23:12:46,429:main_utils.py:81 -     view_model_param(): MODEL/Total parameters: GraphTransformer, 530081
+2022-11-01 23:12:46,430:main_molecules_graph_regression.py:40 -   train_val_pipeline(): [!] Starting seed: 22 in [22]...
+2022-11-01 23:12:46,430:pe_layer.py:87 -             __init__(): rand_pos_enc
+2022-11-01 23:12:46,431:pe_layer.py:160 -             __init__(): Using 32 dimension positional encoding
+2022-11-01 23:12:46,431:pe_layer.py:162 -             __init__(): Using matrix: A
+2022-11-01 23:12:46,431:pe_layer.py:163 -             __init__(): Matrix power: 1
+2022-11-01 23:12:46,449:main_molecules_graph_regression.py:65 -   train_val_pipeline(): [!] Adding random automaton graph positional encoding (32).
+2022-11-01 23:13:01,520:main_molecules_graph_regression.py:71 -   train_val_pipeline(): Time PE:15.090733528137207
+2022-11-01 23:13:04,549:main_molecules_graph_regression.py:119 -   train_val_pipeline(): Training Graphs: 10000
+2022-11-01 23:13:04,549:main_molecules_graph_regression.py:120 -   train_val_pipeline(): Validation Graphs: 1000
+2022-11-01 23:13:04,549:main_molecules_graph_regression.py:121 -   train_val_pipeline(): Test Graphs: 1000
+2022-11-01 23:13:04,552:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 1/1000
+2022-11-01 23:13:15,313:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 2.707684189081192
+2022-11-01 23:13:15,314:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.76s, LR: 0.00070, Train Loss: 1.2838, Train MAE: 1.2838,
+                            Val Loss: 2.7391, Val Acc: 2.7391, Test MAE: 2.7077
+2022-11-01 23:13:15,370:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 2/1000
+2022-11-01 23:13:25,434:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 1.0523683428764343
+2022-11-01 23:13:25,435:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00070, Train Loss: 0.9892, Train MAE: 0.9892,
+                            Val Loss: 1.0038, Val Acc: 1.0038, Test MAE: 1.0524
+2022-11-01 23:13:25,478:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 3/1000
+2022-11-01 23:13:35,561:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.9580796509981155
+2022-11-01 23:13:35,562:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00070, Train Loss: 0.9304, Train MAE: 0.9304,
+                            Val Loss: 0.8923, Val Acc: 0.8923, Test MAE: 0.9581
+2022-11-01 23:13:35,624:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 4/1000
+2022-11-01 23:13:45,639:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.02s, LR: 0.00070, Train Loss: 0.8758, Train MAE: 0.8758,
+                            Val Loss: 1.3882, Val Acc: 1.3882, Test MAE: 1.3975
+2022-11-01 23:13:45,683:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 5/1000
+2022-11-01 23:13:55,704:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.02s, LR: 0.00070, Train Loss: 0.8678, Train MAE: 0.8678,
+                            Val Loss: 1.1590, Val Acc: 1.1590, Test MAE: 1.2170
+2022-11-01 23:13:55,747:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 6/1000
+2022-11-01 23:14:05,784:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.9120929762721062
+2022-11-01 23:14:05,784:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.04s, LR: 0.00070, Train Loss: 0.8317, Train MAE: 0.8317,
+                            Val Loss: 0.8590, Val Acc: 0.8590, Test MAE: 0.9121
+2022-11-01 23:14:05,827:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 7/1000
+2022-11-01 23:14:15,871:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.04s, LR: 0.00070, Train Loss: 0.8171, Train MAE: 0.8171,
+                            Val Loss: 1.0986, Val Acc: 1.0986, Test MAE: 1.1447
+2022-11-01 23:14:15,920:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 8/1000
+2022-11-01 23:14:25,977:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00070, Train Loss: 0.8087, Train MAE: 0.8087,
+                            Val Loss: 1.6829, Val Acc: 1.6829, Test MAE: 1.7868
+2022-11-01 23:14:26,023:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 9/1000
+2022-11-01 23:14:36,072:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00070, Train Loss: 0.8057, Train MAE: 0.8057,
+                            Val Loss: 0.9361, Val Acc: 0.9361, Test MAE: 0.9695
+2022-11-01 23:14:36,118:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 10/1000
+2022-11-01 23:14:46,165:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.9047940522432327
+2022-11-01 23:14:46,166:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00070, Train Loss: 0.7851, Train MAE: 0.7851,
+                            Val Loss: 0.8559, Val Acc: 0.8559, Test MAE: 0.9048
+2022-11-01 23:14:46,211:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 11/1000
+2022-11-01 23:14:56,245:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.8859338760375977
+2022-11-01 23:14:56,246:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.03s, LR: 0.00070, Train Loss: 0.7868, Train MAE: 0.7868,
+                            Val Loss: 0.8191, Val Acc: 0.8191, Test MAE: 0.8859
+2022-11-01 23:14:56,292:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 12/1000
+2022-11-01 23:15:06,360:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00070, Train Loss: 0.7560, Train MAE: 0.7560,
+                            Val Loss: 0.8336, Val Acc: 0.8336, Test MAE: 0.8921
+2022-11-01 23:15:06,406:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 13/1000
+2022-11-01 23:15:16,476:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00070, Train Loss: 0.7742, Train MAE: 0.7742,
+                            Val Loss: 0.9273, Val Acc: 0.9273, Test MAE: 0.9828
+2022-11-01 23:15:16,521:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 14/1000
+2022-11-01 23:15:26,566:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.8455414399504662
+2022-11-01 23:15:26,566:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00070, Train Loss: 0.7456, Train MAE: 0.7456,
+                            Val Loss: 0.8169, Val Acc: 0.8169, Test MAE: 0.8455
+2022-11-01 23:15:26,612:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 15/1000
+2022-11-01 23:15:36,638:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.03s, LR: 0.00070, Train Loss: 0.7526, Train MAE: 0.7526,
+                            Val Loss: 1.0620, Val Acc: 1.0620, Test MAE: 1.1310
+2022-11-01 23:15:36,693:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 16/1000
+2022-11-01 23:15:46,719:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.8386329412460327
+2022-11-01 23:15:46,720:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.03s, LR: 0.00070, Train Loss: 0.7250, Train MAE: 0.7250,
+                            Val Loss: 0.7984, Val Acc: 0.7984, Test MAE: 0.8386
+2022-11-01 23:15:46,764:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 17/1000
+2022-11-01 23:15:56,853:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.09s, LR: 0.00070, Train Loss: 0.7201, Train MAE: 0.7201,
+                            Val Loss: 0.8459, Val Acc: 0.8459, Test MAE: 0.8828
+2022-11-01 23:15:56,900:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 18/1000
+2022-11-01 23:16:06,975:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00070, Train Loss: 0.7143, Train MAE: 0.7143,
+                            Val Loss: 1.0924, Val Acc: 1.0924, Test MAE: 1.1062
+2022-11-01 23:16:07,020:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 19/1000
+2022-11-01 23:16:17,068:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.8011005967855453
+2022-11-01 23:16:17,068:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00070, Train Loss: 0.7604, Train MAE: 0.7604,
+                            Val Loss: 0.7241, Val Acc: 0.7241, Test MAE: 0.8011
+2022-11-01 23:16:17,112:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 20/1000
+2022-11-01 23:16:27,582:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.47s, LR: 0.00070, Train Loss: 0.7304, Train MAE: 0.7304,
+                            Val Loss: 0.8309, Val Acc: 0.8309, Test MAE: 0.8848
+2022-11-01 23:16:27,626:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 21/1000
+2022-11-01 23:16:37,710:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00070, Train Loss: 0.7128, Train MAE: 0.7128,
+                            Val Loss: 0.9445, Val Acc: 0.9445, Test MAE: 0.9529
+2022-11-01 23:16:37,754:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 22/1000
+2022-11-01 23:16:47,854:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00070, Train Loss: 0.6965, Train MAE: 0.6965,
+                            Val Loss: 1.2037, Val Acc: 1.2037, Test MAE: 1.2884
+2022-11-01 23:16:47,898:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 23/1000
+2022-11-01 23:16:57,998:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00070, Train Loss: 0.7159, Train MAE: 0.7159,
+                            Val Loss: 1.5322, Val Acc: 1.5322, Test MAE: 1.6143
+2022-11-01 23:16:58,042:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 24/1000
+2022-11-01 23:17:08,126:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00070, Train Loss: 0.7237, Train MAE: 0.7237,
+                            Val Loss: 0.8158, Val Acc: 0.8158, Test MAE: 0.8662
+2022-11-01 23:17:08,170:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 25/1000
+2022-11-01 23:17:18,240:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00070, Train Loss: 0.7293, Train MAE: 0.7293,
+                            Val Loss: 1.5538, Val Acc: 1.5538, Test MAE: 1.6461
+2022-11-01 23:17:18,287:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 26/1000
+2022-11-01 23:17:28,358:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00070, Train Loss: 0.6974, Train MAE: 0.6974,
+                            Val Loss: 1.8986, Val Acc: 1.8986, Test MAE: 1.9541
+2022-11-01 23:17:28,402:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 27/1000
+2022-11-01 23:17:38,509:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00070, Train Loss: 0.7023, Train MAE: 0.7023,
+                            Val Loss: 1.0627, Val Acc: 1.0627, Test MAE: 1.1166
+2022-11-01 23:17:38,558:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 28/1000
+2022-11-01 23:17:48,662:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00070, Train Loss: 0.6993, Train MAE: 0.6993,
+                            Val Loss: 0.8857, Val Acc: 0.8857, Test MAE: 0.9596
+2022-11-01 23:17:48,707:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 29/1000
+2022-11-01 23:17:58,796:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.09s, LR: 0.00070, Train Loss: 0.7158, Train MAE: 0.7158,
+                            Val Loss: 0.9040, Val Acc: 0.9040, Test MAE: 0.9391
+2022-11-01 23:17:58,840:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 30/1000
+2022-11-01 23:18:08,905:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00070, Train Loss: 0.6987, Train MAE: 0.6987,
+                            Val Loss: 0.8324, Val Acc: 0.8324, Test MAE: 0.8783
+2022-11-01 23:18:08,949:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 31/1000
+2022-11-01 23:18:19,028:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00070, Train Loss: 0.7637, Train MAE: 0.7637,
+                            Val Loss: 0.8052, Val Acc: 0.8052, Test MAE: 0.8592
+2022-11-01 23:18:19,075:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 32/1000
+2022-11-01 23:18:29,181:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.7554517239332199
+2022-11-01 23:18:29,182:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00070, Train Loss: 0.7126, Train MAE: 0.7126,
+                            Val Loss: 0.7291, Val Acc: 0.7291, Test MAE: 0.7555
+2022-11-01 23:18:29,227:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 33/1000
+2022-11-01 23:18:39,348:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.12s, LR: 0.00070, Train Loss: 0.6822, Train MAE: 0.6822,
+                            Val Loss: 0.8108, Val Acc: 0.8108, Test MAE: 0.8522
+2022-11-01 23:18:39,392:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 34/1000
+2022-11-01 23:18:49,482:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.09s, LR: 0.00070, Train Loss: 0.6721, Train MAE: 0.6721,
+                            Val Loss: 1.2298, Val Acc: 1.2298, Test MAE: 1.3005
+2022-11-01 23:18:49,526:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 35/1000
+2022-11-01 23:18:59,594:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00070, Train Loss: 0.6841, Train MAE: 0.6841,
+                            Val Loss: 1.0528, Val Acc: 1.0528, Test MAE: 1.1633
+2022-11-01 23:18:59,638:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 36/1000
+2022-11-01 23:19:09,714:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.7198245897889137
+2022-11-01 23:19:09,715:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00035, Train Loss: 0.6501, Train MAE: 0.6501,
+                            Val Loss: 0.6871, Val Acc: 0.6871, Test MAE: 0.7198
+2022-11-01 23:19:09,759:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 37/1000
+2022-11-01 23:19:19,868:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.6242, Train MAE: 0.6242,
+                            Val Loss: 1.5065, Val Acc: 1.5065, Test MAE: 1.5786
+2022-11-01 23:19:19,913:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 38/1000
+2022-11-01 23:19:30,023:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.6042, Train MAE: 0.6042,
+                            Val Loss: 0.7143, Val Acc: 0.7143, Test MAE: 0.7643
+2022-11-01 23:19:30,068:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 39/1000
+2022-11-01 23:19:40,163:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.7115757912397385
+2022-11-01 23:19:40,163:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.6110, Train MAE: 0.6110,
+                            Val Loss: 0.6785, Val Acc: 0.6785, Test MAE: 0.7116
+2022-11-01 23:19:40,208:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 40/1000
+2022-11-01 23:19:50,275:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00035, Train Loss: 0.5973, Train MAE: 0.5973,
+                            Val Loss: 0.6905, Val Acc: 0.6905, Test MAE: 0.7402
+2022-11-01 23:19:50,319:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 41/1000
+2022-11-01 23:20:00,398:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00035, Train Loss: 0.6007, Train MAE: 0.6007,
+                            Val Loss: 0.8323, Val Acc: 0.8323, Test MAE: 0.8842
+2022-11-01 23:20:00,442:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 42/1000
+2022-11-01 23:20:10,548:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.5799, Train MAE: 0.5799,
+                            Val Loss: 0.8323, Val Acc: 0.8323, Test MAE: 0.9010
+2022-11-01 23:20:10,593:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 43/1000
+2022-11-01 23:20:20,696:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5903, Train MAE: 0.5903,
+                            Val Loss: 0.7104, Val Acc: 0.7104, Test MAE: 0.7524
+2022-11-01 23:20:20,741:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 44/1000
+2022-11-01 23:20:30,822:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00035, Train Loss: 0.5806, Train MAE: 0.5806,
+                            Val Loss: 1.3556, Val Acc: 1.3556, Test MAE: 1.4269
+2022-11-01 23:20:30,866:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 45/1000
+2022-11-01 23:20:40,929:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00035, Train Loss: 0.5879, Train MAE: 0.5879,
+                            Val Loss: 0.6925, Val Acc: 0.6925, Test MAE: 0.7575
+2022-11-01 23:20:40,973:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 46/1000
+2022-11-01 23:20:51,038:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00035, Train Loss: 0.5762, Train MAE: 0.5762,
+                            Val Loss: 0.8822, Val Acc: 0.8822, Test MAE: 0.9631
+2022-11-01 23:20:51,083:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 47/1000
+2022-11-01 23:21:01,211:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.13s, LR: 0.00035, Train Loss: 0.5949, Train MAE: 0.5949,
+                            Val Loss: 0.8117, Val Acc: 0.8117, Test MAE: 0.8721
+2022-11-01 23:21:01,255:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 48/1000
+2022-11-01 23:21:11,355:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5801, Train MAE: 0.5801,
+                            Val Loss: 0.9155, Val Acc: 0.9155, Test MAE: 0.9965
+2022-11-01 23:21:11,399:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 49/1000
+2022-11-01 23:21:21,502:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.6250431835651398
+2022-11-01 23:21:21,502:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5677, Train MAE: 0.5677,
+                            Val Loss: 0.5966, Val Acc: 0.5966, Test MAE: 0.6250
+2022-11-01 23:21:21,546:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 50/1000
+2022-11-01 23:21:31,611:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.06s, LR: 0.00035, Train Loss: 0.5630, Train MAE: 0.5630,
+                            Val Loss: 0.6248, Val Acc: 0.6248, Test MAE: 0.6656
+2022-11-01 23:21:31,655:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 51/1000
+2022-11-01 23:21:41,734:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.6078446544706821
+2022-11-01 23:21:41,734:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00035, Train Loss: 0.5518, Train MAE: 0.5518,
+                            Val Loss: 0.5848, Val Acc: 0.5848, Test MAE: 0.6078
+2022-11-01 23:21:41,778:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 52/1000
+2022-11-01 23:21:51,885:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.5434, Train MAE: 0.5434,
+                            Val Loss: 1.4105, Val Acc: 1.4105, Test MAE: 1.4793
+2022-11-01 23:21:51,930:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 53/1000
+2022-11-01 23:22:02,037:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.5531, Train MAE: 0.5531,
+                            Val Loss: 1.0628, Val Acc: 1.0628, Test MAE: 1.1484
+2022-11-01 23:22:02,081:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 54/1000
+2022-11-01 23:22:12,154:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00035, Train Loss: 0.5410, Train MAE: 0.5410,
+                            Val Loss: 1.8715, Val Acc: 1.8715, Test MAE: 1.9503
+2022-11-01 23:22:12,198:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 55/1000
+2022-11-01 23:22:22,267:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00035, Train Loss: 0.5323, Train MAE: 0.5323,
+                            Val Loss: 1.3263, Val Acc: 1.3263, Test MAE: 1.4060
+2022-11-01 23:22:22,349:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 56/1000
+2022-11-01 23:22:32,429:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.08s, LR: 0.00035, Train Loss: 0.5386, Train MAE: 0.5386,
+                            Val Loss: 0.9674, Val Acc: 0.9674, Test MAE: 1.0086
+2022-11-01 23:22:32,473:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 57/1000
+2022-11-01 23:22:42,659:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.18s, LR: 0.00035, Train Loss: 0.5826, Train MAE: 0.5826,
+                            Val Loss: 1.5258, Val Acc: 1.5258, Test MAE: 1.5698
+2022-11-01 23:22:42,704:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 58/1000
+2022-11-01 23:22:52,863:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.590252723544836
+2022-11-01 23:22:52,864:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.16s, LR: 0.00035, Train Loss: 0.5699, Train MAE: 0.5699,
+                            Val Loss: 0.5685, Val Acc: 0.5685, Test MAE: 0.5903
+2022-11-01 23:22:52,908:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 59/1000
+2022-11-01 23:23:03,047:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.14s, LR: 0.00035, Train Loss: 0.5588, Train MAE: 0.5588,
+                            Val Loss: 0.6139, Val Acc: 0.6139, Test MAE: 0.6549
+2022-11-01 23:23:03,096:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 60/1000
+2022-11-01 23:23:13,201:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.5410, Train MAE: 0.5410,
+                            Val Loss: 0.6023, Val Acc: 0.6023, Test MAE: 0.6272
+2022-11-01 23:23:13,246:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 61/1000
+2022-11-01 23:23:23,351:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5416, Train MAE: 0.5416,
+                            Val Loss: 0.7238, Val Acc: 0.7238, Test MAE: 0.7544
+2022-11-01 23:23:23,394:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 62/1000
+2022-11-01 23:23:33,724:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00035, Train Loss: 0.5425, Train MAE: 0.5425,
+                            Val Loss: 0.9223, Val Acc: 0.9223, Test MAE: 1.0048
+2022-11-01 23:23:33,769:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 63/1000
+2022-11-01 23:23:44,204:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.43s, LR: 0.00035, Train Loss: 0.5436, Train MAE: 0.5436,
+                            Val Loss: 0.7812, Val Acc: 0.7812, Test MAE: 0.8305
+2022-11-01 23:23:44,249:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 64/1000
+2022-11-01 23:23:54,509:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00035, Train Loss: 0.5547, Train MAE: 0.5547,
+                            Val Loss: 0.6355, Val Acc: 0.6355, Test MAE: 0.6679
+2022-11-01 23:23:54,554:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 65/1000
+2022-11-01 23:24:04,651:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5323, Train MAE: 0.5323,
+                            Val Loss: 1.2892, Val Acc: 1.2892, Test MAE: 1.3503
+2022-11-01 23:24:04,695:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 66/1000
+2022-11-01 23:24:14,804:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.11s, LR: 0.00035, Train Loss: 0.5259, Train MAE: 0.5259,
+                            Val Loss: 0.9242, Val Acc: 0.9242, Test MAE: 0.9751
+2022-11-01 23:24:14,848:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 67/1000
+2022-11-01 23:24:24,983:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.13s, LR: 0.00035, Train Loss: 0.5212, Train MAE: 0.5212,
+                            Val Loss: 0.6561, Val Acc: 0.6561, Test MAE: 0.6792
+2022-11-01 23:24:25,028:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 68/1000
+2022-11-01 23:24:35,182:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.15s, LR: 0.00035, Train Loss: 0.5106, Train MAE: 0.5106,
+                            Val Loss: 1.5174, Val Acc: 1.5174, Test MAE: 1.5832
+2022-11-01 23:24:35,227:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 69/1000
+2022-11-01 23:24:45,356:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.13s, LR: 0.00035, Train Loss: 0.5431, Train MAE: 0.5431,
+                            Val Loss: 0.8443, Val Acc: 0.8443, Test MAE: 0.9207
+2022-11-01 23:24:45,400:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 70/1000
+2022-11-01 23:24:55,500:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.10s, LR: 0.00035, Train Loss: 0.5170, Train MAE: 0.5170,
+                            Val Loss: 0.5928, Val Acc: 0.5928, Test MAE: 0.6098
+2022-11-01 23:24:55,544:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 71/1000
+2022-11-01 23:25:05,851:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00035, Train Loss: 0.5263, Train MAE: 0.5263,
+                            Val Loss: 1.3181, Val Acc: 1.3181, Test MAE: 1.3326
+2022-11-01 23:25:05,896:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 72/1000
+2022-11-01 23:25:16,279:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.38s, LR: 0.00035, Train Loss: 0.5239, Train MAE: 0.5239,
+                            Val Loss: 0.6638, Val Acc: 0.6638, Test MAE: 0.7090
+2022-11-01 23:25:16,325:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 73/1000
+2022-11-01 23:25:26,579:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00035, Train Loss: 0.5113, Train MAE: 0.5113,
+                            Val Loss: 0.6518, Val Acc: 0.6518, Test MAE: 0.6966
+2022-11-01 23:25:26,623:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 74/1000
+2022-11-01 23:25:36,833:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.21s, LR: 0.00035, Train Loss: 0.5025, Train MAE: 0.5025,
+                            Val Loss: 0.9387, Val Acc: 0.9387, Test MAE: 1.0244
+2022-11-01 23:25:36,878:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 75/1000
+2022-11-01 23:25:47,188:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.5498287975788116
+2022-11-01 23:25:47,189:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4807, Train MAE: 0.4807,
+                            Val Loss: 0.5367, Val Acc: 0.5367, Test MAE: 0.5498
+2022-11-01 23:25:47,233:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 76/1000
+2022-11-01 23:25:57,487:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00017, Train Loss: 0.4816, Train MAE: 0.4816,
+                            Val Loss: 1.2365, Val Acc: 1.2365, Test MAE: 1.2866
+2022-11-01 23:25:57,532:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 77/1000
+2022-11-01 23:26:07,866:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00017, Train Loss: 0.4857, Train MAE: 0.4857,
+                            Val Loss: 0.7384, Val Acc: 0.7384, Test MAE: 0.7680
+2022-11-01 23:26:07,911:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 78/1000
+2022-11-01 23:26:18,196:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00017, Train Loss: 0.4673, Train MAE: 0.4673,
+                            Val Loss: 0.6673, Val Acc: 0.6673, Test MAE: 0.7087
+2022-11-01 23:26:18,241:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 79/1000
+2022-11-01 23:26:28,509:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4643, Train MAE: 0.4643,
+                            Val Loss: 0.9565, Val Acc: 0.9565, Test MAE: 1.0073
+2022-11-01 23:26:28,555:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 80/1000
+2022-11-01 23:26:38,909:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.35s, LR: 0.00017, Train Loss: 0.4660, Train MAE: 0.4660,
+                            Val Loss: 1.2209, Val Acc: 1.2209, Test MAE: 1.2847
+2022-11-01 23:26:38,954:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 81/1000
+2022-11-01 23:26:49,264:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4679, Train MAE: 0.4679,
+                            Val Loss: 0.5246, Val Acc: 0.5246, Test MAE: 0.5501
+2022-11-01 23:26:49,309:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 82/1000
+2022-11-01 23:26:59,685:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.38s, LR: 0.00017, Train Loss: 0.4593, Train MAE: 0.4593,
+                            Val Loss: 0.6073, Val Acc: 0.6073, Test MAE: 0.6354
+2022-11-01 23:26:59,729:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 83/1000
+2022-11-01 23:27:09,998:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.5487902797758579
+2022-11-01 23:27:09,998:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4665, Train MAE: 0.4665,
+                            Val Loss: 0.5343, Val Acc: 0.5343, Test MAE: 0.5488
+2022-11-01 23:27:10,044:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 84/1000
+2022-11-01 23:27:20,279:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.23s, LR: 0.00017, Train Loss: 0.4490, Train MAE: 0.4490,
+                            Val Loss: 0.5711, Val Acc: 0.5711, Test MAE: 0.5990
+2022-11-01 23:27:20,323:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 85/1000
+2022-11-01 23:27:30,548:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.23s, LR: 0.00017, Train Loss: 0.4615, Train MAE: 0.4615,
+                            Val Loss: 0.7458, Val Acc: 0.7458, Test MAE: 0.7950
+2022-11-01 23:27:30,593:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 86/1000
+2022-11-01 23:27:40,841:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.5435571186244488
+2022-11-01 23:27:40,841:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00017, Train Loss: 0.4481, Train MAE: 0.4481,
+                            Val Loss: 0.5224, Val Acc: 0.5224, Test MAE: 0.5436
+2022-11-01 23:27:40,886:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 87/1000
+2022-11-01 23:27:51,161:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4467, Train MAE: 0.4467,
+                            Val Loss: 0.6564, Val Acc: 0.6564, Test MAE: 0.6782
+2022-11-01 23:27:51,206:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 88/1000
+2022-11-01 23:28:01,469:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00017, Train Loss: 0.4584, Train MAE: 0.4584,
+                            Val Loss: 0.7814, Val Acc: 0.7814, Test MAE: 0.8084
+2022-11-01 23:28:01,514:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 89/1000
+2022-11-01 23:28:11,844:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00017, Train Loss: 0.4367, Train MAE: 0.4367,
+                            Val Loss: 0.8498, Val Acc: 0.8498, Test MAE: 0.9032
+2022-11-01 23:28:11,889:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 90/1000
+2022-11-01 23:28:22,229:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.34s, LR: 0.00017, Train Loss: 0.4368, Train MAE: 0.4368,
+                            Val Loss: 1.1826, Val Acc: 1.1826, Test MAE: 1.2428
+2022-11-01 23:28:22,274:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 91/1000
+2022-11-01 23:28:32,645:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.37s, LR: 0.00017, Train Loss: 0.4454, Train MAE: 0.4454,
+                            Val Loss: 0.5872, Val Acc: 0.5872, Test MAE: 0.6108
+2022-11-01 23:28:32,690:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 92/1000
+2022-11-01 23:28:43,083:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.5220100395381451
+2022-11-01 23:28:43,084:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.39s, LR: 0.00017, Train Loss: 0.4414, Train MAE: 0.4414,
+                            Val Loss: 0.5061, Val Acc: 0.5061, Test MAE: 0.5220
+2022-11-01 23:28:43,129:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 93/1000
+2022-11-01 23:28:53,431:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4343, Train MAE: 0.4343,
+                            Val Loss: 0.5565, Val Acc: 0.5565, Test MAE: 0.5741
+2022-11-01 23:28:53,475:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 94/1000
+2022-11-01 23:29:03,764:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00017, Train Loss: 0.4413, Train MAE: 0.4413,
+                            Val Loss: 0.5595, Val Acc: 0.5595, Test MAE: 0.6036
+2022-11-01 23:29:03,809:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 95/1000
+2022-11-01 23:29:14,091:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00017, Train Loss: 0.4286, Train MAE: 0.4286,
+                            Val Loss: 0.5902, Val Acc: 0.5902, Test MAE: 0.6266
+2022-11-01 23:29:14,136:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 96/1000
+2022-11-01 23:29:24,451:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4271, Train MAE: 0.4271,
+                            Val Loss: 0.6515, Val Acc: 0.6515, Test MAE: 0.6889
+2022-11-01 23:29:24,496:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 97/1000
+2022-11-01 23:29:34,804:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4236, Train MAE: 0.4236,
+                            Val Loss: 0.6518, Val Acc: 0.6518, Test MAE: 0.6962
+2022-11-01 23:29:34,848:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 98/1000
+2022-11-01 23:29:45,157:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4195, Train MAE: 0.4195,
+                            Val Loss: 0.5317, Val Acc: 0.5317, Test MAE: 0.5529
+2022-11-01 23:29:45,201:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 99/1000
+2022-11-01 23:29:55,475:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4198, Train MAE: 0.4198,
+                            Val Loss: 0.5520, Val Acc: 0.5520, Test MAE: 0.5578
+2022-11-01 23:29:55,519:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 100/1000
+2022-11-01 23:30:05,787:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4248, Train MAE: 0.4248,
+                            Val Loss: 0.5398, Val Acc: 0.5398, Test MAE: 0.5664
+2022-11-01 23:30:05,833:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 101/1000
+2022-11-01 23:30:16,130:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4080, Train MAE: 0.4080,
+                            Val Loss: 0.8861, Val Acc: 0.8861, Test MAE: 0.9667
+2022-11-01 23:30:16,176:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 102/1000
+2022-11-01 23:30:26,478:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.5154566317796707
+2022-11-01 23:30:26,479:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4146, Train MAE: 0.4146,
+                            Val Loss: 0.4882, Val Acc: 0.4882, Test MAE: 0.5155
+2022-11-01 23:30:26,524:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 103/1000
+2022-11-01 23:30:36,783:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00017, Train Loss: 0.4067, Train MAE: 0.4067,
+                            Val Loss: 0.5494, Val Acc: 0.5494, Test MAE: 0.5939
+2022-11-01 23:30:36,828:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 104/1000
+2022-11-01 23:30:47,100:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4089, Train MAE: 0.4089,
+                            Val Loss: 0.4991, Val Acc: 0.4991, Test MAE: 0.5226
+2022-11-01 23:30:47,144:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 105/1000
+2022-11-01 23:30:57,421:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00017, Train Loss: 0.4101, Train MAE: 0.4101,
+                            Val Loss: 0.5427, Val Acc: 0.5427, Test MAE: 0.5705
+2022-11-01 23:30:57,466:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 106/1000
+2022-11-01 23:31:07,796:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00017, Train Loss: 0.4115, Train MAE: 0.4115,
+                            Val Loss: 0.5204, Val Acc: 0.5204, Test MAE: 0.5527
+2022-11-01 23:31:07,841:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 107/1000
+2022-11-01 23:31:18,145:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4074, Train MAE: 0.4074,
+                            Val Loss: 1.1048, Val Acc: 1.1048, Test MAE: 1.1602
+2022-11-01 23:31:18,189:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 108/1000
+2022-11-01 23:31:28,494:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4027, Train MAE: 0.4027,
+                            Val Loss: 0.5126, Val Acc: 0.5126, Test MAE: 0.5417
+2022-11-01 23:31:28,539:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 109/1000
+2022-11-01 23:31:38,809:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4222, Train MAE: 0.4222,
+                            Val Loss: 0.6026, Val Acc: 0.6026, Test MAE: 0.6556
+2022-11-01 23:31:38,854:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 110/1000
+2022-11-01 23:31:49,125:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4193, Train MAE: 0.4193,
+                            Val Loss: 0.5756, Val Acc: 0.5756, Test MAE: 0.6032
+2022-11-01 23:31:49,170:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 111/1000
+2022-11-01 23:31:59,469:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4074, Train MAE: 0.4074,
+                            Val Loss: 0.6549, Val Acc: 0.6549, Test MAE: 0.6925
+2022-11-01 23:31:59,514:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 112/1000
+2022-11-01 23:32:09,815:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4339, Train MAE: 0.4339,
+                            Val Loss: 0.6054, Val Acc: 0.6054, Test MAE: 0.6333
+2022-11-01 23:32:09,860:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 113/1000
+2022-11-01 23:32:20,129:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.4170, Train MAE: 0.4170,
+                            Val Loss: 0.4986, Val Acc: 0.4986, Test MAE: 0.5420
+2022-11-01 23:32:20,174:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 114/1000
+2022-11-01 23:32:30,846:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.67s, LR: 0.00017, Train Loss: 0.4270, Train MAE: 0.4270,
+                            Val Loss: 0.7276, Val Acc: 0.7276, Test MAE: 0.7993
+2022-11-01 23:32:30,890:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 115/1000
+2022-11-01 23:32:41,170:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00017, Train Loss: 0.4075, Train MAE: 0.4075,
+                            Val Loss: 0.7042, Val Acc: 0.7042, Test MAE: 0.7449
+2022-11-01 23:32:41,214:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 116/1000
+2022-11-01 23:32:51,525:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00017, Train Loss: 0.4033, Train MAE: 0.4033,
+                            Val Loss: 0.6810, Val Acc: 0.6810, Test MAE: 0.7318
+2022-11-01 23:32:51,572:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 117/1000
+2022-11-01 23:33:01,876:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00017, Train Loss: 0.4169, Train MAE: 0.4169,
+                            Val Loss: 0.5366, Val Acc: 0.5366, Test MAE: 0.5625
+2022-11-01 23:33:01,920:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 118/1000
+2022-11-01 23:33:12,188:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00017, Train Loss: 0.3895, Train MAE: 0.3895,
+                            Val Loss: 0.5060, Val Acc: 0.5060, Test MAE: 0.5272
+2022-11-01 23:33:12,232:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 119/1000
+2022-11-01 23:33:22,487:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00009, Train Loss: 0.3778, Train MAE: 0.3778,
+                            Val Loss: 0.8295, Val Acc: 0.8295, Test MAE: 0.8962
+2022-11-01 23:33:22,531:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 120/1000
+2022-11-01 23:33:32,808:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.49748727679252625
+2022-11-01 23:33:32,809:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00009, Train Loss: 0.3716, Train MAE: 0.3716,
+                            Val Loss: 0.4726, Val Acc: 0.4726, Test MAE: 0.4975
+2022-11-01 23:33:32,853:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 121/1000
+2022-11-01 23:33:43,146:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00009, Train Loss: 0.3668, Train MAE: 0.3668,
+                            Val Loss: 0.5576, Val Acc: 0.5576, Test MAE: 0.5935
+2022-11-01 23:33:43,191:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 122/1000
+2022-11-01 23:33:53,498:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00009, Train Loss: 0.3683, Train MAE: 0.3683,
+                            Val Loss: 0.4845, Val Acc: 0.4845, Test MAE: 0.5037
+2022-11-01 23:33:53,543:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 123/1000
+2022-11-01 23:34:03,794:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00009, Train Loss: 0.3642, Train MAE: 0.3642,
+                            Val Loss: 0.4669, Val Acc: 0.4669, Test MAE: 0.5035
+2022-11-01 23:34:03,839:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 124/1000
+2022-11-01 23:34:14,096:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00009, Train Loss: 0.3625, Train MAE: 0.3625,
+                            Val Loss: 0.5027, Val Acc: 0.5027, Test MAE: 0.5234
+2022-11-01 23:34:14,141:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 125/1000
+2022-11-01 23:34:24,415:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00009, Train Loss: 0.3643, Train MAE: 0.3643,
+                            Val Loss: 0.4808, Val Acc: 0.4808, Test MAE: 0.5145
+2022-11-01 23:34:24,459:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 126/1000
+2022-11-01 23:34:34,765:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00009, Train Loss: 0.3578, Train MAE: 0.3578,
+                            Val Loss: 0.4843, Val Acc: 0.4843, Test MAE: 0.5061
+2022-11-01 23:34:34,810:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 127/1000
+2022-11-01 23:34:45,141:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00009, Train Loss: 0.3624, Train MAE: 0.3624,
+                            Val Loss: 0.4905, Val Acc: 0.4905, Test MAE: 0.5177
+2022-11-01 23:34:45,186:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 128/1000
+2022-11-01 23:34:55,464:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00009, Train Loss: 0.3607, Train MAE: 0.3607,
+                            Val Loss: 0.5438, Val Acc: 0.5438, Test MAE: 0.5731
+2022-11-01 23:34:55,508:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 129/1000
+2022-11-01 23:35:05,769:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00009, Train Loss: 0.3566, Train MAE: 0.3566,
+                            Val Loss: 0.4675, Val Acc: 0.4675, Test MAE: 0.5037
+2022-11-01 23:35:05,819:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 130/1000
+2022-11-01 23:35:16,099:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00009, Train Loss: 0.3550, Train MAE: 0.3550,
+                            Val Loss: 0.4827, Val Acc: 0.4827, Test MAE: 0.5017
+2022-11-01 23:35:16,144:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 131/1000
+2022-11-01 23:35:26,457:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00009, Train Loss: 0.3523, Train MAE: 0.3523,
+                            Val Loss: 0.4893, Val Acc: 0.4893, Test MAE: 0.5145
+2022-11-01 23:35:26,502:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 132/1000
+2022-11-01 23:35:36,790:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.49357473477721214
+2022-11-01 23:35:36,791:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00009, Train Loss: 0.3511, Train MAE: 0.3511,
+                            Val Loss: 0.4633, Val Acc: 0.4633, Test MAE: 0.4936
+2022-11-01 23:35:36,836:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 133/1000
+2022-11-01 23:35:47,076:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.24s, LR: 0.00009, Train Loss: 0.3561, Train MAE: 0.3561,
+                            Val Loss: 0.5102, Val Acc: 0.5102, Test MAE: 0.5365
+2022-11-01 23:35:47,120:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 134/1000
+2022-11-01 23:35:57,364:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.24s, LR: 0.00009, Train Loss: 0.3511, Train MAE: 0.3511,
+                            Val Loss: 0.4866, Val Acc: 0.4866, Test MAE: 0.5054
+2022-11-01 23:35:57,409:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 135/1000
+2022-11-01 23:36:07,714:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00009, Train Loss: 0.3488, Train MAE: 0.3488,
+                            Val Loss: 0.6339, Val Acc: 0.6339, Test MAE: 0.6521
+2022-11-01 23:36:07,759:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 136/1000
+2022-11-01 23:36:18,058:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00009, Train Loss: 0.3516, Train MAE: 0.3516,
+                            Val Loss: 0.4687, Val Acc: 0.4687, Test MAE: 0.5043
+2022-11-01 23:36:18,103:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 137/1000
+2022-11-01 23:36:28,395:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00009, Train Loss: 0.3469, Train MAE: 0.3469,
+                            Val Loss: 0.7533, Val Acc: 0.7533, Test MAE: 0.8037
+2022-11-01 23:36:28,439:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 138/1000
+2022-11-01 23:36:38,700:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00009, Train Loss: 0.3436, Train MAE: 0.3436,
+                            Val Loss: 0.5205, Val Acc: 0.5205, Test MAE: 0.5508
+2022-11-01 23:36:38,745:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 139/1000
+2022-11-01 23:36:49,006:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.49076518416404724
+2022-11-01 23:36:49,007:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00009, Train Loss: 0.3451, Train MAE: 0.3451,
+                            Val Loss: 0.4647, Val Acc: 0.4647, Test MAE: 0.4908
+2022-11-01 23:36:49,052:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 140/1000
+2022-11-01 23:36:59,342:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00009, Train Loss: 0.3472, Train MAE: 0.3472,
+                            Val Loss: 0.5586, Val Acc: 0.5586, Test MAE: 0.5957
+2022-11-01 23:36:59,386:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 141/1000
+2022-11-01 23:37:09,669:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00009, Train Loss: 0.3517, Train MAE: 0.3517,
+                            Val Loss: 0.4843, Val Acc: 0.4843, Test MAE: 0.5126
+2022-11-01 23:37:09,713:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 142/1000
+2022-11-01 23:37:19,988:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00009, Train Loss: 0.3434, Train MAE: 0.3434,
+                            Val Loss: 0.4917, Val Acc: 0.4917, Test MAE: 0.5235
+2022-11-01 23:37:20,038:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 143/1000
+2022-11-01 23:37:30,301:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00009, Train Loss: 0.3399, Train MAE: 0.3399,
+                            Val Loss: 0.8878, Val Acc: 0.8878, Test MAE: 0.9615
+2022-11-01 23:37:30,346:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 144/1000
+2022-11-01 23:37:40,613:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00009, Train Loss: 0.3487, Train MAE: 0.3487,
+                            Val Loss: 0.4671, Val Acc: 0.4671, Test MAE: 0.4936
+2022-11-01 23:37:40,658:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 145/1000
+2022-11-01 23:37:50,951:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00009, Train Loss: 0.3478, Train MAE: 0.3478,
+                            Val Loss: 0.4869, Val Acc: 0.4869, Test MAE: 0.5192
+2022-11-01 23:37:50,996:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 146/1000
+2022-11-01 23:38:01,311:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00009, Train Loss: 0.3382, Train MAE: 0.3382,
+                            Val Loss: 0.7575, Val Acc: 0.7575, Test MAE: 0.7957
+2022-11-01 23:38:01,356:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 147/1000
+2022-11-01 23:38:11,656:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00009, Train Loss: 0.3376, Train MAE: 0.3376,
+                            Val Loss: 0.5019, Val Acc: 0.5019, Test MAE: 0.5254
+2022-11-01 23:38:11,701:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 148/1000
+2022-11-01 23:38:21,968:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00009, Train Loss: 0.3305, Train MAE: 0.3305,
+                            Val Loss: 1.4718, Val Acc: 1.4718, Test MAE: 1.5729
+2022-11-01 23:38:22,013:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 149/1000
+2022-11-01 23:38:32,285:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3306, Train MAE: 0.3306,
+                            Val Loss: 0.4821, Val Acc: 0.4821, Test MAE: 0.5148
+2022-11-01 23:38:32,330:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 150/1000
+2022-11-01 23:38:42,615:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00004, Train Loss: 0.3221, Train MAE: 0.3221,
+                            Val Loss: 0.4619, Val Acc: 0.4619, Test MAE: 0.4978
+2022-11-01 23:38:42,660:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 151/1000
+2022-11-01 23:38:52,961:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.3295, Train MAE: 0.3295,
+                            Val Loss: 0.4786, Val Acc: 0.4786, Test MAE: 0.5023
+2022-11-01 23:38:53,006:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 152/1000
+2022-11-01 23:39:03,280:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3335, Train MAE: 0.3335,
+                            Val Loss: 0.5037, Val Acc: 0.5037, Test MAE: 0.5380
+2022-11-01 23:39:03,324:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 153/1000
+2022-11-01 23:39:13,598:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3257, Train MAE: 0.3257,
+                            Val Loss: 0.4768, Val Acc: 0.4768, Test MAE: 0.5050
+2022-11-01 23:39:13,642:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 154/1000
+2022-11-01 23:39:23,924:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.3191, Train MAE: 0.3191,
+                            Val Loss: 0.4649, Val Acc: 0.4649, Test MAE: 0.4971
+2022-11-01 23:39:23,975:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 155/1000
+2022-11-01 23:39:34,285:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.3239, Train MAE: 0.3239,
+                            Val Loss: 0.4624, Val Acc: 0.4624, Test MAE: 0.4965
+2022-11-01 23:39:34,330:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 156/1000
+2022-11-01 23:39:44,674:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.34s, LR: 0.00004, Train Loss: 0.3197, Train MAE: 0.3197,
+                            Val Loss: 0.5644, Val Acc: 0.5644, Test MAE: 0.6010
+2022-11-01 23:39:44,718:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 157/1000
+2022-11-01 23:39:54,999:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.3235, Train MAE: 0.3235,
+                            Val Loss: 0.7791, Val Acc: 0.7791, Test MAE: 0.8261
+2022-11-01 23:39:55,044:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 158/1000
+2022-11-01 23:40:05,334:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00004, Train Loss: 0.3143, Train MAE: 0.3143,
+                            Val Loss: 0.4782, Val Acc: 0.4782, Test MAE: 0.5091
+2022-11-01 23:40:05,379:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 159/1000
+2022-11-01 23:40:15,663:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.3308, Train MAE: 0.3308,
+                            Val Loss: 0.4661, Val Acc: 0.4661, Test MAE: 0.5002
+2022-11-01 23:40:15,707:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 160/1000
+2022-11-01 23:40:26,017:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.4884777292609215
+2022-11-01 23:40:26,018:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.3146, Train MAE: 0.3146,
+                            Val Loss: 0.4597, Val Acc: 0.4597, Test MAE: 0.4885
+2022-11-01 23:40:26,063:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 161/1000
+2022-11-01 23:40:36,366:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.3187, Train MAE: 0.3187,
+                            Val Loss: 0.4656, Val Acc: 0.4656, Test MAE: 0.4950
+2022-11-01 23:40:36,410:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 162/1000
+2022-11-01 23:40:46,669:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00004, Train Loss: 0.3194, Train MAE: 0.3194,
+                            Val Loss: 0.6668, Val Acc: 0.6668, Test MAE: 0.7129
+2022-11-01 23:40:46,713:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 163/1000
+2022-11-01 23:40:56,976:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00004, Train Loss: 0.3168, Train MAE: 0.3168,
+                            Val Loss: 0.4603, Val Acc: 0.4603, Test MAE: 0.4911
+2022-11-01 23:40:57,021:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 164/1000
+2022-11-01 23:41:07,319:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.3195, Train MAE: 0.3195,
+                            Val Loss: 0.4610, Val Acc: 0.4610, Test MAE: 0.4895
+2022-11-01 23:41:07,364:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 165/1000
+2022-11-01 23:41:17,671:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.3190, Train MAE: 0.3190,
+                            Val Loss: 0.5376, Val Acc: 0.5376, Test MAE: 0.5731
+2022-11-01 23:41:17,716:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 166/1000
+2022-11-01 23:41:28,053:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.34s, LR: 0.00004, Train Loss: 0.3152, Train MAE: 0.3152,
+                            Val Loss: 0.4781, Val Acc: 0.4781, Test MAE: 0.5051
+2022-11-01 23:41:28,098:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 167/1000
+2022-11-01 23:41:38,364:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3124, Train MAE: 0.3124,
+                            Val Loss: 0.4690, Val Acc: 0.4690, Test MAE: 0.4990
+2022-11-01 23:41:38,409:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 168/1000
+2022-11-01 23:41:48,670:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00004, Train Loss: 0.3069, Train MAE: 0.3069,
+                            Val Loss: 0.4745, Val Acc: 0.4745, Test MAE: 0.5052
+2022-11-01 23:41:48,715:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 169/1000
+2022-11-01 23:41:58,993:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.3106, Train MAE: 0.3106,
+                            Val Loss: 0.5066, Val Acc: 0.5066, Test MAE: 0.5439
+2022-11-01 23:41:59,037:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 170/1000
+2022-11-01 23:42:09,336:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.3117, Train MAE: 0.3117,
+                            Val Loss: 0.4591, Val Acc: 0.4591, Test MAE: 0.4957
+2022-11-01 23:42:10,477:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 171/1000
+2022-11-01 23:42:20,857:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.38s, LR: 0.00004, Train Loss: 0.3114, Train MAE: 0.3114,
+                            Val Loss: 0.4820, Val Acc: 0.4820, Test MAE: 0.5066
+2022-11-01 23:42:20,901:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 172/1000
+2022-11-01 23:42:31,188:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00004, Train Loss: 0.3142, Train MAE: 0.3142,
+                            Val Loss: 0.5097, Val Acc: 0.5097, Test MAE: 0.5354
+2022-11-01 23:42:31,242:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 173/1000
+2022-11-01 23:42:41,509:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3121, Train MAE: 0.3121,
+                            Val Loss: 1.0018, Val Acc: 1.0018, Test MAE: 1.0817
+2022-11-01 23:42:41,554:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 174/1000
+2022-11-01 23:42:51,853:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.3099, Train MAE: 0.3099,
+                            Val Loss: 0.4650, Val Acc: 0.4650, Test MAE: 0.5059
+2022-11-01 23:42:51,898:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 175/1000
+2022-11-01 23:43:02,260:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3009, Train MAE: 0.3009,
+                            Val Loss: 0.4706, Val Acc: 0.4706, Test MAE: 0.5017
+2022-11-01 23:43:02,305:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 176/1000
+2022-11-01 23:43:12,679:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.37s, LR: 0.00004, Train Loss: 0.3113, Train MAE: 0.3113,
+                            Val Loss: 0.4643, Val Acc: 0.4643, Test MAE: 0.4946
+2022-11-01 23:43:12,724:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 177/1000
+2022-11-01 23:43:23,040:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00004, Train Loss: 0.3013, Train MAE: 0.3013,
+                            Val Loss: 0.4974, Val Acc: 0.4974, Test MAE: 0.5205
+2022-11-01 23:43:23,085:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 178/1000
+2022-11-01 23:43:33,406:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00004, Train Loss: 0.3032, Train MAE: 0.3032,
+                            Val Loss: 0.4623, Val Acc: 0.4623, Test MAE: 0.4919
+2022-11-01 23:43:33,451:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 179/1000
+2022-11-01 23:43:43,809:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3024, Train MAE: 0.3024,
+                            Val Loss: 0.5790, Val Acc: 0.5790, Test MAE: 0.6125
+2022-11-01 23:43:43,854:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 180/1000
+2022-11-01 23:43:54,218:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3014, Train MAE: 0.3014,
+                            Val Loss: 0.4745, Val Acc: 0.4745, Test MAE: 0.5038
+2022-11-01 23:43:54,265:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 181/1000
+2022-11-01 23:44:04,623:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3039, Train MAE: 0.3039,
+                            Val Loss: 0.4663, Val Acc: 0.4663, Test MAE: 0.4944
+2022-11-01 23:44:04,668:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 182/1000
+2022-11-01 23:44:14,987:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00004, Train Loss: 0.3090, Train MAE: 0.3090,
+                            Val Loss: 0.5290, Val Acc: 0.5290, Test MAE: 0.5537
+2022-11-01 23:44:15,032:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 183/1000
+2022-11-01 23:44:25,353:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00004, Train Loss: 0.3067, Train MAE: 0.3067,
+                            Val Loss: 0.7541, Val Acc: 0.7541, Test MAE: 0.7930
+2022-11-01 23:44:25,398:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 184/1000
+2022-11-01 23:44:35,763:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3012, Train MAE: 0.3012,
+                            Val Loss: 0.4627, Val Acc: 0.4627, Test MAE: 0.4928
+2022-11-01 23:44:35,808:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 185/1000
+2022-11-01 23:44:46,174:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.4883689135313034
+2022-11-01 23:44:46,175:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.37s, LR: 0.00004, Train Loss: 0.3219, Train MAE: 0.3219,
+                            Val Loss: 0.4588, Val Acc: 0.4588, Test MAE: 0.4884
+2022-11-01 23:44:46,220:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 186/1000
+2022-11-01 23:44:56,484:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00004, Train Loss: 0.3039, Train MAE: 0.3039,
+                            Val Loss: 0.4565, Val Acc: 0.4565, Test MAE: 0.4916
+2022-11-01 23:44:56,529:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 187/1000
+2022-11-01 23:45:06,797:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3014, Train MAE: 0.3014,
+                            Val Loss: 0.4629, Val Acc: 0.4629, Test MAE: 0.4901
+2022-11-01 23:45:06,841:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 188/1000
+2022-11-01 23:45:17,116:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.3001, Train MAE: 0.3001,
+                            Val Loss: 0.8328, Val Acc: 0.8328, Test MAE: 0.8810
+2022-11-01 23:45:17,161:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 189/1000
+2022-11-01 23:45:27,472:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.2931, Train MAE: 0.2931,
+                            Val Loss: 0.4968, Val Acc: 0.4968, Test MAE: 0.5383
+2022-11-01 23:45:27,517:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 190/1000
+2022-11-01 23:45:37,810:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00004, Train Loss: 0.2971, Train MAE: 0.2971,
+                            Val Loss: 0.4634, Val Acc: 0.4634, Test MAE: 0.4937
+2022-11-01 23:45:37,855:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 191/1000
+2022-11-01 23:45:48,121:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.3035, Train MAE: 0.3035,
+                            Val Loss: 0.5608, Val Acc: 0.5608, Test MAE: 0.5969
+2022-11-01 23:45:48,165:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 192/1000
+2022-11-01 23:45:58,438:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00004, Train Loss: 0.2993, Train MAE: 0.2993,
+                            Val Loss: 0.4784, Val Acc: 0.4784, Test MAE: 0.5153
+2022-11-01 23:45:58,483:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 193/1000
+2022-11-01 23:46:08,811:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00004, Train Loss: 0.2997, Train MAE: 0.2997,
+                            Val Loss: 0.6502, Val Acc: 0.6502, Test MAE: 0.6879
+2022-11-01 23:46:08,856:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 194/1000
+2022-11-01 23:46:19,218:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00004, Train Loss: 0.3036, Train MAE: 0.3036,
+                            Val Loss: 0.4658, Val Acc: 0.4658, Test MAE: 0.4943
+2022-11-01 23:46:19,263:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 195/1000
+2022-11-01 23:46:29,641:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.38s, LR: 0.00004, Train Loss: 0.2988, Train MAE: 0.2988,
+                            Val Loss: 0.4703, Val Acc: 0.4703, Test MAE: 0.4944
+2022-11-01 23:46:29,686:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 196/1000
+2022-11-01 23:46:39,995:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.3067, Train MAE: 0.3067,
+                            Val Loss: 0.5016, Val Acc: 0.5016, Test MAE: 0.5318
+2022-11-01 23:46:40,040:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 197/1000
+2022-11-01 23:46:50,353:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00004, Train Loss: 0.2926, Train MAE: 0.2926,
+                            Val Loss: 0.4857, Val Acc: 0.4857, Test MAE: 0.5192
+2022-11-01 23:46:50,398:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 198/1000
+2022-11-01 23:47:00,743:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.34s, LR: 0.00004, Train Loss: 0.2892, Train MAE: 0.2892,
+                            Val Loss: 0.4678, Val Acc: 0.4678, Test MAE: 0.4996
+2022-11-01 23:47:00,792:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 199/1000
+2022-11-01 23:47:11,093:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.30s, LR: 0.00004, Train Loss: 0.2935, Train MAE: 0.2935,
+                            Val Loss: 0.4648, Val Acc: 0.4648, Test MAE: 0.4915
+2022-11-01 23:47:11,997:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 200/1000
+2022-11-01 23:47:22,281:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00004, Train Loss: 0.2927, Train MAE: 0.2927,
+                            Val Loss: 0.4602, Val Acc: 0.4602, Test MAE: 0.4930
+2022-11-01 23:47:22,326:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 201/1000
+2022-11-01 23:47:32,564:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.24s, LR: 0.00004, Train Loss: 0.2946, Train MAE: 0.2946,
+                            Val Loss: 0.5193, Val Acc: 0.5193, Test MAE: 0.5507
+2022-11-01 23:47:32,609:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 202/1000
+2022-11-01 23:47:42,854:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00004, Train Loss: 0.2976, Train MAE: 0.2976,
+                            Val Loss: 0.4655, Val Acc: 0.4655, Test MAE: 0.4998
+2022-11-01 23:47:42,899:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 203/1000
+2022-11-01 23:47:53,143:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.24s, LR: 0.00002, Train Loss: 0.2957, Train MAE: 0.2957,
+                            Val Loss: 0.4628, Val Acc: 0.4628, Test MAE: 0.4977
+2022-11-01 23:47:53,194:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 204/1000
+2022-11-01 23:48:03,473:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00002, Train Loss: 0.2864, Train MAE: 0.2864,
+                            Val Loss: 0.4632, Val Acc: 0.4632, Test MAE: 0.4936
+2022-11-01 23:48:03,518:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 205/1000
+2022-11-01 23:48:13,810:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00002, Train Loss: 0.2840, Train MAE: 0.2840,
+                            Val Loss: 0.4644, Val Acc: 0.4644, Test MAE: 0.4950
+2022-11-01 23:48:13,855:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 206/1000
+2022-11-01 23:48:24,108:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00002, Train Loss: 0.2895, Train MAE: 0.2895,
+                            Val Loss: 0.4615, Val Acc: 0.4615, Test MAE: 0.4913
+2022-11-01 23:48:24,153:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 207/1000
+2022-11-01 23:48:34,408:main_molecules_graph_regression.py:178 -   train_val_pipeline(): Best model with MAE 0.486015722155571
+2022-11-01 23:48:34,408:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00002, Train Loss: 0.2851, Train MAE: 0.2851,
+                            Val Loss: 0.4557, Val Acc: 0.4557, Test MAE: 0.4860
+2022-11-01 23:48:34,453:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 208/1000
+2022-11-01 23:48:44,718:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00002, Train Loss: 0.2849, Train MAE: 0.2849,
+                            Val Loss: 0.4655, Val Acc: 0.4655, Test MAE: 0.4971
+2022-11-01 23:48:44,763:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 209/1000
+2022-11-01 23:48:55,120:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.36s, LR: 0.00002, Train Loss: 0.2855, Train MAE: 0.2855,
+                            Val Loss: 0.4596, Val Acc: 0.4596, Test MAE: 0.4883
+2022-11-01 23:48:55,165:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 210/1000
+2022-11-01 23:49:05,520:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.35s, LR: 0.00002, Train Loss: 0.2795, Train MAE: 0.2795,
+                            Val Loss: 0.5195, Val Acc: 0.5195, Test MAE: 0.5605
+2022-11-01 23:49:05,564:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 211/1000
+2022-11-01 23:49:15,878:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00002, Train Loss: 0.2873, Train MAE: 0.2873,
+                            Val Loss: 0.4564, Val Acc: 0.4564, Test MAE: 0.4883
+2022-11-01 23:49:15,923:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 212/1000
+2022-11-01 23:49:26,232:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.31s, LR: 0.00002, Train Loss: 0.2891, Train MAE: 0.2891,
+                            Val Loss: 0.6559, Val Acc: 0.6559, Test MAE: 0.6913
+2022-11-01 23:49:26,277:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 213/1000
+2022-11-01 23:49:36,612:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.33s, LR: 0.00002, Train Loss: 0.2854, Train MAE: 0.2854,
+                            Val Loss: 0.5209, Val Acc: 0.5209, Test MAE: 0.5598
+2022-11-01 23:49:36,657:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 214/1000
+2022-11-01 23:49:47,024:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.37s, LR: 0.00002, Train Loss: 0.2879, Train MAE: 0.2879,
+                            Val Loss: 0.4667, Val Acc: 0.4667, Test MAE: 0.4974
+2022-11-01 23:49:47,069:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 215/1000
+2022-11-01 23:49:57,390:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.32s, LR: 0.00002, Train Loss: 0.2865, Train MAE: 0.2865,
+                            Val Loss: 0.4678, Val Acc: 0.4678, Test MAE: 0.4938
+2022-11-01 23:49:57,434:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 216/1000
+2022-11-01 23:50:07,673:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.24s, LR: 0.00002, Train Loss: 0.2798, Train MAE: 0.2798,
+                            Val Loss: 0.4564, Val Acc: 0.4564, Test MAE: 0.4928
+2022-11-01 23:50:07,718:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 217/1000
+2022-11-01 23:50:17,977:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00002, Train Loss: 0.2815, Train MAE: 0.2815,
+                            Val Loss: 0.4617, Val Acc: 0.4617, Test MAE: 0.4917
+2022-11-01 23:50:18,021:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 218/1000
+2022-11-01 23:50:28,286:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00002, Train Loss: 0.2957, Train MAE: 0.2957,
+                            Val Loss: 0.4821, Val Acc: 0.4821, Test MAE: 0.5080
+2022-11-01 23:50:28,331:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 219/1000
+2022-11-01 23:50:38,623:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00002, Train Loss: 0.2866, Train MAE: 0.2866,
+                            Val Loss: 0.4641, Val Acc: 0.4641, Test MAE: 0.4910
+2022-11-01 23:50:38,668:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 220/1000
+2022-11-01 23:50:48,917:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00002, Train Loss: 0.2897, Train MAE: 0.2897,
+                            Val Loss: 0.4640, Val Acc: 0.4640, Test MAE: 0.4904
+2022-11-01 23:50:48,961:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 221/1000
+2022-11-01 23:50:59,215:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.25s, LR: 0.00002, Train Loss: 0.2789, Train MAE: 0.2789,
+                            Val Loss: 0.4587, Val Acc: 0.4587, Test MAE: 0.4878
+2022-11-01 23:50:59,259:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 222/1000
+2022-11-01 23:51:09,528:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00002, Train Loss: 0.2804, Train MAE: 0.2804,
+                            Val Loss: 0.4662, Val Acc: 0.4662, Test MAE: 0.4959
+2022-11-01 23:51:09,572:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 223/1000
+2022-11-01 23:51:19,836:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00002, Train Loss: 0.2888, Train MAE: 0.2888,
+                            Val Loss: 0.4598, Val Acc: 0.4598, Test MAE: 0.4894
+2022-11-01 23:51:19,881:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 224/1000
+2022-11-01 23:51:30,167:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00001, Train Loss: 0.2775, Train MAE: 0.2775,
+                            Val Loss: 0.4626, Val Acc: 0.4626, Test MAE: 0.4928
+2022-11-01 23:51:30,212:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 225/1000
+2022-11-01 23:51:40,488:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.28s, LR: 0.00001, Train Loss: 0.2777, Train MAE: 0.2777,
+                            Val Loss: 0.4591, Val Acc: 0.4591, Test MAE: 0.4927
+2022-11-01 23:51:40,532:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 226/1000
+2022-11-01 23:51:50,803:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.27s, LR: 0.00001, Train Loss: 0.2770, Train MAE: 0.2770,
+                            Val Loss: 0.4673, Val Acc: 0.4673, Test MAE: 0.4984
+2022-11-01 23:51:50,847:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 227/1000
+2022-11-01 23:52:01,138:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.29s, LR: 0.00001, Train Loss: 0.2816, Train MAE: 0.2816,
+                            Val Loss: 0.4729, Val Acc: 0.4729, Test MAE: 0.5029
+2022-11-01 23:52:01,182:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 228/1000
+2022-11-01 23:52:11,447:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00001, Train Loss: 0.2774, Train MAE: 0.2774,
+                            Val Loss: 0.4589, Val Acc: 0.4589, Test MAE: 0.4889
+2022-11-01 23:52:11,493:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 229/1000
+2022-11-01 23:52:21,750:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.26s, LR: 0.00001, Train Loss: 0.2831, Train MAE: 0.2831,
+                            Val Loss: 0.4622, Val Acc: 0.4622, Test MAE: 0.4940
+2022-11-01 23:52:21,795:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 230/1000
+2022-11-01 23:52:32,027:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.23s, LR: 0.00001, Train Loss: 0.2840, Train MAE: 0.2840,
+                            Val Loss: 0.4584, Val Acc: 0.4584, Test MAE: 0.4892
+2022-11-01 23:52:32,071:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 231/1000
+2022-11-01 23:52:42,252:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.18s, LR: 0.00001, Train Loss: 0.2765, Train MAE: 0.2765,
+                            Val Loss: 0.4595, Val Acc: 0.4595, Test MAE: 0.4878
+2022-11-01 23:52:42,296:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 232/1000
+2022-11-01 23:52:52,424:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.13s, LR: 0.00001, Train Loss: 0.2743, Train MAE: 0.2743,
+                            Val Loss: 0.4620, Val Acc: 0.4620, Test MAE: 0.4952
+2022-11-01 23:52:52,468:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 233/1000
+2022-11-01 23:53:02,585:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.12s, LR: 0.00001, Train Loss: 0.2740, Train MAE: 0.2740,
+                            Val Loss: 0.4605, Val Acc: 0.4605, Test MAE: 0.4919
+2022-11-01 23:53:02,630:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 234/1000
+2022-11-01 23:53:12,802:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.17s, LR: 0.00001, Train Loss: 0.2757, Train MAE: 0.2757,
+                            Val Loss: 0.4622, Val Acc: 0.4622, Test MAE: 0.4903
+2022-11-01 23:53:12,846:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 235/1000
+2022-11-01 23:53:22,978:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.13s, LR: 0.00001, Train Loss: 0.2704, Train MAE: 0.2704,
+                            Val Loss: 0.4628, Val Acc: 0.4628, Test MAE: 0.4914
+2022-11-01 23:53:23,022:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 236/1000
+2022-11-01 23:53:33,091:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.07s, LR: 0.00001, Train Loss: 0.2772, Train MAE: 0.2772,
+                            Val Loss: 0.4588, Val Acc: 0.4588, Test MAE: 0.4886
+2022-11-01 23:53:33,139:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 237/1000
+2022-11-01 23:53:43,170:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.03s, LR: 0.00001, Train Loss: 0.2701, Train MAE: 0.2701,
+                            Val Loss: 0.4614, Val Acc: 0.4614, Test MAE: 0.4912
+2022-11-01 23:53:43,214:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 238/1000
+2022-11-01 23:53:53,263:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00001, Train Loss: 0.2762, Train MAE: 0.2762,
+                            Val Loss: 0.4628, Val Acc: 0.4628, Test MAE: 0.4934
+2022-11-01 23:53:53,307:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 239/1000
+2022-11-01 23:54:03,359:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.05s, LR: 0.00001, Train Loss: 0.2830, Train MAE: 0.2830,
+                            Val Loss: 0.4648, Val Acc: 0.4648, Test MAE: 0.4942
+2022-11-01 23:54:03,404:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 240/1000
+2022-11-01 23:54:13,428:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.02s, LR: 0.00001, Train Loss: 0.2783, Train MAE: 0.2783,
+                            Val Loss: 0.4665, Val Acc: 0.4665, Test MAE: 0.4978
+2022-11-01 23:54:13,472:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 241/1000
+2022-11-01 23:54:23,464:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.99s, LR: 0.00001, Train Loss: 0.2709, Train MAE: 0.2709,
+                            Val Loss: 0.4596, Val Acc: 0.4596, Test MAE: 0.4884
+2022-11-01 23:54:23,509:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 242/1000
+2022-11-01 23:54:33,495:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.99s, LR: 0.00001, Train Loss: 0.2683, Train MAE: 0.2683,
+                            Val Loss: 0.4617, Val Acc: 0.4617, Test MAE: 0.4915
+2022-11-01 23:54:33,539:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 243/1000
+2022-11-01 23:54:43,523:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.98s, LR: 0.00001, Train Loss: 0.2723, Train MAE: 0.2723,
+                            Val Loss: 0.4620, Val Acc: 0.4620, Test MAE: 0.4900
+2022-11-01 23:54:43,567:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 244/1000
+2022-11-01 23:54:53,552:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.98s, LR: 0.00001, Train Loss: 0.2821, Train MAE: 0.2821,
+                            Val Loss: 0.4592, Val Acc: 0.4592, Test MAE: 0.4912
+2022-11-01 23:54:53,596:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 245/1000
+2022-11-01 23:55:03,565:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.97s, LR: 0.00001, Train Loss: 0.2758, Train MAE: 0.2758,
+                            Val Loss: 0.4650, Val Acc: 0.4650, Test MAE: 0.4930
+2022-11-01 23:55:03,610:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 246/1000
+2022-11-01 23:55:13,554:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.94s, LR: 0.00001, Train Loss: 0.2756, Train MAE: 0.2756,
+                            Val Loss: 0.4595, Val Acc: 0.4595, Test MAE: 0.4887
+2022-11-01 23:55:13,599:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 247/1000
+2022-11-01 23:55:23,561:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.96s, LR: 0.00001, Train Loss: 0.2812, Train MAE: 0.2812,
+                            Val Loss: 0.4596, Val Acc: 0.4596, Test MAE: 0.4915
+2022-11-01 23:55:23,605:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 248/1000
+2022-11-01 23:55:33,543:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.94s, LR: 0.00001, Train Loss: 0.2735, Train MAE: 0.2735,
+                            Val Loss: 0.4561, Val Acc: 0.4561, Test MAE: 0.4894
+2022-11-01 23:55:33,587:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 249/1000
+2022-11-01 23:55:43,486:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00001, Train Loss: 0.2729, Train MAE: 0.2729,
+                            Val Loss: 0.4607, Val Acc: 0.4607, Test MAE: 0.4919
+2022-11-01 23:55:43,530:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 250/1000
+2022-11-01 23:55:53,762:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 10.23s, LR: 0.00001, Train Loss: 0.2743, Train MAE: 0.2743,
+                            Val Loss: 0.4584, Val Acc: 0.4584, Test MAE: 0.4877
+2022-11-01 23:55:53,806:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 251/1000
+2022-11-01 23:56:03,678:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.87s, LR: 0.00001, Train Loss: 0.2755, Train MAE: 0.2755,
+                            Val Loss: 0.4673, Val Acc: 0.4673, Test MAE: 0.4975
+2022-11-01 23:56:03,722:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 252/1000
+2022-11-01 23:56:13,632:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00001, Train Loss: 0.2757, Train MAE: 0.2757,
+                            Val Loss: 0.4575, Val Acc: 0.4575, Test MAE: 0.4897
+2022-11-01 23:56:13,677:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 253/1000
+2022-11-01 23:56:23,590:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00001, Train Loss: 0.2717, Train MAE: 0.2717,
+                            Val Loss: 0.4683, Val Acc: 0.4683, Test MAE: 0.4936
+2022-11-01 23:56:23,634:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 254/1000
+2022-11-01 23:56:33,534:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00001, Train Loss: 0.2757, Train MAE: 0.2757,
+                            Val Loss: 0.4562, Val Acc: 0.4562, Test MAE: 0.4902
+2022-11-01 23:56:33,578:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 255/1000
+2022-11-01 23:56:43,469:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00001, Train Loss: 0.2741, Train MAE: 0.2741,
+                            Val Loss: 0.4570, Val Acc: 0.4570, Test MAE: 0.4912
+2022-11-01 23:56:43,513:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 256/1000
+2022-11-01 23:56:53,405:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00000, Train Loss: 0.2738, Train MAE: 0.2738,
+                            Val Loss: 0.4593, Val Acc: 0.4593, Test MAE: 0.4886
+2022-11-01 23:56:53,449:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 257/1000
+2022-11-01 23:57:03,351:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2651, Train MAE: 0.2651,
+                            Val Loss: 0.4571, Val Acc: 0.4571, Test MAE: 0.4881
+2022-11-01 23:57:03,395:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 258/1000
+2022-11-01 23:57:13,304:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00000, Train Loss: 0.2763, Train MAE: 0.2763,
+                            Val Loss: 0.4631, Val Acc: 0.4631, Test MAE: 0.4924
+2022-11-01 23:57:14,849:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 259/1000
+2022-11-01 23:57:24,746:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2716, Train MAE: 0.2716,
+                            Val Loss: 0.4586, Val Acc: 0.4586, Test MAE: 0.4887
+2022-11-01 23:57:24,791:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 260/1000
+2022-11-01 23:57:34,741:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.95s, LR: 0.00000, Train Loss: 0.2739, Train MAE: 0.2739,
+                            Val Loss: 0.4546, Val Acc: 0.4546, Test MAE: 0.4873
+2022-11-01 23:57:34,785:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 261/1000
+2022-11-01 23:57:44,743:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.96s, LR: 0.00000, Train Loss: 0.2745, Train MAE: 0.2745,
+                            Val Loss: 0.4606, Val Acc: 0.4606, Test MAE: 0.4889
+2022-11-01 23:57:44,787:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 262/1000
+2022-11-01 23:57:54,732:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.94s, LR: 0.00000, Train Loss: 0.2721, Train MAE: 0.2721,
+                            Val Loss: 0.4566, Val Acc: 0.4566, Test MAE: 0.4868
+2022-11-01 23:57:54,776:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 263/1000
+2022-11-01 23:58:04,753:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.98s, LR: 0.00000, Train Loss: 0.2699, Train MAE: 0.2699,
+                            Val Loss: 0.4608, Val Acc: 0.4608, Test MAE: 0.4891
+2022-11-01 23:58:04,797:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 264/1000
+2022-11-01 23:58:14,735:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.94s, LR: 0.00000, Train Loss: 0.2727, Train MAE: 0.2727,
+                            Val Loss: 0.4574, Val Acc: 0.4574, Test MAE: 0.4903
+2022-11-01 23:58:14,779:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 265/1000
+2022-11-01 23:58:24,673:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00000, Train Loss: 0.2754, Train MAE: 0.2754,
+                            Val Loss: 0.4568, Val Acc: 0.4568, Test MAE: 0.4896
+2022-11-01 23:58:24,717:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 266/1000
+2022-11-01 23:58:34,601:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.88s, LR: 0.00000, Train Loss: 0.2713, Train MAE: 0.2713,
+                            Val Loss: 0.4563, Val Acc: 0.4563, Test MAE: 0.4877
+2022-11-01 23:58:34,645:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 267/1000
+2022-11-01 23:58:44,535:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00000, Train Loss: 0.2657, Train MAE: 0.2657,
+                            Val Loss: 0.4606, Val Acc: 0.4606, Test MAE: 0.4890
+2022-11-01 23:58:44,580:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 268/1000
+2022-11-01 23:58:54,502:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.92s, LR: 0.00000, Train Loss: 0.2689, Train MAE: 0.2689,
+                            Val Loss: 0.4575, Val Acc: 0.4575, Test MAE: 0.4887
+2022-11-01 23:58:54,547:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 269/1000
+2022-11-01 23:59:04,458:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00000, Train Loss: 0.2704, Train MAE: 0.2704,
+                            Val Loss: 0.4588, Val Acc: 0.4588, Test MAE: 0.4903
+2022-11-01 23:59:04,502:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 270/1000
+2022-11-01 23:59:14,399:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2699, Train MAE: 0.2699,
+                            Val Loss: 0.4614, Val Acc: 0.4614, Test MAE: 0.4885
+2022-11-01 23:59:14,443:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 271/1000
+2022-11-01 23:59:24,344:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2755, Train MAE: 0.2755,
+                            Val Loss: 0.4633, Val Acc: 0.4633, Test MAE: 0.4915
+2022-11-01 23:59:24,389:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 272/1000
+2022-11-01 23:59:34,287:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2728, Train MAE: 0.2728,
+                            Val Loss: 0.4620, Val Acc: 0.4620, Test MAE: 0.4907
+2022-11-01 23:59:34,331:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 273/1000
+2022-11-01 23:59:44,243:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00000, Train Loss: 0.2733, Train MAE: 0.2733,
+                            Val Loss: 0.4554, Val Acc: 0.4554, Test MAE: 0.4901
+2022-11-01 23:59:44,287:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 274/1000
+2022-11-01 23:59:54,221:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.93s, LR: 0.00000, Train Loss: 0.2683, Train MAE: 0.2683,
+                            Val Loss: 0.4598, Val Acc: 0.4598, Test MAE: 0.4887
+2022-11-01 23:59:54,265:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 275/1000
+2022-11-02 00:00:04,176:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00000, Train Loss: 0.2738, Train MAE: 0.2738,
+                            Val Loss: 0.4647, Val Acc: 0.4647, Test MAE: 0.4927
+2022-11-02 00:00:04,221:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 276/1000
+2022-11-02 00:00:14,211:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.99s, LR: 0.00000, Train Loss: 0.2703, Train MAE: 0.2703,
+                            Val Loss: 0.4609, Val Acc: 0.4609, Test MAE: 0.4895
+2022-11-02 00:00:14,256:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 277/1000
+2022-11-02 00:00:24,246:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.99s, LR: 0.00000, Train Loss: 0.2725, Train MAE: 0.2725,
+                            Val Loss: 0.4653, Val Acc: 0.4653, Test MAE: 0.4941
+2022-11-02 00:00:24,290:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 278/1000
+2022-11-02 00:00:34,284:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.99s, LR: 0.00000, Train Loss: 0.2664, Train MAE: 0.2664,
+                            Val Loss: 0.4584, Val Acc: 0.4584, Test MAE: 0.4881
+2022-11-02 00:00:34,328:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 279/1000
+2022-11-02 00:00:44,301:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.97s, LR: 0.00000, Train Loss: 0.2620, Train MAE: 0.2620,
+                            Val Loss: 0.4591, Val Acc: 0.4591, Test MAE: 0.4905
+2022-11-02 00:00:44,345:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 280/1000
+2022-11-02 00:00:54,271:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.93s, LR: 0.00000, Train Loss: 0.2679, Train MAE: 0.2679,
+                            Val Loss: 0.4619, Val Acc: 0.4619, Test MAE: 0.4892
+2022-11-02 00:00:54,315:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 281/1000
+2022-11-02 00:01:04,209:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00000, Train Loss: 0.2727, Train MAE: 0.2727,
+                            Val Loss: 0.4687, Val Acc: 0.4687, Test MAE: 0.4945
+2022-11-02 00:01:04,253:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 282/1000
+2022-11-02 00:01:14,162:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.91s, LR: 0.00000, Train Loss: 0.2714, Train MAE: 0.2714,
+                            Val Loss: 0.4573, Val Acc: 0.4573, Test MAE: 0.4894
+2022-11-02 00:01:14,206:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 283/1000
+2022-11-02 00:01:24,106:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2642, Train MAE: 0.2642,
+                            Val Loss: 0.4596, Val Acc: 0.4596, Test MAE: 0.4906
+2022-11-02 00:01:24,149:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 284/1000
+2022-11-02 00:01:34,054:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.90s, LR: 0.00000, Train Loss: 0.2682, Train MAE: 0.2682,
+                            Val Loss: 0.4584, Val Acc: 0.4584, Test MAE: 0.4908
+2022-11-02 00:01:34,099:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 285/1000
+2022-11-02 00:01:44,020:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.92s, LR: 0.00000, Train Loss: 0.2800, Train MAE: 0.2800,
+                            Val Loss: 0.4597, Val Acc: 0.4597, Test MAE: 0.4913
+2022-11-02 00:01:44,065:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 286/1000
+2022-11-02 00:01:54,018:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.95s, LR: 0.00000, Train Loss: 0.2713, Train MAE: 0.2713,
+                            Val Loss: 0.4579, Val Acc: 0.4579, Test MAE: 0.4898
+2022-11-02 00:01:54,063:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 287/1000
+2022-11-02 00:02:03,998:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.94s, LR: 0.00000, Train Loss: 0.2664, Train MAE: 0.2664,
+                            Val Loss: 0.4630, Val Acc: 0.4630, Test MAE: 0.4909
+2022-11-02 00:02:04,042:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 288/1000
+2022-11-02 00:02:14,014:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.97s, LR: 0.00000, Train Loss: 0.2704, Train MAE: 0.2704,
+                            Val Loss: 0.4594, Val Acc: 0.4594, Test MAE: 0.4911
+2022-11-02 00:02:14,058:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 289/1000
+2022-11-02 00:02:24,015:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.96s, LR: 0.00000, Train Loss: 0.2789, Train MAE: 0.2789,
+                            Val Loss: 0.4569, Val Acc: 0.4569, Test MAE: 0.4885
+2022-11-02 00:02:24,060:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 290/1000
+2022-11-02 00:02:33,955:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.89s, LR: 0.00000, Train Loss: 0.2691, Train MAE: 0.2691,
+                            Val Loss: 0.4598, Val Acc: 0.4598, Test MAE: 0.4904
+2022-11-02 00:02:33,998:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 291/1000
+2022-11-02 00:02:43,856:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.86s, LR: 0.00000, Train Loss: 0.2651, Train MAE: 0.2651,
+                            Val Loss: 0.4607, Val Acc: 0.4607, Test MAE: 0.4934
+2022-11-02 00:02:43,900:main_molecules_graph_regression.py:159 -   train_val_pipeline(): Epoch 292/1000
+2022-11-02 00:02:53,776:main_molecules_graph_regression.py:201 -   train_val_pipeline(): 	Time: 9.88s, LR: 0.00000, Train Loss: 0.2705, Train MAE: 0.2705,
+                            Val Loss: 0.4595, Val Acc: 0.4595, Test MAE: 0.4889
+2022-11-02 00:02:53,820:main_molecules_graph_regression.py:223 -   train_val_pipeline(): 
+!! LR EQUAL TO MIN LR SET.
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:243 -   train_val_pipeline(): Test MAE: 0.4889
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:244 -   train_val_pipeline(): Best Test MAE: 0.4860
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:245 -   train_val_pipeline(): Train MAE: 0.2309
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:246 -   train_val_pipeline(): Best Train MAE Corresponding to Best Test MAE: 0.2851
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:247 -   train_val_pipeline(): Convergence Time (Epochs): 291.0000
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:248 -   train_val_pipeline(): TOTAL TIME TAKEN: 3013.9374s
+2022-11-02 00:03:00,367:main_molecules_graph_regression.py:249 -   train_val_pipeline(): AVG TIME PER EPOCH: 10.1923s
+2022-11-02 00:03:00,369:main_molecules_graph_regression.py:253 -   train_val_pipeline(): {'seed': 41, 'epochs': 1000, 'batch_size': 128, 'init_lr': 0.0007, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 15, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [22], 'save_name': 'b128-bnorm-alt-noedge-500k-clamped-8-trials', 'job_num': 32}
+2022-11-02 00:03:00,369:main_molecules_graph_regression.py:254 -   train_val_pipeline(): train history: [0.23087350514870655]
+2022-11-02 00:03:00,369:main_molecules_graph_regression.py:255 -   train_val_pipeline(): test history: [0.4888984151184559]
+2022-11-02 00:03:00,369:main_molecules_graph_regression.py:256 -   train_val_pipeline(): val history: [0.45945676416158676]
