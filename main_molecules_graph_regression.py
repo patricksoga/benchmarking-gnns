@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pprint import pprint
 
 from tensorboardX import SummaryWriter
-from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_spectral_decomposition, add_spd_encodings
+from data.positional_encs import add_automaton_encodings, add_multiple_automaton_encodings, add_rw_pos_encodings, add_simple_spectral_decomp, add_spectral_decomposition, add_spd_encodings
 from utils.main_utils import DotDict, gpu_setup, view_model_param, get_logger, add_args, setup_dirs, get_parameters, get_net_params
 
 logger = None
@@ -65,10 +65,15 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 logger.info(f"[!] Adding random automaton graph positional encoding ({net_params['pos_enc_dim']}).")
                 if net_params.get('n_gape', 1) > 1:
                     logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
-                    dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
+                    dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'], model=model)
                 else:
                     dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
                     logger.info(f'Time PE:{time.time()-t0}')
+            # if net_params.get('eigen_bartels_stewart', False):
+            #     logger.info(f"[!] Adding adjacency matrix eigendecomp for learned automaton")
+            #     dataset = add_simple_spectral_decomp(dataset)
+            #     logger.info(f'Time PE:{time.time()-t0}')
+
             if net_params.get('rw_pos_enc', False):
                 logger.info(f"[!] Adding random walk graph positional encoding ({net_params['pos_enc_dim']}).")
                 dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'], 'full')
@@ -205,17 +210,17 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 per_epoch_time.append(time.time()-start)
 
                 # Saving checkpoint
-                ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
-                if not os.path.exists(ckpt_dir):
-                    os.makedirs(ckpt_dir)
-                torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
+                # ckpt_dir = os.path.join(root_ckpt_dir, "RUN_")
+                # if not os.path.exists(ckpt_dir):
+                #     os.makedirs(ckpt_dir)
+                # torch.save(model.state_dict(), '{}.pkl'.format(ckpt_dir + "/epoch_" + str(epoch)))
 
-                files = glob.glob(ckpt_dir + '/*.pkl')
-                for file in files:
-                    epoch_nb = file.split('_')[-1]
-                    epoch_nb = int(epoch_nb.split('.')[0])
-                    if epoch_nb < epoch-1:
-                        os.remove(file)
+                # files = glob.glob(ckpt_dir + '/*.pkl')
+                # for file in files:
+                #     epoch_nb = file.split('_')[-1]
+                #     epoch_nb = int(epoch_nb.split('.')[0])
+                #     if epoch_nb < epoch-1:
+                #         os.remove(file)
 
                 scheduler.step(epoch_val_loss)
 

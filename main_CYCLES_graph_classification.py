@@ -171,7 +171,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, config_fil
                         os.makedirs(model_dir)
                     fname = f"/best_model{best_test_acc:.4f}_{params['job_num']}.pt"
                     torch.save(model.state_dict(), model_dir + fname)
-                    logger.info(f"Saving best model with test accuracy: {best_test_acc:.4f} to {model_dir}")
+                    logger.info(f"Best test accuracy: {best_test_acc:.4f} to {model_dir}")
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
