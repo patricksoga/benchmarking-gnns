@@ -162,8 +162,10 @@ def add_args(parser):
     parser.add_argument('--gape_scale', nargs="+", help="Scale the transition weights by some strategy. Default is 0.99.")
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
-    parser.add_argument('--gape_stoch', help="Stochastic gape")
+    parser.add_argument('--gape_stoch', help="Row-wise normalization of transition weights")
+    parser.add_argument('--gape_normalize_mat', help="Normalize graph matrix involved in GAPE equation")
     parser.add_argument('--gape_softmax_init', help="Column-wise softmax on initial weight matrix")
+    parser.add_argument('--gape_uniform_init', help="Uniform initialize initial weight vectors")
     parser.add_argument('--gape_stack_strat', help="Use 1 for taking top n of supplied num_initials (num_initials > largest graph) 2 for random")
     parser.add_argument('--gape_scalar', help="Learnable scaler")
 
@@ -514,10 +516,17 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['gape_softmax_init'] = False
 
     if args.gape_stack_strat is not None:
-        net_params['gape_stack_strat'] = True if args.gape_stack_strat == 'True' else False
+        net_params['gape_stack_strat'] = args.gape_stack_strat
     elif 'gape_stack_strat' in net_params:
         pass
     else:
-        net_params['gape_stack_strat'] = False
+        net_params['gape_stack_strat'] = "2"
+
+    if args.gape_normalize_mat is not None:
+        net_params['gape_normalize_mat'] = args.gape_normalize_mat
+    elif 'gape_normalize_mat' in net_params:
+        pass
+    else:
+        net_params['gape_normalize_mat'] = "2"
 
     return net_params
