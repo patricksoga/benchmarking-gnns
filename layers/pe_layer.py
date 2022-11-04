@@ -240,21 +240,13 @@ class PELayer(nn.Module):
         n = A.shape[-1]
         R, U = torch.linalg.eig(A)
         S, V = torch.linalg.eig(B)
-        # R, U = torch.real(R), torch.real(U)
-        # S, V = torch.real(S), torch.real(V)
-        # S, V = B
-        # t1 = time.time()
         F = torch.linalg.solve(U, (C + 0j) @ V)
-        # F = torch.linalg.solve(U, C @ V)
         W = R[..., :, None] - S[..., None, :]
         Y = F / W
         X = U[...,:n,:n] @ Y[...,:n,:m] @ torch.linalg.inv(V)[...,:m,:m]
         return X
 
-    def learned_forward(self, g, graph_spectra):
-        # if not self.diag:
-        #     print("Must use diag with eigendecomposition-based Bartels-Stewart")
-        #     exit()
+    def learned_forward(self, g):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
@@ -271,10 +263,7 @@ class PELayer(nn.Module):
 
         transition_inverse = torch.linalg.inv(transition).to(self.device)
         mat_product = transition_inverse @ vec_init
-        # mat_product = self.pos_transition_inv @ vec_init
         pe = self.sylvester(transition_inverse, -mat, mat_product)
-        # eigvals, eigvecs = g.EigVals, g.EigVecs
-        # pe = self.sylvester(self.pos_transition_inv, (eigvals, eigvecs), mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
         pe = torch.real(pe)
         pe = self.embedding_pos_encs[0](pe)
@@ -283,7 +272,7 @@ class PELayer(nn.Module):
         return pe
 
 
-    def forward(self, g, h, pos_enc=None, graph_spectra=None):
+    def forward(self, g, h, pos_enc=None):
         pe = pos_enc
         if not self.use_pos_enc:
             return h
@@ -296,7 +285,7 @@ class PELayer(nn.Module):
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
             if self.eigen_bartels_stewart:
-                return self.learned_forward(g, graph_spectra)
+                return self.learned_forward(g)
 
             mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g.num_nodes())
