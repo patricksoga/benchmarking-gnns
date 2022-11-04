@@ -1,4 +1,5 @@
 import os
+from matplotlib import pyplot as plt
 import torch
 import dgl
 import scipy
@@ -303,6 +304,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         k_RW_power = k_RW_power.toarray()
         mat = k_RW_power
 
+    if model.pe_layer.gape_normalize_mat:
+        mat = mat @ sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) # D^-1
 
     # if model is None:
     # initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
@@ -318,7 +321,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     #     initial_vector = pi
 
     if diag:
-        mat_product = torch.einsum('ij, i->ij', initial_vector, transition_inv).cpu().numpy()
+        # mat_product = torch.einsum('ij, i->ij', initial_vector, transition_inv).cpu().numpy()
+        mat_product = (torch.diag(transition_matrix) @ initial_vector).cpu().numpy() 
         transition_inv = torch.diag(transition_inv).cpu().numpy()
     else:
         initial_vector = initial_vector.cpu().numpy()
@@ -337,10 +341,10 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
-    # if storage is not None:
-    #     storage['before']['mins'].append(torch.min(pe))
-    #     storage['before']['maxs'].append(torch.max(pe))
-    #     storage['before']['all'].extend(torch.flatten(pe).tolist())
+    if storage is not None:
+        storage['before']['mins'].append(torch.min(pe))
+        storage['before']['maxs'].append(torch.max(pe))
+        storage['before']['all'].extend(torch.flatten(pe).tolist())
 
     #     clameped_pe = torch.clamp(pe, -5, 5)
     #     # clameped_pe = 5*torch.tanh(pe)
@@ -451,6 +455,7 @@ def add_multiple_automaton_encodings_CSL(splits, model):
     transition_matrices = model.pe_layer.pos_transitions
     initial_vectors = model.pe_layer.pos_initials
     for i, (transition_matrix, initial_vector) in enumerate(zip(transition_matrices, initial_vectors)):
+        # print(i)
         graphs = []
         for g in splits[0]:
             # initial_vector = model.pe_layer.stack_strategy(g.num_nodes())
@@ -459,13 +464,145 @@ def add_multiple_automaton_encodings_CSL(splits, model):
     # dump_encodings(dataset, transition_matrix.shape[0])
     return new_split
 
-def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, idx=0, model=None):
+def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, idx=0, model=None, matrix_type='A', prev_graph=None):
     transition_inv = transition_matrix.transpose(1, 0).cpu().numpy() # assuming the transition matrix is orthogonal
     matrix = g.adjacency_matrix().to_dense().cpu().numpy()
+    mat = matrix
+
+    if matrix_type == 'A':
+        # Adjacency matrix
+        mat = g.adjacency_matrix().to_dense().cpu().numpy()
+    elif matrix_type == 'L':
+        # Normalized Laplacian
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - D * A * D
+        mat = L.todense()
+    elif matrix_type == 'SL':
+        # Normalized unsigned Laplacian
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) + D * A * D
+        mat = L.todense()
+    elif matrix_type == 'UL':
+        # Unnormalized Laplacian
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        mat = (A - D).todense()
+    elif matrix_type == 'USL':
+        # Unnormalized unsigned Laplacian
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()), dtype=float)
+        mat = (A + D).todense()
+    elif matrix_type == 'E':
+        # Laplacian eigenvector matrix
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(n) - D * A * D
+        EigVal, EigVec = np.linalg.eig(L.todense())
+        EigVec = EigVec[:, EigVal.argsort()] # increasing order
+        mat = EigVec
+    elif matrix_type == 'R':
+        # Random walk matrix (1st power)
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+        mat = (A * D).todense()
+    elif matrix_type == 'R2':
+        # Random walk matrix (2nd power)
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+        mat = (A * D).todense()**2
+    elif matrix_type == 'R20':
+        # Random walk matrix (20th power)
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+        rw = (A*D).todense()
+        m_power = rw
+
+        for _ in range(20):
+            m_power = m_power * rw
+        mat = m_power
+
+    elif matrix_type == 'RV':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+        rw = (A*D).todense()
+        m_power = rw
+        # if idx > 0:
+        #     l = idx * 2
+        # else:
+        #     l = 1
+
+        for _ in range(idx+1):
+            m_power = m_power * rw
+        mat = m_power
+
+    elif matrix_type == 'RWK':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix(scipy_fmt="csr")
+        p_steps = n
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.4*n)
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.3*n)
+        gamma = 1
+
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        I = sp.eye(n)
+        L = I - N * A * N
+
+        k_RW = I - gamma*L
+        k_RW_power = k_RW
+        for _ in range(p_steps - 1):
+            k_RW_power = k_RW_power.dot(k_RW)
+
+        k_RW_power = k_RW_power.toarray()
+        mat = k_RW_power
+
+    elif matrix_type == 'RWK16':
+        n = g.number_of_nodes()
+        A = g.adjacency_matrix(scipy_fmt="csr")
+        p_steps = 16
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.4*n)
+        # p_steps = int(0.7*n)
+        # p_steps = int(0.3*n)
+        gamma = 1
+
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        I = sp.eye(n)
+        L = I - N * A * N
+
+        k_RW = I - gamma*L
+        k_RW_power = k_RW
+        for _ in range(p_steps - 1):
+            k_RW_power = k_RW_power.dot(k_RW)
+
+        k_RW_power = k_RW_power.toarray()
+        mat = k_RW_power
+
+    if model.pe_layer.gape_normalize_mat:
+        mat = mat @ sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) # D^-1
+
+    matrix = mat
 
     # if idx == 0:
-        # initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
+    # initial_vector = torch.cat([initial_vector for _ in range(matrix.shape[0])], dim=1)
     initial_vector = model.pe_layer.stack_strategy(g.number_of_nodes())
+
+    # initial_vector = torch.ones_like(initial_vector)
+    # for i in range(initial_vector.shape[0]):
+    #     initial_vector[:, i] = torch.full_like(initial_vector[:, i], i)
+
     # else:
     #     import random
     #     pi = torch.zeros(initial_vector.shape[0], g.number_of_nodes())
@@ -473,9 +610,32 @@ def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, i
     #     pi[:, index] = initial_vector.squeeze(1)
     #     initial_vector = pi
 
-    initial_vector = initial_vector.cpu().numpy()
+    initial_vector = initial_vector.detach().cpu().numpy()
     pe = scipy.linalg.solve_sylvester(transition_inv, -matrix, transition_inv @ initial_vector)
     pe = torch.from_numpy(pe.T).float()
+
+    # import seaborn as sb
+    # import networkx as nx
+
+    # def id_to_str(graph: nx.Graph):
+    #     g = nx.Graph()
+    #     g.add_edges_from([(str(edge[0]), str(edge[1])) for edge in graph.edges()])
+    #     g.add_nodes_from([str(id) for id in graph.nodes()])
+    #     return g
+
+    # graph = id_to_str(dgl.to_networkx(g).to_undirected())
+
+    # if prev_graph is not None:
+    #     prev_graph = id_to_str(dgl.to_networkx(prev_graph).to_undirected())
+    #     print(nx.isomorphism.is_isomorphic(prev_graph, graph))
+
+    # k = len(min(nx.cycle_basis(graph), key=len))
+    # n = g.number_of_nodes()
+    # plt.title(f"{n}, {k}")
+    # sb.heatmap(pe)
+
+    # plt.show()
+    # input()
 
     if ret_pe:
         return pe
@@ -483,13 +643,15 @@ def automaton_encoding_CSL(g, transition_matrix, initial_vector, ret_pe=False, i
     g.ndata['pos_enc'] = pe
     return g
 
-def add_automaton_encodings_CSL(splits, model):
+def add_automaton_encodings_CSL(splits, model, matrix_type='A'):
     transition_matrix = model.pe_layer.pos_transitions[0]
     graphs = []
+    prev_graph = None
     for i, split in enumerate(splits[0]):
         # initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
         initial_vector = model.pe_layer.pos_initials[0]
-        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i, model))
+        graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i, model, matrix_type=matrix_type, prev_graph=prev_graph))
+        prev_graph = split
 
     new_split = (graphs, splits[1])
     return new_split
