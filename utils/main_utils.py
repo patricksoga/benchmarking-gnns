@@ -163,7 +163,7 @@ def add_args(parser):
     parser.add_argument('--gape_per_layer', help="Add pos enc between each conv layer")
 
     parser.add_argument('--gape_stoch', help="Row-wise normalization of transition weights")
-    parser.add_argument('--gape_normalize_mat', help="Normalize graph matrix involved in GAPE equation")
+    parser.add_argument('--gape_normalize_mat', help="Normalize adjacency matrix")
     parser.add_argument('--gape_softmax_init', help="Column-wise softmax on initial weight matrix")
     parser.add_argument('--gape_uniform_init', help="Uniform initialize initial weight vectors")
     parser.add_argument('--gape_stack_strat', help="Use 1 for taking top n of supplied num_initials (num_initials > largest graph) 2 for random")
