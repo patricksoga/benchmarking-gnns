@@ -73,7 +73,10 @@ class PELayer(nn.Module):
         self.gape_scale = net_params.get('gape_scale', 1/40)
         self.gape_weight_gen = net_params.get('gape_weight_gen', False)
         self.gape_softmax_init = net_params.get('gape_softmax_init', False)
+        self.gape_uniform_init = net_params.get('gape_uniform_init', False)
         self.gape_stack_strat = net_params.get('gape_stack_strat', '2')
+
+        self.gape_normalize_mat = net_params.get('gape_normalize_mat', False)
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
         self.gape_stoch = net_params.get('gape_stoch', False)
@@ -188,6 +191,9 @@ class PELayer(nn.Module):
             out = torch.cat([tensor for tensor in self.pos_initials[:num_nodes]], dim=1)     # pick top n, num_initials > n
             if self.gape_softmax_init:
                 out = out.softmax(dim=1)
+            elif self.gape_uniform_init:
+                out = torch.full(out.shape, 1/self.pos_enc_dim)
+
             return out
         # if self.out is None:
         #     options = [i for i in range(num_pos_initials)]
@@ -201,10 +207,12 @@ class PELayer(nn.Module):
         #     self.out[num_nodes] = out
             # return out
         # self.out = [options, indices]
+        out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
         if self.gape_softmax_init:
-            out = torch.cat([self.pos_initials[i] for i in indices], dim=1).softmax(dim=1)
-        else: 
-            out = torch.cat([self.pos_initials[i] for i in indices], dim=1)
+            out = out.softmax(1)
+        elif self.gape_uniform_init:
+            out = torch.full(out.shape, 1/self.pos_enc_dim)
+
         return out
         # return self.out[num_nodes]
         """
