@@ -523,10 +523,10 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['gape_stack_strat'] = "2"
 
     if args.gape_normalize_mat is not None:
-        net_params['gape_normalize_mat'] = args.gape_normalize_mat
+        net_params['gape_normalize_mat'] = True if args.gape_normalize_mat == 'True' else False
     elif 'gape_normalize_mat' in net_params:
         pass
     else:
-        net_params['gape_normalize_mat'] = "2"
+        net_params['gape_normalize_mat'] = False
 
     return net_params
