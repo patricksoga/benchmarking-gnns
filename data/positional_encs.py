@@ -361,8 +361,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     # pe = torch.nn.functional.normalize(pe, dim=1)
     # pe = torch.relu(pe)
     if model.pe_layer.gape_tau:
-        pe = pe.to(torch.device('cuda'))
-        initial_vector_torch = initial_vector_torch.to(torch.device('cuda'))
+        pe = pe.to(torch.device('cpu'))
+        initial_vector_torch = initial_vector_torch.to(torch.device('cpu'))
         pe = torch.mul(pe.T, initial_vector_torch).T
 
     if ret_pe:
