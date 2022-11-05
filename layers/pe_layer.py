@@ -124,7 +124,7 @@ class PELayer(nn.Module):
 
                 # option for normalizing weights
                 if self.gape_stoch:
-                    mod_transition = torch.softmax(mod_transition, dim=0)
+                    mod_transition = torch.softmax(mod_transition, dim=1)
                 modified_transitions.append(mod_transition)
 
             # store matrices or vectors depending whether diag
@@ -443,6 +443,7 @@ class PELayer(nn.Module):
                 #     torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
                 if not self.cat:
+                    pe = pe @ self.stack_strategy(g.number_of_nodes())
                     pe = self.embedding_pos_encs[0](pos_enc)
 
                 if self.gape_softmax_after:
