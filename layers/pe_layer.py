@@ -80,6 +80,7 @@ class PELayer(nn.Module):
 
         self.gape_symmetric = net_params.get('gape_symmetric', False)
         self.gape_stoch = net_params.get('gape_stoch', False)
+        self.gape_tau = net_params.get('gape_tau', False)
 
         self.gape_scalar = net_params.get('gape_scalar', False)
         if self.gape_scalar:
