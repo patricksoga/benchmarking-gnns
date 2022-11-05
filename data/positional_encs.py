@@ -311,6 +311,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     # initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     # else: initial_vector = model.pe_layer.stack_strategy(g)
     initial_vector = model.pe_layer.stack_strategy(g)
+    initial_vector_torch = initial_vector.clone()
     # import random
     # if idx == 0:
     #     initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
@@ -359,6 +360,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     # pe = torch.clamp(pe, -6, 6)
     # pe = torch.nn.functional.normalize(pe, dim=1)
     # pe = torch.relu(pe)
+    if model.pe_layer.gape_tau:
+        pe = torch.mul(pe.T, initial_vector_torch).T
 
     if ret_pe:
         return pe
