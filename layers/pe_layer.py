@@ -125,7 +125,7 @@ class PELayer(nn.Module):
 
                 # option for normalizing weights
                 if self.gape_stoch:
-                    mod_transition = torch.softmax(mod_transition, dim=1)
+                    mod_transition = torch.softmax(mod_transition, dim=0)
                 modified_transitions.append(mod_transition)
 
             # store matrices or vectors depending whether diag
