@@ -444,7 +444,6 @@ class PELayer(nn.Module):
                 #     torch.save(pes, f'./data/{self.dataset}_{self.gape_squash}_{self.gape_normalization}_{self.seed_array[0]}.pt')
 
                 if not self.cat:
-                    pe = pe @ self.stack_strategy(g.number_of_nodes())
                     pe = self.embedding_pos_encs[0](pos_enc)
 
                 if self.gape_softmax_after:
