@@ -66,7 +66,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     logger.info(f"[!] Using {net_params.get('n_gape', 1)} random automata.")
                     dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
                 else:
-                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'])
+                    dataset = add_automaton_encodings(dataset, model.pe_layer.pos_transitions[0], model.pe_layer.pos_initials[0], net_params['diag'], net_params['matrix_type'], model=model)
                 logger.info(f'Time PE:{time.time()-start0}')
 
         if MODEL_NAME in ['SAGraphTransformer']:
