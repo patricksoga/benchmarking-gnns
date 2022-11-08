@@ -249,7 +249,8 @@ class PELayer(nn.Module):
         m = B.shape[-1]
         n = A.shape[-1]
         R, U = torch.linalg.eig(A)
-        S, V = torch.linalg.eig(B)
+        # S, V = torch.linalg.eig(B)
+        S, V = torch.linalg.eigh(B)
         F = torch.linalg.solve(U, (C + 0j) @ V)
         W = R[..., :, None] - S[..., None, :]
         Y = F / W
