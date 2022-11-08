@@ -6,6 +6,7 @@ import networkx as nx
 import dgl
 import scipy
 
+from itertools import permutations
 from utils.main_utils import get_logger
 from random import choices
 
@@ -257,6 +258,11 @@ class PELayer(nn.Module):
 
     def learned_forward(self, g):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
+        if self.gape_normalize_mat:
+            A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+            D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+            mat = torch.from_numpy((A * D).todense())
+
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
 
