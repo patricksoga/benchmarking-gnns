@@ -262,7 +262,7 @@ class PELayer(nn.Module):
             A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
             # D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
             # mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
-            N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+            N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
             mat = torch.from_numpy(N * A * N).to(scipy.device).type(torch.float)
 
 
