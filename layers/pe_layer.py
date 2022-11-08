@@ -263,7 +263,7 @@ class PELayer(nn.Module):
             # D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
             # mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
             N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-            mat = torch.from_numpy((N * A * N).todense()).to(scipy.device).type(torch.float)
+            mat = torch.from_numpy((N * A * N).todense()).to(self.device).type(torch.float)
 
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
