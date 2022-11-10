@@ -306,6 +306,10 @@ class PELayer(nn.Module):
         vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
         mat_product = transition_inverse @ vec_init
         pe = self.sylvester(transition_inverse, -mat, mat_product)
+
+        if self.gape_tau:
+            pe = torch.mul(pe, vec_init)
+
         pe = pe.transpose(1, 0).type(torch.float32)
         pe = torch.real(pe)
         pe = self.embedding_pos_encs[0](pe)
