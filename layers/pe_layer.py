@@ -83,6 +83,7 @@ class PELayer(nn.Module):
         self.gape_stoch = net_params.get('gape_stoch', False)
         self.gape_tau = net_params.get('gape_tau', False)
 
+        self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
         if self.gape_scalar:
             self.scalar = nn.Parameter(torch.empty((1,)))
@@ -96,6 +97,11 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc or self.rand_sketchy_pos_enc:
+            if self.eigen_bartels_stewart:
+                # self.gape_beta = nn.Parameter(torch.empty(1,device=self.device), requires_grad=True)
+                self.gape_beta = 0.85
+                # nn.init.normal_(self.gape_beta)
+
             # init initial vectors
 
             self.pos_initials = nn.ParameterList(
@@ -122,7 +128,7 @@ class PELayer(nn.Module):
                 if self.gape_norm:
                     mod_transition = transition / torch.linalg.norm(transition)
                 elif self.gape_scalar is not None and self.gape_scale != '0':
-                    mod_transition = mod_transition * float(self.gape_scale)
+                    mod_transition = mod_transition * float(self.gape_scale[0])
 
                 # option for normalizing weights
                 if self.gape_stoch:
@@ -178,7 +184,6 @@ class PELayer(nn.Module):
         self.pos_adder = nn.Parameter(torch.Tensor(self.pos_enc_dim, 1), requires_grad=True)
         nn.init.normal_(self.pos_adder)
 
-        self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         if self.eigen_bartels_stewart:
             self.pos_transition_inv = nn.Parameter(torch.linalg.inv(self.pos_transitions[0]))
         # self.out = {}
@@ -249,8 +254,22 @@ class PELayer(nn.Module):
         m = B.shape[-1]
         n = A.shape[-1]
         R, U = torch.linalg.eig(A)
-        # S, V = torch.linalg.eig(B)
         S, V = torch.linalg.eigh(B)
+        V = V.type(torch.complex64)
+
+        # S, V = torch.linalg.eig(B)
+        # S, V = torch.linalg.eigh(B)
+
+        # mu = torch.linalg.inv(A).detach()
+        # adj = -B
+
+        # ev_mu, _ = torch.linalg.eig(mu)
+        # ev_adj, _ = torch.linalg.eigh(adj)
+
+        # print('mu spec radius: ', torch.abs(torch.real(ev_mu)).max())
+        # print('adj spec radius: ', torch.abs(torch.real(ev_adj)).max())
+        # print()
+
         F = torch.linalg.solve(U, (C + 0j) @ V)
         W = R[..., :, None] - S[..., None, :]
         Y = F / W
@@ -261,11 +280,14 @@ class PELayer(nn.Module):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         if self.gape_normalize_mat:
             A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-            # D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
-            # mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
-            N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-            mat = torch.from_numpy((N * A * N).todense()).to(self.device)
+            D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
+            mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
+            # N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+            # mat = torch.from_numpy((N * A * N).todense()).to(self.device).type(torch.float)
+            # mat = torch.from_numpy(A.todense()).to(self.device).type(torch.float)
+            # mat = mat * 1.1
 
+        mat = mat * self.gape_beta # emulate pagerank
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
         # transition = torch.diag(self.pos_transitions[0])
@@ -281,6 +303,7 @@ class PELayer(nn.Module):
             transition = self.pos_transitions[0]
 
         transition_inverse = torch.linalg.inv(transition).to(self.device)
+        vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
         mat_product = transition_inverse @ vec_init
         pe = self.sylvester(transition_inverse, -mat, mat_product)
         pe = pe.transpose(1, 0).type(torch.float32)
