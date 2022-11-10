@@ -25,7 +25,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'cat_gape': False,
 #                 'cycles_k': 6,
 #                 'dataset': 'CYCLES',
-#                 'diag': True,
+#                 'diag': False,
 #                 'dropout': 0.0,
 #                 'edge_feat': False,
 #                 'eigen_bartels_stewart': True,
@@ -36,14 +36,20 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_individual': False,
 #                 'gape_norm': False,
 #                 'gape_normalization': False,
+#                 'gape_normalize_mat': False,
 #                 'gape_per_layer': False,
 #                 'gape_rand': False,
 #                 'gape_scalar': False,
 #                 'gape_scale': '0',
 #                 'gape_softmax_after': False,
 #                 'gape_softmax_before': False,
+#                 'gape_softmax_init': False,
 #                 'gape_squash': 'none',
+#                 'gape_stack_strat': '2',
+#                 'gape_stoch': False,
 #                 'gape_symmetric': False,
+#                 'gape_tau': False,
+#                 'gape_uniform_init': False,
 #                 'gape_weight_gen': False,
 #                 'gpu_id': 0,
 #                 'hidden_dim': 80,
@@ -83,4 +89,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-32-bartels-trials --diag True --eigen_bartels_stewart True --rand_pos_enc False --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --seed_array 41 95 22 35 --max_time 50 --param_values 32
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-32-bartels-trials --diag False --eigen_bartels_stewart True --rand_pos_enc False --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --seed_array 41 95 22 35 --max_time 50 --param_values 32
