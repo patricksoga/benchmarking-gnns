@@ -484,7 +484,7 @@ class PELayer(nn.Module):
                     pe = self.embedding_pos_encs[0](pos_enc)
 
                 if self.gape_softmax_after:
-                    pe = torch.tanh(pe)
+                    pe = torch.softmax(pe, dim=1)
 
             if self.clamp:
                 pe = torch.tanh(pe)
