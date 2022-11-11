@@ -310,6 +310,9 @@ class PELayer(nn.Module):
         if self.gape_tau:
             pe = torch.mul(pe, vec_init)
 
+        if self.gape_softmax_after:
+            pe = torch.softmax(pe, dim=1)
+
         pe = pe.transpose(1, 0).type(torch.float32)
         pe = torch.real(pe)
         pe = self.embedding_pos_encs[0](pe)
