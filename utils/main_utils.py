@@ -169,6 +169,8 @@ def add_args(parser):
     parser.add_argument('--gape_stack_strat', help="Use 1 for taking top n of supplied num_initials (num_initials > largest graph) 2 for random")
     parser.add_argument('--gape_scalar', help="Learnable scaler")
     parser.add_argument('--gape_tau', help="Use initial weights as final weights")
+    parser.add_argument('--gape_tau_mat', help="Use stopping probability matrix")
+    parser.add_argument('--gape_beta', help="Use damping factor for learned eigen Bartels-Stewart")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
 
@@ -540,5 +542,19 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_tau'] = False
+
+    if args.gape_tau_mat is not None:
+        net_params['gape_tau_mat'] = True if args.gape_tau_mat == 'True' else False
+    elif 'gape_tau_mat' in net_params:
+        pass
+    else:
+        net_params['gape_tau_mat'] = False
+
+    if args.gape_beta is not None:
+        net_params['gape_beta'] = True if args.gape_beta == 'True' else False
+    elif 'gape_beta' in net_params:
+        pass
+    else:
+        net_params['gape_beta'] = False
 
     return net_params
