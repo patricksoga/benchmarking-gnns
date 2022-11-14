@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-32-bartels-initials1500-topn-trials
+#$ -N GraphTransformer_CYCLES_b25-bnorm-alt-32-bartels-beta085-initials1500-topn-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 32)
-fname=$(pwd)/b25-bnorm-alt-32-bartels-initials1500-topn-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b25-bnorm-alt-32-bartels-beta085-initials1500-topn-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-32-bartels-initials1500-topn-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTransformer_CYCLES_CYCLES_b25-bnorm-alt-32-bartels-beta085-initials1500-topn-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'CYCLES',
@@ -31,6 +31,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'eigen_bartels_stewart': True,
 #                 'experiment_1': False,
 #                 'full_graph': False,
+#                 'gape_beta': False,
 #                 'gape_clamp': False,
 #                 'gape_div': False,
 #                 'gape_individual': False,
@@ -49,6 +50,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'gape_stoch': False,
 #                 'gape_symmetric': False,
 #                 'gape_tau': False,
+#                 'gape_tau_mat': False,
 #                 'gape_uniform_init': False,
 #                 'gape_weight_gen': False,
 #                 'gpu_id': 0,
@@ -74,7 +76,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-32-bartels-initials1500-topn-trials',
+#  'out_dir': 'out/CYCLES_graph_classification_b25-bnorm-alt-32-bartels-beta085-initials1500-topn-trials',
 #  'params': {'batch_size': 25,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -90,4 +92,4 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-32-bartels-initials1500-topn-trials --diag False --eigen_bartels_stewart True --rand_pos_enc False --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --seed_array 41 95 22 35 --max_time 50 --param_values 32 --num_initials 1500 --gape_stack_strat 1
+#python3 configure_tests.py --config ../configs/CYCLES_graph_classification_GraphTransformer_CYCLES_500k.json --batch_size 25 --job_note b25-bnorm-alt-32-bartels-beta085-initials1500-topn-trials --diag False --eigen_bartels_stewart True --rand_pos_enc False --learned_pos_enc True --batch_norm True --layer_norm False --edge_feat False --seed_array 41 95 22 35 --max_time 50 --param_values 32 --num_initials 1500 --gape_stack_strat 1 --gape_beta 0.85
