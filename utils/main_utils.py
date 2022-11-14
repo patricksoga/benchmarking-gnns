@@ -181,7 +181,6 @@ def add_args(parser):
     parser.add_argument('--out_deg_centrality', help="Max out-degree centrality PE for graph transformer (Graphormer)")
     parser.add_argument('--spd_len', help="Max shortest path distance for use as spatial PE for graph transformer (Graphormer)")
 
-    parser.add_argument('--pagerank')
     return parser
 
 def setup_dirs(args, out_dir, MODEL_NAME, DATASET_NAME, config):
@@ -296,8 +295,6 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
     if args.num_initials is not None:
         net_params['num_initials'] = int(args.num_initials)
-    if args.pagerank is not None:
-        net_params['pagerank'] = True if args.pagerank=='True' else False
     if args.full_graph is not None:
         net_params['full_graph'] = True if args.full_graph=='True' else False
     if args.power_method is not None:
