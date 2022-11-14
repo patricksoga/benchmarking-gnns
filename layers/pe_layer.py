@@ -47,7 +47,6 @@ class PELayer(nn.Module):
         self.dataset = net_params.get('dataset', 'CYCLES')
         self.pow_of_mat = net_params.get('pow_of_mat', 1)
         self.num_initials = net_params.get('num_initials', 1)
-        self.pagerank = net_params.get('pagerank', False)
         self.cat = net_params.get('cat_gape', False)
         self.n_gape = net_params.get('n_gape', 1)
         self.gape_pooling = net_params.get('gape_pooling', 'mean')
@@ -82,6 +81,8 @@ class PELayer(nn.Module):
         self.gape_symmetric = net_params.get('gape_symmetric', False)
         self.gape_stoch = net_params.get('gape_stoch', False)
         self.gape_tau = net_params.get('gape_tau', False)
+        self.gape_tau_mat = net_params.get('gape_tau_mat', False)
+        self.gape_beta = net_params.get('gape_beta', False)
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
@@ -97,10 +98,13 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc or self.rand_sketchy_pos_enc:
-            if self.eigen_bartels_stewart:
-                # self.gape_beta = nn.Parameter(torch.empty(1,device=self.device), requires_grad=True)
+
+            if self.eigen_bartels_stewart and self.gape_beta:
                 self.gape_beta = 0.85
-                # nn.init.normal_(self.gape_beta)
+
+            if self.eigen_bartels_stewart and self.gape_tau_mat:
+                self.stop_vec = nn.Parameter(torch.empty(self.pos_enc_dim, device=self.device), requires_grad=self.learned_pos_enc)
+                nn.init.normal_(self.stop_vec)
 
             # init initial vectors
 
@@ -132,7 +136,7 @@ class PELayer(nn.Module):
 
                 # option for normalizing weights
                 if self.gape_stoch:
-                    mod_transition = torch.softmax(mod_transition, dim=0)
+                    mod_transition = torch.softmax(transition, dim=0)
                 modified_transitions.append(mod_transition)
 
             # store matrices or vectors depending whether diag
@@ -164,8 +168,6 @@ class PELayer(nn.Module):
                 self.gape_pool_vec = nn.Parameter(torch.Tensor(self.n_gape, 1), requires_grad=True)
                 nn.init.normal_(self.gape_pool_vec)
 
-        elif self.pagerank:
-            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
 
         if self.rw_pos_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim) 
@@ -287,25 +289,40 @@ class PELayer(nn.Module):
             # mat = torch.from_numpy(A.todense()).to(self.device).type(torch.float)
             # mat = mat * 1.1
 
-        mat = mat * self.gape_beta # emulate pagerank
+        if self.gape_tau_mat:
+            stop_vec = self.stop_vec.softmax(dim=0)
+            stop_diag = torch.eye(self.pos_enc_dim) - torch.diag(stop_vec)
+
+        if self.gape_beta:
+            mat = mat * self.gape_beta # emulate pagerank
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
-        # transition = torch.diag(self.pos_transitions[0])
+
+        if self.gape_beta:
+            vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
+
+        if self.gape_stoch:
+            transition = torch.softmax(self.pos_transitions[0], dim=0)
 
         if self.gape_symmetric:
-            triu = torch.triu(self.pos_transitions[0])
+            triu = torch.triu(transition)
             values = triu[triu != 0]
             i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
             triu[i, j] = values
             triu.T[i, j] = values
             transition = triu
-        else:
-            transition = self.pos_transitions[0]
 
         transition_inverse = torch.linalg.inv(transition).to(self.device)
-        vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
-        mat_product = transition_inverse @ vec_init
-        pe = self.sylvester(transition_inverse, -mat, mat_product)
+
+        B = -mat
+        if self.gape_tau_mat:
+            A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
+        else:
+            A = transition_inverse
+
+        C = A @ vec_init
+
+        pe = self.sylvester(A, B, C)
 
         if self.gape_tau:
             pe = torch.mul(pe, vec_init)
@@ -523,11 +540,6 @@ class PELayer(nn.Module):
                 pe = self.scalar * pe
             return pe
 
-        elif self.pagerank:
-            graph = dgl.to_networkx(g.cpu())
-            google_matrix = nx.google_matrix(graph).A
-            pe = self.embedding_pos_enc(torch.from_numpy(google_matrix).to(self.device)[:, :self.pos_enc_dim].type(torch.float32))
-            torch.save(pe, "/home/psoga/Documents/projects/benchmarking-gnns/google_matrix.pt")
         else:
             if self.dataset == "ZINC":
                 pe = h
