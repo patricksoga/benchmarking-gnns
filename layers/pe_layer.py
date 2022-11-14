@@ -301,8 +301,9 @@ class PELayer(nn.Module):
         if self.gape_beta:
             vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
 
+        transition = self.pos_transitions[0]
         if self.gape_stoch:
-            transition = torch.softmax(self.pos_transitions[0], dim=0)
+            transition = torch.softmax(transition, dim=0)
 
         if self.gape_symmetric:
             triu = torch.triu(transition)
