@@ -551,10 +551,10 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         net_params['gape_tau_mat'] = False
 
     if args.gape_beta is not None:
-        net_params['gape_beta'] = True if args.gape_beta == 'True' else False
+        net_params['gape_beta'] = float(args.gape_beta)
     elif 'gape_beta' in net_params:
         pass
     else:
-        net_params['gape_beta'] = False
+        net_params['gape_beta'] = 1.0
 
     return net_params
