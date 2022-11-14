@@ -1,0 +1,31 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:351: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py:351: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  num_classes = len(np.unique(np.array(dataset.train[:][1])))
+/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/dgl/heterograph.py:3719: DGLWarning: DGLGraph.adjacency_matrix_scipy is deprecated. Please replace it with:
+
+	DGLGraph.adjacency_matrix(transpose, scipy_fmt="csr").
+
+  dgl_warning('DGLGraph.adjacency_matrix_scipy is deprecated. '
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py:331: UserWarning: Casting complex values to real discards the imaginary part (Triggered internally at  /opt/conda/conda-bld/pytorch_1656352645774/work/aten/src/ATen/native/Copy.cpp:250.)
+  pe = pe.transpose(1, 0).type(torch.float32)
+[I] Loading dataset CYCLES...
+train, test, val sizes : 9000 10000 1000
+[I] Finished loading.
+[I] Data load time: 14.1725s
+Epoch 00018: reducing learning rate of group 0 to 2.5000e-04.
+Epoch 00029: reducing learning rate of group 0 to 1.2500e-04.
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 376, in <module>
+    main(args) 
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 368, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, args.config, config)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_CYCLES_graph_classification.py", line 161, in train_val_pipeline
+    epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_CYCLES_graph_classification.py", line 66, in train_epoch_sparse
+    loss.backward()
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/autograd/__init__.py", line 173, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+RuntimeError: linalg_eig_backward: The eigenvectors in the complex case are specified up to multiplication by e^{i phi}. The specified loss function depends on this quantity, so it is ill-defined.
