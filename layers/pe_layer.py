@@ -291,7 +291,7 @@ class PELayer(nn.Module):
 
         if self.gape_tau_mat:
             stop_vec = self.stop_vec.softmax(dim=0)
-            stop_diag = torch.eye(self.pos_enc_dim) - torch.diag(stop_vec)
+            stop_diag = torch.eye(self.pos_enc_dim).to(self.device) - torch.diag(stop_vec).to(self.device)
 
         if self.gape_beta:
             mat = mat * self.gape_beta # emulate pagerank
