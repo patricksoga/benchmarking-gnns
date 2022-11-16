@@ -296,8 +296,8 @@ class PELayer(nn.Module):
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
 
-        # if self.gape_beta:
-        #     vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
+        if self.gape_beta < 1:
+            vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
 
         transition = self.pos_transitions[0]
         if self.gape_stoch:
