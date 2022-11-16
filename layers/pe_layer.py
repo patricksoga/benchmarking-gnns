@@ -254,6 +254,7 @@ class PELayer(nn.Module):
         # R, U = torch.linalg.eig(A)
         R, U = torch.linalg.eigh(A)
         S, V = torch.linalg.eigh(B)
+        U = U.type(torch.complex64)
         V = V.type(torch.complex64)
 
         # S, V = torch.linalg.eig(B)
