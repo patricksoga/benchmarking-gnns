@@ -311,19 +311,21 @@ class PELayer(nn.Module):
             triu.T[i, j] = values
             transition = triu
 
-        # transition_inverse = torch.linalg.inv(transition).to(self.device)
 
-        # B = -mat
-        # if self.gape_tau_mat:
-        #     A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
-        # else:
-        #     A = transition_inverse
+        if self.gape_tau_mat:
+            A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
+            B = -mat
+            C = A.clone() @ vec_init
+        else:
+            transition_inverse = torch.linalg.inv(transition).to(self.device)
 
-        # C = A @ vec_init
+            B = -mat
+            if self.gape_tau_mat:
+                A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
+            else:
+                A = transition_inverse
 
-        A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
-        B = -mat
-        C = A.clone() @ vec_init
+            C = A @ vec_init
 
         def spectral_radius(matrix):
             return torch.abs(torch.real(matrix)).max()  
