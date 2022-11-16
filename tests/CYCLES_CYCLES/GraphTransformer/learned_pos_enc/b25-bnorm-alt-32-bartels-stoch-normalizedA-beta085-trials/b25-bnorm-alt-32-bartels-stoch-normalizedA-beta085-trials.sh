@@ -31,7 +31,7 @@ python3 main_CYCLES_graph_classification.py --config tests/test-configs/GraphTra
 #                 'eigen_bartels_stewart': True,
 #                 'experiment_1': False,
 #                 'full_graph': False,
-#                 'gape_beta': False,
+#                 'gape_beta': 0.85,
 #                 'gape_clamp': False,
 #                 'gape_div': False,
 #                 'gape_individual': False,
