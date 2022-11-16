@@ -6,7 +6,6 @@ import networkx as nx
 import dgl
 import scipy
 
-from itertools import permutations
 from utils.main_utils import get_logger
 from random import choices
 
@@ -98,9 +97,6 @@ class PELayer(nn.Module):
         if self.adj_enc:
             self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         elif self.learned_pos_enc or self.rand_pos_enc or self.rand_sketchy_pos_enc:
-
-            if self.eigen_bartels_stewart and self.gape_beta:
-                self.gape_beta = 0.85
 
             if self.eigen_bartels_stewart and self.gape_tau_mat:
                 self.stop_vec = nn.Parameter(torch.empty(self.pos_enc_dim, device=self.device), requires_grad=self.learned_pos_enc)
@@ -291,15 +287,15 @@ class PELayer(nn.Module):
 
         if self.gape_tau_mat:
             stop_vec = self.stop_vec.softmax(dim=0)
-            stop_diag = torch.eye(self.pos_enc_dim).to(self.device) - torch.diag(stop_vec).to(self.device)
+            stop_diag = torch.eye(self.pos_enc_dim, device=self.device) - torch.diag(stop_vec)
 
         if self.gape_beta:
             mat = mat * self.gape_beta # emulate pagerank
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
 
-        if self.gape_beta:
-            vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
+        # if self.gape_beta:
+        #     vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
 
         transition = self.pos_transitions[0]
         if self.gape_stoch:
@@ -313,15 +309,26 @@ class PELayer(nn.Module):
             triu.T[i, j] = values
             transition = triu
 
-        transition_inverse = torch.linalg.inv(transition).to(self.device)
+        # transition_inverse = torch.linalg.inv(transition).to(self.device)
 
+        # B = -mat
+        # if self.gape_tau_mat:
+        #     A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
+        # else:
+        #     A = transition_inverse
+
+        # C = A @ vec_init
+
+        A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
         B = -mat
-        if self.gape_tau_mat:
-            A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
-        else:
-            A = transition_inverse
+        C = A.clone() @ vec_init
 
-        C = A @ vec_init
+        def spectral_radius(matrix):
+            return torch.abs(torch.real(matrix)).max()  
+
+        # A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
+        # B = -mat
+        # C = A.clone() @ vec_init
 
         pe = self.sylvester(A, B, C)
 
