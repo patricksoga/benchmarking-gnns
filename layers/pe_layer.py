@@ -251,7 +251,8 @@ class PELayer(nn.Module):
     def sylvester(self, A, B, C):
         m = B.shape[-1]
         n = A.shape[-1]
-        R, U = torch.linalg.eig(A)
+        # R, U = torch.linalg.eig(A)
+        R, U = torch.linalg.eigh(A)
         S, V = torch.linalg.eigh(B)
         V = V.type(torch.complex64)
 
