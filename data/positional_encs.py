@@ -209,8 +209,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     # import seaborn as sb
     # import matplotlib.pyplot as plt
 
-    # PE -= PE.min(1, keepdim=True)[0]
-    # PE /= PE.max(1, keepdim=True)[0]
+    PE -= PE.min(1, keepdim=True)[0]
+    PE /= PE.max(1, keepdim=True)[0]
 
     # rw -= rw.min(1, keepdim=True)[0]
     # rw /= rw.max(1, keepdim=True)[0]
