@@ -128,7 +128,7 @@ class PELayer(nn.Module):
                 if self.gape_norm:
                     mod_transition = transition / torch.linalg.norm(transition)
                 elif self.gape_scalar is not None and self.gape_scale != '0':
-                    mod_transition = mod_transition * float(self.gape_scale)
+                    mod_transition = mod_transition * float(self.gape_scale[0])
 
                 # option for normalizing weights
                 if self.gape_stoch:
@@ -276,19 +276,23 @@ class PELayer(nn.Module):
         X = U[...,:n,:n] @ Y[...,:n,:m] @ torch.linalg.inv(V)[...,:m,:m]
         return X
 
+    def spectral_radius(self, matrix):
+        return torch.abs(torch.real(matrix)).max()
+
     def learned_forward(self, g):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         if self.gape_normalize_mat:
             A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
             D = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float)
-            mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
+            # mat = torch.from_numpy((A * D).todense()).to(self.device).type(torch.float)
+            mat = torch.from_numpy((D * A).todense()).to(self.device).type(torch.float)
             # N = sp.sparse.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
             # mat = torch.from_numpy((N * A * N).todense()).to(self.device).type(torch.float)
             # mat = torch.from_numpy(A.todense()).to(self.device).type(torch.float)
             # mat = mat * 1.1
 
         if self.gape_tau_mat:
-            stop_vec = self.stop_vec.softmax(dim=0)
+            stop_vec = torch.softmax(self.stop_vec, dim=0)
             stop_diag = torch.eye(self.pos_enc_dim, device=self.device) - torch.diag(stop_vec)
 
         if self.gape_beta:
@@ -325,7 +329,8 @@ class PELayer(nn.Module):
             else:
                 A = transition_inverse
 
-            C = A @ vec_init
+            # C = A @ vec_init
+            C = A @ (vec_init @ torch.diag(stop_vec))
 
         def spectral_radius(matrix):
             return torch.abs(torch.real(matrix)).max()  
