@@ -177,6 +177,63 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # torch.einsum('ij, kj -> ij', a, b) for matrix
         # torch.einsum('ij, j->ij', a, b) for vector
         # torch.einsum('ij, i->ij', a, b), a is a matrix, b is a vector
+    # rw = random_walk_encoding(g, transition_matrix.shape[0], ret_pe=True)
+    A = g.adjacency_matrix(scipy_fmt="csr")
+    Dinv = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(0) ** -1.0, dtype=float) # D^-1
+    alpha = 0.999
+    PE = []
+    # R = (Dinv * A).todense()
+    # # PE = [torch.from_numpy(R.diagonal()).float()]
+    # prev = R
+    # import numpy as np
+    # for i in range(1, transition_matrix.shape[0]+1):
+    #     R = prev*R
+    #     A = torch.eye(g.number_of_nodes())
+    #     B = -1 * (1-alpha) * R
+    #     C = alpha * np.eye(g.number_of_nodes())
+    #     new_pe = scipy.linalg.solve_sylvester(A, B, C)
+    #     PE.append(torch.from_numpy(new_pe.diagonal()).float().unsqueeze(0))
+
+    # A_hat = Dinv * A * Dinv
+    A_hat = A * Dinv
+    prev = A_hat
+    for i in range(1, transition_matrix.shape[0]+1):
+        pe_mat = np.linalg.inv(alpha * (np.eye(g.number_of_nodes()) - (1-alpha) * A_hat))
+        A_hat = A_hat * prev
+        
+        pe = torch.from_numpy(pe_mat.diagonal()).float()
+        PE.append(pe)
+
+    PE = torch.stack(PE,dim=-1).squeeze(0)
+
+    # import seaborn as sb
+    # import matplotlib.pyplot as plt
+
+    # PE -= PE.min(1, keepdim=True)[0]
+    # PE /= PE.max(1, keepdim=True)[0]
+
+    # rw -= rw.min(1, keepdim=True)[0]
+    # rw /= rw.max(1, keepdim=True)[0]
+
+    # print(rw)
+    # print(PE)
+
+    # plt.figure("rw")
+    # sb.heatmap(rw)
+    # plt.figure("ppr")
+    # sb.heatmap(PE)
+    # plt.figure("rw-ppr")
+    # sb.heatmap(rw-PE)
+    # plt.show()    
+
+    # exit()
+
+    if ret_pe:
+        return PE
+
+    g.ndata['pos_enc'] = PE
+    return g
+
     transition_matrix = torch.nan_to_num(transition_matrix)
     if diag:
         transition_inv = transition_matrix**-1
@@ -305,12 +362,38 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         mat = k_RW_power
 
     if model.pe_layer.gape_normalize_mat:
-        mat = mat @ sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) # D^-1
+        D = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) # D^-1
+        mat = mat @ D
+        # mat = D @ mat
+        # mat = mat * 0.85
+        # mat = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1.0, dtype=float) @ mat
+        # A = g.adjacency_matrix(scipy_fmt="csr")
+        # N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        # I = sp.eye(g.number_of_nodes())
+        # L = I - N * A * N
+        # mat = (N * A * N).todense()
+        # mat = (I - N * A * N).todense()
+        # k_RW = I - L
+        # mat = k_RW.todense()
+
+        # mat = mat * 0.9
+
+    if model.pe_layer.gape_beta < 1:
+        mat = mat * (1-model.pe_layer.gape_beta) # emulate pagerank
+
 
     # if model is None:
     # initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     # else: initial_vector = model.pe_layer.stack_strategy(g)
+
     initial_vector = model.pe_layer.stack_strategy(g)
+    # initial_vector = torch.fill(initial_vector, 1/g.number_of_nodes())
+    initial_vector = torch.zeros_like(initial_vector)
+    initial_vector.fill_diagonal_(1)
+    if model.pe_layer.gape_beta:
+        initial_vector = initial_vector * model.pe_layer.gape_beta # emulate pagerank
+
+    # print(torch.linalg.svd(initial_vector)[1])
     initial_vector_torch = initial_vector.clone()
     # import random
     # if idx == 0:
@@ -339,6 +422,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
     # pe = torch.stack((pe.split(transition_matrix.shape[0])), dim=1)
     # pe = pe.transpose(1, 0)
+    transition_inv = torch.eye(transition_matrix.shape[0])
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
@@ -653,8 +737,8 @@ def add_automaton_encodings_CSL(splits, model, matrix_type='A'):
     graphs = []
     prev_graph = None
     for i, split in enumerate(splits[0]):
-        # initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
-        initial_vector = model.pe_layer.pos_initials[0]
+        initial_vector = model.pe_layer.stack_strategy(split.num_nodes())
+        # initial_vector = model.pe_layer.pos_initials[0]
         graphs.append(automaton_encoding_CSL(split, transition_matrix, initial_vector, False, i, model, matrix_type=matrix_type, prev_graph=prev_graph))
         prev_graph = split
 
