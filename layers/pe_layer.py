@@ -299,6 +299,8 @@ class PELayer(nn.Module):
             mat = mat * self.gape_beta # emulate pagerank
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
+        if self.gape_tau_mat:
+            vec_init = torch.diag(stop_vec) @ vec_init
 
         if self.gape_beta < 1:
             vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
