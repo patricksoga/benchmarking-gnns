@@ -178,61 +178,51 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # torch.einsum('ij, j->ij', a, b) for vector
         # torch.einsum('ij, i->ij', a, b), a is a matrix, b is a vector
     # rw = random_walk_encoding(g, transition_matrix.shape[0], ret_pe=True)
-    A = g.adjacency_matrix(scipy_fmt="csr")
-    Dinv = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(0) ** -1.0, dtype=float) # D^-1
-    alpha = 0.999
-    PE = []
-    # R = (Dinv * A).todense()
-    # # PE = [torch.from_numpy(R.diagonal()).float()]
-    # prev = R
-    # import numpy as np
-    # for i in range(1, transition_matrix.shape[0]+1):
-    #     R = prev*R
-    #     A = torch.eye(g.number_of_nodes())
-    #     B = -1 * (1-alpha) * R
-    #     C = alpha * np.eye(g.number_of_nodes())
-    #     new_pe = scipy.linalg.solve_sylvester(A, B, C)
-    #     PE.append(torch.from_numpy(new_pe.diagonal()).float().unsqueeze(0))
 
     # A_hat = Dinv * A * Dinv
-    A_hat = A * Dinv
-    prev = A_hat
-    for i in range(1, transition_matrix.shape[0]+1):
-        pe_mat = np.linalg.inv(alpha * (np.eye(g.number_of_nodes()) - (1-alpha) * A_hat))
-        A_hat = A_hat * prev
-        
-        pe = torch.from_numpy(pe_mat.diagonal()).float()
-        PE.append(pe)
 
-    PE = torch.stack(PE,dim=-1).squeeze(0)
+    # A = g.adjacency_matrix(scipy_fmt="csr")
+    # Dinv = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(0) ** -1.0, dtype=float) # D^-1
+    # alpha = 0.0001
+    # PE = []
+    # A_hat = A * Dinv
+    # prev = A_hat
+
+    # for _ in range(1, transition_matrix.shape[0]+1):
+    #     pe_mat = alpha * np.linalg.inv((np.eye(g.number_of_nodes()) - (1-alpha) * A_hat))
+    #     # A_hat = A_hat * prev
+
+    #     pe = torch.from_numpy(pe_mat.diagonal()).float()
+    #     PE.append(pe)
+
+    # PE = torch.stack(PE,dim=-1).squeeze(0)
 
     # import seaborn as sb
     # import matplotlib.pyplot as plt
 
-    PE -= PE.min(1, keepdim=True)[0]
-    PE /= PE.max(1, keepdim=True)[0]
+    # # PE -= PE.min(1, keepdim=True)[0]
+    # # PE /= PE.max(1, keepdim=True)[0]
 
-    # rw -= rw.min(1, keepdim=True)[0]
-    # rw /= rw.max(1, keepdim=True)[0]
-
-    # print(rw)
-    # print(PE)
+    # # rw -= rw.min(1, keepdim=True)[0]
+    # # rw /= rw.max(1, keepdim=True)[0]
 
     # plt.figure("rw")
-    # sb.heatmap(rw)
+    # plt.title("rw")
+    # ax1 = sb.heatmap(rw)
+    # ax1.invert_yaxis()
     # plt.figure("ppr")
-    # sb.heatmap(PE)
-    # plt.figure("rw-ppr")
-    # sb.heatmap(rw-PE)
+    # plt.title("ppr")
+    # ax2 = sb.heatmap(PE)
+    # ax2.invert_yaxis()
     # plt.show()    
 
     # exit()
 
-    if ret_pe:
-        return PE
+    # if ret_pe:
+    #     return PE
 
-    g.ndata['pos_enc'] = PE
-    return g
+    # g.ndata['pos_enc'] = PE
+    # return g
 
     transition_matrix = torch.nan_to_num(transition_matrix)
     if diag:
