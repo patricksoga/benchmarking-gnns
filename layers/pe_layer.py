@@ -336,8 +336,10 @@ class PELayer(nn.Module):
             else:
                 A = transition_inverse
 
-            # C = A @ vec_init
-            C = A @ (vec_init @ torch.diag(stop_vec))
+            if self.gape_tau_mat:
+                C = A @ (vec_init @ torch.diag(stop_vec))
+            else:
+                C = A @ vec_init
 
         def spectral_radius(matrix):
             return torch.abs(torch.real(matrix)).max()  
