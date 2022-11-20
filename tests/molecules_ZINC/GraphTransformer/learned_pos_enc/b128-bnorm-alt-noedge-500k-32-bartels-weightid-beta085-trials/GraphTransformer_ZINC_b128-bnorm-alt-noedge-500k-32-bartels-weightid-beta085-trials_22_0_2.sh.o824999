@@ -1,0 +1,43 @@
+/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py:356: UserWarning: Casting complex values to real discards the imaginary part (Triggered internally at  /opt/conda/conda-bld/pytorch_1656352645774/work/aten/src/ATen/native/Copy.cpp:250.)
+  pe = pe.transpose(1, 0).type(torch.float32)
+[I] Loading dataset ZINC, fold 1...
+train, test, val sizes : 10000 1000 1000
+[I] Finished loading.
+[I] Data load time: 7.7228s
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_molecules_graph_regression.py", line 58, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/molecules_graph_regression/graph_transformer.py", line 57, in forward
+    pe = self.pe_layer(g, h, pos_enc)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 381, in forward
+    return self.learned_forward(g)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 351, in learned_forward
+    pe = self.sylvester(A, B, C)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 256, in sylvester
+    R, U = torch.linalg.eigh(A)
+torch._C._LinAlgError: torch.linalg.eigh: The algorithm failed to converge because the input matrix is ill-conditioned or has too many repeated eigenvalues (error code: 33).
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 378, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 376, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, params['save_name'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_molecules_graph_regression.py", line 170, in train_val_pipeline
+    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_molecules_graph_regression.py", line 68, in train_epoch_sparse
+    batch_scores = model.forward(batch_graphs, batch_x, batch_e)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/nets/molecules_graph_regression/graph_transformer.py", line 57, in forward
+    pe = self.pe_layer(g, h, pos_enc)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 381, in forward
+    return self.learned_forward(g)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 351, in learned_forward
+    pe = self.sylvester(A, B, C)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/layers/pe_layer.py", line 256, in sylvester
+    R, U = torch.linalg.eigh(A)
+torch._C._LinAlgError: torch.linalg.eigh: The algorithm failed to converge because the input matrix is ill-conditioned or has too many repeated eigenvalues (error code: 33).
