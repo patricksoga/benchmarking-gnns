@@ -82,6 +82,7 @@ class PELayer(nn.Module):
         self.gape_tau = net_params.get('gape_tau', False)
         self.gape_tau_mat = net_params.get('gape_tau_mat', False)
         self.gape_beta = net_params.get('gape_beta', False)
+        self.gape_weight_id = net_params.get('gape_weight_id', False)
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
@@ -299,11 +300,16 @@ class PELayer(nn.Module):
             mat = mat * self.gape_beta # emulate pagerank
 
         vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
+
+        if self.gape_weight_id:
+            vec_init = torch.zeros_like(vec_init)
+            vec_init.fill_diagonal_(1)
+
         if self.gape_tau_mat:
             vec_init = torch.diag(stop_vec) @ vec_init
 
         if self.gape_beta < 1:
-            vec_init = vec_init * (1-self.gape_beta) # emulate pagerank
+            vec_init = vec_init * self.gape_beta # emulate pagerank
 
         transition = self.pos_transitions[0]
         if self.gape_stoch:
@@ -316,7 +322,6 @@ class PELayer(nn.Module):
             triu[i, j] = values
             triu.T[i, j] = values
             transition = triu
-
 
         if self.gape_tau_mat:
             A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
