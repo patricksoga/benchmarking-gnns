@@ -379,7 +379,14 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     initial_vector = model.pe_layer.stack_strategy(g)
     # initial_vector = torch.fill(initial_vector, 1/g.number_of_nodes())
     initial_vector = torch.zeros_like(initial_vector)
-    initial_vector.fill_diagonal_(1)
+    # initial_vector.fill_diagonal_(1)
+    import random
+    rows, cols = initial_vector.shape
+    indices = [n for n in range(rows)]
+    for i in range(cols):
+        p = random.choice(indices)
+        initial_vector[p, i] = 1
+
     if model.pe_layer.gape_beta:
         initial_vector = initial_vector * model.pe_layer.gape_beta # emulate pagerank
 
