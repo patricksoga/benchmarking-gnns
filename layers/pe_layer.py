@@ -283,21 +283,16 @@ class PELayer(nn.Module):
 
     def break_batch(self, g, graph_lens):
         adj = g.adjacency_matrix_scipy().todense().astype(float)
-        prev = 0
-        until = 0
-        all_graphs = []
-        gl = []
+        prev, until = 0, 0
+
         for graph_len in graph_lens:
-            gl.append(graph_len)
             until += graph_len
             graph_adj = adj[prev:until, prev:until]
             prev = until
 
             src, dst = np.nonzero(graph_adj)
             new_graph = dgl.graph((src, dst))
-            all_graphs.append(new_graph)
-
-        return all_graphs
+            yield new_graph
 
     def compute_learned_gape(self, g):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
@@ -387,8 +382,7 @@ class PELayer(nn.Module):
     def learned_forward(self, g, graph_lens=None):
         if self.gape_break_batch:
             pes = []
-            all_graphs = self.break_batch(g, graph_lens)
-            for graph in all_graphs:
+            for graph in self.break_batch(g, graph_lens):
                 pe = self.compute_learned_gape(graph)
                 pes.append(pe)
             return pes
