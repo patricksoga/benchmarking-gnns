@@ -54,7 +54,7 @@ class GraphTransformerNet(nn.Module):
         if self.cat:
             self.ll = nn.Linear(hidden_dim - net_params['pos_enc_dim'], hidden_dim)
 
-    def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None):
+    def forward(self, g, h, e, pos_enc=None, h_wl_pos_enc=None, graph_lens=None):
         h = self.embedding_h(h)
         if self.cat:
             pe = self.pe_layer(g, h, pos_enc)
@@ -64,28 +64,27 @@ class GraphTransformerNet(nn.Module):
         # h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
             if self.pe_layer.use_pos_enc:
-                pe = self.pe_layer(g, h, pos_enc)
+                pe = self.pe_layer(g, h, pos_enc, graph_lens=graph_lens)
                 h = h + pe
-            # h = pe
+
 
         # if not self.edge_feat: # edge feature set to 1
         if self.edge_feat:
             e = torch.ones(e.size(0),1).to(self.device)
             e = self.embedding_e(e)   
-        
+
         # convnets
-        if self.edge_feat:
-            for conv in self.layers:
+        for conv in self.layers:
+            if self.edge_feat:
                 h, e = conv(g, h, e)
-        else:
-            for conv in self.layers:
+            else:
                 h = conv(g, h)
 
-                if self.gape_per_layer:
-                    h = h + pe
+            if self.gape_per_layer:
+                h = h + pe
 
         g.ndata['h'] = h
-        
+
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')
         elif self.readout == "max":

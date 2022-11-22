@@ -213,14 +213,16 @@ class CyclesDataset(torch.utils.data.Dataset):
             else:
                 batched_spatial_pos_biases = None
 
-            return batched_graph, labels, batched_spatial_pos_biases
+            graph_lens = [g.number_of_nodes() for g in graphs]
+            return (batched_graph, graph_lens), labels, batched_spatial_pos_biases
 
         except:
             graphs, labels = map(list, zip(*samples))
+            graph_lens = [g.number_of_nodes() for g in graphs]
             labels = torch.tensor(labels)
             batched_graph = dgl.batch(graphs)
 
-            return batched_graph, labels
+            return (batched_graph, graph_lens), labels
 
     def _add_positional_encodings(self, pos_enc_dim):
         

@@ -83,6 +83,7 @@ class PELayer(nn.Module):
         self.gape_tau_mat = net_params.get('gape_tau_mat', False)
         self.gape_beta = net_params.get('gape_beta', False)
         self.gape_weight_id = net_params.get('gape_weight_id', False)
+        self.gape_break_batch = net_params.get('gape_break_batch', False)
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
@@ -280,7 +281,25 @@ class PELayer(nn.Module):
     def spectral_radius(self, matrix):
         return torch.abs(torch.real(matrix)).max()
 
-    def learned_forward(self, g):
+    def break_batch(self, g, graph_lens):
+        adj = g.adjacency_matrix_scipy().todense().astype(float)
+        prev = 0
+        until = 0
+        all_graphs = []
+        gl = []
+        for graph_len in graph_lens:
+            gl.append(graph_len)
+            until += graph_len
+            graph_adj = adj[prev:until, prev:until]
+            prev = until
+
+            src, dst = np.nonzero(graph_adj)
+            new_graph = dgl.graph((src, dst))
+            all_graphs.append(new_graph)
+
+        return all_graphs
+
+    def compute_learned_gape(self, g):
         mat = self.type_of_matrix(g, self.matrix_type).to(self.device)
         if self.gape_normalize_mat:
             A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
@@ -365,7 +384,19 @@ class PELayer(nn.Module):
         return pe
 
 
-    def forward(self, g, h, pos_enc=None):
+    def learned_forward(self, g, graph_lens=None):
+        if self.gape_break_batch:
+            pes = []
+            all_graphs = self.break_batch(g, graph_lens)
+            for graph in all_graphs:
+                pe = self.compute_learned_gape(graph)
+                pes.append(pe)
+            return pes
+
+        return self.compute_learned_gape(g)
+
+
+    def forward(self, g, h, pos_enc=None, graph_lens=None):
         pe = pos_enc
         if not self.use_pos_enc:
             return h
@@ -377,8 +408,14 @@ class PELayer(nn.Module):
         if self.pos_enc or self.adj_enc or self.rw_pos_enc:
             pe = self.embedding_pos_enc(pos_enc)
         elif self.learned_pos_enc:
+
             if self.eigen_bartels_stewart:
-                return self.learned_forward(g)
+                pes = self.learned_forward(g, graph_lens=graph_lens)
+
+                if self.gape_break_batch:
+                    return torch.cat(pes, dim=0)
+
+                return pes
 
             mat = self.type_of_matrix(g, self.matrix_type)
             vec_init = self.stack_strategy(g.num_nodes())

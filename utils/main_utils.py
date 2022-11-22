@@ -172,6 +172,7 @@ def add_args(parser):
     parser.add_argument('--gape_tau_mat', help="Use stopping probability matrix")
     parser.add_argument('--gape_beta', help="Use damping factor for learned eigen Bartels-Stewart")
     parser.add_argument('--gape_weight_id', help="Use weighted id matrix for init")
+    parser.add_argument('--gape_break_batch', help="Break the batched graph and compute PEs for each separately. Use with eigen-Bartels-Stewart.")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
 
@@ -564,5 +565,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['gape_weight_id'] = False
+        
+
+    if args.gape_break_batch is not None:
+        net_params['gape_break_batch'] = True if args.gape_break_batch == 'True' else False
+    elif 'gape_break_batch' in net_params:
+        pass
+    else:
+        net_params['gape_break_batch'] = False
 
     return net_params
