@@ -157,7 +157,10 @@ def add_random_orientation(dataset):
     return dataset
 
 def add_multiple_automaton_encodings(dataset, transition_matrices, initial_vectors, diag=False, matrix='A', model=None):
-    for i, (transition_matrix, initial_vector) in enumerate(zip(transition_matrices, initial_vectors)):
+    transition_matrix = transition_matrices[0]
+    initial_vector = initial_vectors[0]
+    # for i, (_, _) in enumerate(zip(transition_matrices, initial_vectors)):
+    for i, _ in enumerate(transition_matrices):
         dataset.train.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i, model) for g in dataset.train.graph_lists]
         dataset.val.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i, model) for g in dataset.val.graph_lists]
         dataset.test.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i, model) for g in dataset.test.graph_lists]
@@ -228,7 +231,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     if diag:
         transition_inv = transition_matrix**-1
     else:
-        transition_inv = torch.inverse(transition_matrix).cpu().numpy()
+        transition_inv = torch.linalg.inv(transition_matrix).cpu().numpy()
 
     if matrix == 'A':
         # Adjacency matrix
@@ -367,28 +370,35 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
         # mat = k_RW.todense()
 
         # mat = mat * 0.9
+    
+    if model.pe_layer.ngape_betas:
+        gape_beta = float(model.pe_layer.ngape_betas[idx])
+    else:
+        gape_beta = float(model.pe_layer.gape_beta)
 
     if model.pe_layer.gape_beta < 1:
-        mat = mat * (1-model.pe_layer.gape_beta) # emulate pagerank
+        mat = mat * (1-gape_beta) # emulate pagerank
 
 
     # if model is None:
     # initial_vector = torch.cat([initial_vector for _ in range(mat.shape[0])], dim=1)
     # else: initial_vector = model.pe_layer.stack_strategy(g)
 
-    initial_vector = model.pe_layer.stack_strategy(g)
     # initial_vector = torch.fill(initial_vector, 1/g.number_of_nodes())
-    initial_vector = torch.zeros_like(initial_vector)
-    # initial_vector.fill_diagonal_(1)
-    import random
-    rows, cols = initial_vector.shape
-    indices = [n for n in range(rows)]
-    for i in range(cols):
-        p = random.choice(indices)
-        initial_vector[p, i] = 1
+    if model.pe_layer.gape_weight_id:
+        initial_vector = torch.zeros_like(initial_vector)
+        # initial_vector.fill_diagonal_(1)
+        import random
+        rows, cols = initial_vector.shape
+        indices = [n for n in range(rows)]
+        for i in range(cols):
+            p = random.choice(indices)
+            initial_vector[p, i] = 1
+    else:
+        initial_vector = model.pe_layer.stack_strategy(g)
 
     if model.pe_layer.gape_beta:
-        initial_vector = initial_vector * model.pe_layer.gape_beta # emulate pagerank
+        initial_vector = initial_vector * gape_beta # emulate pagerank
 
     # print(torch.linalg.svd(initial_vector)[1])
     initial_vector_torch = initial_vector.clone()
@@ -419,7 +429,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
     # pe = torch.stack((pe.split(transition_matrix.shape[0])), dim=1)
     # pe = pe.transpose(1, 0)
-    transition_inv = torch.eye(transition_matrix.shape[0])
+
     pe = scipy.linalg.solve_sylvester(transition_inv, -mat, mat_product)
     pe = torch.from_numpy(pe.T).float()
 
