@@ -84,6 +84,7 @@ class PELayer(nn.Module):
         self.gape_beta = net_params.get('gape_beta', False)
         self.gape_weight_id = net_params.get('gape_weight_id', False)
         self.gape_break_batch = net_params.get('gape_break_batch', False)
+        self.ngape_betas = net_params.get('ngape_betas', [])
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
