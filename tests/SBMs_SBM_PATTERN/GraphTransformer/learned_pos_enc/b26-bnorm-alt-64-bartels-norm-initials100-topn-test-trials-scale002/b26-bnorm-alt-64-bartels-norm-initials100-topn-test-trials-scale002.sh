@@ -62,7 +62,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'matrix_type': 'A',
 #                 'n_heads': 8,
 #                 'ngape_betas': [],
-#                 'num_initials': 100,
+#                 'num_initials': 200,
 #                 'out_dim': 80,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
@@ -91,4 +91,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-bnorm-alt-64-bartels-norm-initials100-topn-test-trials --param_values 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --rand_pos_enc False --learned_pos_enc True --eigen_bartels_stewart True --gape_norm False --gape_scale 0.02 --num_initials 100 --gape_stack_strat 1
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_PATTERN_500k.json --job_note b26-bnorm-alt-64-bartels-norm-initials100-topn-test-trials --param_values 64 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --rand_pos_enc False --learned_pos_enc True --eigen_bartels_stewart True --gape_norm False --gape_scale 0.02 --num_initials 200 --gape_stack_strat 1
