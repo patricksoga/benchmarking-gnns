@@ -146,14 +146,24 @@ class PELayer(nn.Module):
 
             if self.n_gape > 1:
                 shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
-                scales = [0.02, 0.025, 0.05]
+                # scales = [0.02, 0.025, 0.05]
                 # scales = [0.9, 0.8, 0.5, 0.1]
 
                 transition_matrices = []
-                for i, transition in enumerate(transitions):
-                    torch.nn.init.orthogonal_(transition)
-                    transition_matrix = scales[i] * transition
-                    transition_matrices.append(transition_matrix)
+                # for i, transition in enumerate(transitions):
+                    #  torch.nn.init.orthogonal_(transition)
+                    # transition_matrix = scales[i] * transition
+                    # transition_matrices.append(transition_matrix)
+                for transition in transitions:
+                    if self.gape_norm:
+                        mod_transition = transition / torch.linalg.norm(transition)
+                    elif self.gape_scalar is not None and self.gape_scale != '0':
+                        mod_transition = mod_transition * float(self.gape_scale)
+                    # option for normalizing weights
+                    if self.gape_stoch:
+                        mod_transition = torch.softmax(transition, dim=0)
+
+                    transition_matrices.append(mod_transition)
 
                 self.pos_transitions = nn.ParameterList(nn.Parameter(transition, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for transition in transition_matrices)
 
