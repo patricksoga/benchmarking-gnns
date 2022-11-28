@@ -1,0 +1,22 @@
+[I] Loading dataset SBM_PATTERN...
+train, test, val sizes : 10000 2000 2000
+[I] Finished loading.
+[I] Data load time: 17.1534s
+using 3 automata/automaton
+using 3 automata/automaton
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 397, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 395, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_SBMs_node_classification.py", line 91, in train_val_pipeline
+    dataset = add_multiple_automaton_encodings(dataset, model.pe_layer.pos_transitions, model.pe_layer.pos_initials, net_params['diag'], net_params['matrix_type'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 164, in add_multiple_automaton_encodings
+    dataset.train.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i, model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 164, in <listcomp>
+    dataset.train.graph_lists = [multiple_automaton_encodings(g, transition_matrix, initial_vector, diag, matrix, i, model) for g in dataset.train.graph_lists]
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 137, in multiple_automaton_encodings
+    pe = automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, ret_pe=True, storage=None, idx=idx, model=model)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/data/positional_encs.py", line 358, in automaton_encoding
+    if model.pe_layer.gape_normalize_mat:
+AttributeError: 'NoneType' object has no attribute 'pe_layer'
