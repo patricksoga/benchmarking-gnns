@@ -508,9 +508,9 @@ class PELayer(nn.Module):
                         normalized_pos_encs.append(normalized_pos_enc)
                     pos_encs = normalized_pos_encs
 
-                # pe = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
+                pe = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
 
-                # pe = pe.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
+                pe = pe.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
 
                 # pos_enc_block = self.embedding_pos_enc(pos_enc_block) # (n_gape, n_nodes, hidden_dim)
 
@@ -527,18 +527,19 @@ class PELayer(nn.Module):
                 #     plt.figure(f"{i}")
                 #     sb.heatmap(pe[:, :, i].detach().numpy())
 
-                # pe = pe @ self.gape_pool_vec
+                pe = pe @ self.gape_pool_vec
 
-                if self.gape_softmax_after:
-                    pe = torch.softmax(pe, dim=1)
-
-                # pe = pe.squeeze(2)
+                pe = pe.squeeze(2)
 
                 # plt.figure("all")
                 # sb.heatmap(pe.detach().numpy())
 
                 # plt.show()
-                pe = sum(pos_encs)
+                # pe = sum(pos_encs)
+
+                if self.gape_softmax_after:
+                    pe = torch.softmax(pe, dim=1)
+
                 if not self.gape_individual:
                     pe = self.embedding_pos_encs[0](pe)
 
