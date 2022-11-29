@@ -1,18 +1,18 @@
 #!/bin/bash
-#$ -N GraphTransformer_SBM_CLUSTER_b26-bnorm-alt-32-ngape3-015-030-050-trials
+#$ -N GraphTransformer_SBM_CLUSTER_b26-bnorm-alt-32-stoch-ngape3-015-030-050-smaxafter-initials200-topn-trials
 #$ -q gpu
 #$ -l gpu_card=1
 #$ -t 1-1:1
 
 pos_enc_dim=(0 32)
-fname=$(pwd)/b26-bnorm-alt-32-ngape3-015-030-050-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
+fname=$(pwd)/b26-bnorm-alt-32-stoch-ngape3-015-030-050-smaxafter-initials200-topn-trials_${SGE_TASK_ID}_${pos_enc_dim[${SGE_TASK_ID}]}_DEBUG.log
 touch $fname
 fsync -d 10 $fname &
 
 conda activate gnn
 cd /afs/crc.nd.edu/user/p/psoga/benchmarking-gnns
 
-python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_CLUSTER_b26-bnorm-alt-32-ngape3-015-030-050-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
+python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransformer_SBMs_SBM_CLUSTER_b26-bnorm-alt-32-stoch-ngape3-015-030-050-smaxafter-initials200-topn-trials.json --job_num ${SGE_TASK_ID} --pos_enc_dim ${pos_enc_dim[${SGE_TASK_ID}]} --log_file $fname
 
 
 # {'dataset': 'SBM_CLUSTER',
@@ -42,12 +42,12 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'gape_rand': False,
 #                 'gape_scalar': False,
 #                 'gape_scale': '0',
-#                 'gape_softmax_after': False,
+#                 'gape_softmax_after': True,
 #                 'gape_softmax_before': False,
 #                 'gape_softmax_init': False,
 #                 'gape_squash': 'none',
-#                 'gape_stack_strat': '2',
-#                 'gape_stoch': False,
+#                 'gape_stack_strat': '1',
+#                 'gape_stoch': True,
 #                 'gape_symmetric': False,
 #                 'gape_tau': False,
 #                 'gape_tau_mat': False,
@@ -62,6 +62,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'n_gape': 3,
 #                 'n_heads': 8,
 #                 'ngape_betas': ['0.15', '0.3', '0.5'],
+#                 'num_initials': 200,
 #                 'out_dim': 80,
 #                 'pow_of_mat': 1,
 #                 'power_method': False,
@@ -74,7 +75,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'self_loop': False,
 #                 'spectral_attn': False,
 #                 'wl_pos_enc': False},
-#  'out_dir': 'out/SBMs_node_classification_b26-bnorm-alt-32-ngape3-015-030-050-trials',
+#  'out_dir': 'out/SBMs_node_classification_b26-bnorm-alt-32-stoch-ngape3-015-030-050-smaxafter-initials200-topn-trials',
 #  'params': {'batch_size': 26,
 #             'epochs': 1000,
 #             'init_lr': 0.0005,
@@ -90,4 +91,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b26-bnorm-alt-32-ngape3-015-030-050-trials --param_values 32 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_clamp False --ngape_betas 0.15 0.3 0.5 --n_gape 3
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b26-bnorm-alt-32-stoch-ngape3-015-030-050-smaxafter-initials200-topn-trials --param_values 32 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_clamp False --ngape_betas 0.15 0.3 0.5 --n_gape 3 --gape_stoch True --num_initials 200 --gape_stack_strat 1 --gape_softmax_after True

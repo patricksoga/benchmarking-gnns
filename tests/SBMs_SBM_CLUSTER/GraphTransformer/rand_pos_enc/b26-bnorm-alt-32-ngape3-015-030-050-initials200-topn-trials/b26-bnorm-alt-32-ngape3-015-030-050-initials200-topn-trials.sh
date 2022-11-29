@@ -47,7 +47,7 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 #                 'gape_softmax_init': False,
 #                 'gape_squash': 'none',
 #                 'gape_stack_strat': '1',
-#                 'gape_stoch': True,
+#                 'gape_stoch': False,
 #                 'gape_symmetric': False,
 #                 'gape_tau': False,
 #                 'gape_tau_mat': False,
@@ -91,4 +91,4 @@ python3 main_SBMs_node_classification.py --config tests/test-configs/GraphTransf
 
 
 # Generated with command:
-#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b26-bnorm-alt-32-ngape3-015-030-050-initials200-topn-trials --param_values 32 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_clamp False --ngape_betas 0.15 0.3 0.5 --n_gape 3 --gape_stoch True --num_initials 200 --gape_stack_strat 1
+#python3 configure_tests.py --config ../configs/SBMs_node_clustering_GraphTransformer_CLUSTER_500k.json --job_note b26-bnorm-alt-32-ngape3-015-030-050-initials200-topn-trials --param_values 32 --batch_size 26 --rand_pos_enc True --batch_norm True --layer_norm False --seed_array 41 95 22 35 --gape_clamp False --ngape_betas 0.15 0.3 0.5 --n_gape 3 --gape_stack_strat 1 --num_initials 200
