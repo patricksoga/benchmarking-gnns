@@ -321,65 +321,76 @@ class PELayer(nn.Module):
             stop_vec = torch.softmax(self.stop_vec, dim=0)
             stop_diag = torch.eye(self.pos_enc_dim, device=self.device) - torch.diag(stop_vec)
 
-        if self.gape_beta:
-            mat = mat * (1-self.gape_beta) # emulate pagerank
-
-        vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
-
-        if self.gape_weight_id:
-            vec_init = torch.zeros_like(vec_init)
-            vec_init.fill_diagonal_(1)
-
-        if self.gape_tau_mat:
-            vec_init = torch.diag(stop_vec) @ vec_init
-
-        if self.gape_beta < 1:
-            vec_init = vec_init * self.gape_beta # emulate pagerank
-
-        transition = self.pos_transitions[0]
-        if self.gape_stoch:
-            transition = torch.softmax(transition, dim=0)
-
-        if self.gape_symmetric:
-            triu = torch.triu(transition)
-            values = triu[triu != 0]
-            i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
-            triu[i, j] = values
-            triu.T[i, j] = values
-            transition = triu
-
-        if self.gape_tau_mat:
-            A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
-            B = -mat
-            C = A.clone() @ vec_init
+        if not self.ngape_betas:
+            betas = [float(self.gape_beta)]
         else:
-            transition_inverse = torch.linalg.inv(transition).to(self.device)
+            betas = [float(beta) for beta in self.ngape_betas]
 
-            B = -mat
+        pes = []
+
+        for beta in betas:
+            if beta:
+                mat = mat * (1-beta) # emulate pagerank
+
+            vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
+
+            if self.gape_weight_id:
+                vec_init = torch.zeros_like(vec_init)
+                vec_init.fill_diagonal_(1)
+
             if self.gape_tau_mat:
-                A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
-            else:
-                A = transition_inverse
+                vec_init = torch.diag(stop_vec) @ vec_init
+
+            if beta < 1:
+                vec_init = vec_init * beta # emulate pagerank
+
+            transition = self.pos_transitions[0]
+            if self.gape_stoch:
+                transition = torch.softmax(transition, dim=0)
+
+            if self.gape_symmetric:
+                triu = torch.triu(transition)
+                values = triu[triu != 0]
+                i, j = torch.triu_indices(self.pos_enc_dim, self.pos_enc_dim)
+                triu[i, j] = values
+                triu.T[i, j] = values
+                transition = triu
 
             if self.gape_tau_mat:
-                C = A @ (vec_init @ torch.diag(stop_vec))
+                A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
+                B = -mat
+                C = A.clone() @ vec_init
             else:
-                C = A @ vec_init
+                transition_inverse = torch.linalg.inv(transition).to(self.device)
 
-        def spectral_radius(matrix):
-            return torch.abs(torch.real(matrix)).max()  
+                B = -mat
+                if self.gape_tau_mat:
+                    A = torch.linalg.inv(transition @ stop_diag) # insert stopping probabilities
+                else:
+                    A = transition_inverse
 
-        # A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
-        # B = -mat
-        # C = A.clone() @ vec_init
+                if self.gape_tau_mat:
+                    C = A @ (vec_init @ torch.diag(stop_vec))
+                else:
+                    C = A @ vec_init
 
-        pe = self.sylvester(A, B, C)
+            # A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
+            # B = -mat
+            # C = A.clone() @ vec_init
 
-        if self.gape_tau:
-            pe = torch.mul(pe, vec_init)
+            pe = self.sylvester(A, B, C)
 
-        pe = pe.transpose(1, 0).type(torch.float32)
-        pe = torch.real(pe)
+            if self.gape_tau:
+                pe = torch.mul(pe, vec_init)
+
+            pe = pe.transpose(1, 0).type(torch.float32)
+            pe = torch.real(pe)
+            pes.append(pe)
+
+        if len(pes) > 1:
+            pe = sum(pes)
+        else:
+            pe = pes[0]
 
         pe = self.embedding_pos_encs[0](pe)
 
