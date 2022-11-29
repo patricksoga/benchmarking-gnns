@@ -370,9 +370,9 @@ class PELayer(nn.Module):
                     A = transition_inverse
 
                 if self.gape_tau_mat:
-                    C = A @ (vec_init @ torch.diag(stop_vec))
+                    C = transition_inverse @ (vec_init @ torch.diag(stop_vec))
                 else:
-                    C = A @ vec_init
+                    C = transition_inverse @ vec_init
 
             # A = torch.linalg.inv(transition.transpose(0, 1) @ stop_diag)
             # B = -mat
