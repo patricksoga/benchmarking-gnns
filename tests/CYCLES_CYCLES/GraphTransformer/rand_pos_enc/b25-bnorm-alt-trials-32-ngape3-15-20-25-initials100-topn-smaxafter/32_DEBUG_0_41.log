@@ -1,0 +1,705 @@
+2022-11-29 05:51:31,345:main_utils.py:62 -            gpu_setup(): cuda available with GPU: Quadro RTX 6000
+2022-11-29 05:51:41,676:main_CYCLES_graph_classification.py:356 -                 main(): {'num_train_data': 200, 'L': 10, 'n_heads': 8, 'hidden_dim': 80, 'out_dim': 80, 'residual': True, 'readout': 'sum', 'in_feat_dropout': 0.0, 'dropout': 0.0, 'layer_norm': False, 'batch_norm': False, 'self_loop': False, 'pos_enc': False, 'learned_pos_enc': False, 'pos_enc_dim': 32, 'wl_pos_enc': False, 'full_graph': False, 'gpu_id': 0, 'batch_size': 25, 'edge_feat': False, 'rand_pos_enc': True, 'rw_pos_enc': False, 'num_initials': 100, 'power_method': False, 'diag': False, 'pow_of_mat': 1, 'adj_enc': False, 'dataset': 'CYCLES', 'matrix_type': 'A', 'spectral_attn': False, 'cat_gape': False, 'n_gape': 3, 'gape_softmax_after': True, 'gape_softmax_before': False, 'gape_individual': False, 'random_orientation': False, 'gape_clamp': False, 'rand_sketchy_pos_enc': False, 'eigen_bartels_stewart': False, 'gape_rand': False, 'experiment_1': False, 'gape_normalization': False, 'gape_squash': 'none', 'gape_div': False, 'gape_norm': False, 'gape_symmetric': False, 'gape_weight_gen': False, 'cycles_k': 6, 'gape_scale': '0', 'gape_per_layer': False, 'gape_scalar': False, 'gape_stoch': False, 'gape_softmax_init': False, 'gape_uniform_init': False, 'gape_stack_strat': '1', 'gape_normalize_mat': False, 'gape_tau': False, 'gape_tau_mat': False, 'gape_beta': 1.0, 'gape_weight_id': False, 'gape_break_batch': False, 'ngape_betas': ['0.15', '0.2', '0.25'], 'log_file': '/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/tests/CYCLES_CYCLES/GraphTransformer/rand_pos_enc/b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxafter/32_DEBUG_0_41.log', 'device': device(type='cuda'), 'in_dim': 1, 'in_dim_edge': 1, 'n_classes': 2, 'seed_array': [41]}
+2022-11-29 05:51:41,677:main_CYCLES_graph_classification.py:357 -                 main(): {'seed': 41, 'epochs': 1000, 'batch_size': 25, 'init_lr': 0.0005, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 10, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [41], 'job_num': 32}
+2022-11-29 05:51:41,679:pe_layer.py:97 -             __init__(): rand_pos_enc
+2022-11-29 05:51:43,082:pe_layer.py:186 -             __init__(): Using 32 dimension positional encoding
+2022-11-29 05:51:43,082:pe_layer.py:188 -             __init__(): Using matrix: A
+2022-11-29 05:51:43,082:pe_layer.py:189 -             __init__(): Matrix power: 1
+2022-11-29 05:51:43,091:main_utils.py:76 -     view_model_param(): MODEL DETAILS:
+
+2022-11-29 05:51:43,093:main_utils.py:81 -     view_model_param(): MODEL/Total parameters: GraphTransformer, 529433
+2022-11-29 05:51:43,093:main_CYCLES_graph_classification.py:43 -   train_val_pipeline(): [!] Starting seed: 41 in [41]...
+2022-11-29 05:51:43,093:pe_layer.py:97 -             __init__(): rand_pos_enc
+2022-11-29 05:51:43,096:pe_layer.py:186 -             __init__(): Using 32 dimension positional encoding
+2022-11-29 05:51:43,096:pe_layer.py:188 -             __init__(): Using matrix: A
+2022-11-29 05:51:43,096:pe_layer.py:189 -             __init__(): Matrix power: 1
+2022-11-29 05:51:43,108:main_CYCLES_graph_classification.py:76 -   train_val_pipeline(): [!] Adding random automaton graph positional encoding (32).
+2022-11-29 05:51:43,108:main_CYCLES_graph_classification.py:80 -   train_val_pipeline(): [!] Using 3 random automata.
+2022-11-29 05:53:35,108:main_CYCLES_graph_classification.py:84 -   train_val_pipeline(): Time PE:112.0143814086914
+2022-11-29 05:53:35,113:main_CYCLES_graph_classification.py:130 -   train_val_pipeline(): Training Graphs: 200
+2022-11-29 05:53:35,113:main_CYCLES_graph_classification.py:131 -   train_val_pipeline(): Validation Graphs: 1000
+2022-11-29 05:53:35,113:main_CYCLES_graph_classification.py:132 -   train_val_pipeline(): Test Graphs: 10000
+2022-11-29 05:53:35,113:main_CYCLES_graph_classification.py:133 -   train_val_pipeline(): Number of Classes: 2
+2022-11-29 05:53:35,116:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 1/1000
+2022-11-29 05:53:57,421:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.5000 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 05:53:57,422:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 22.31s, LR: 0.00050, Train Loss: 2.8757, Train Acc: 0.5300,
+                            Val Loss: 1.0302, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:53:57,423:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 2/1000
+2022-11-29 05:54:19,100:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.68s, LR: 0.00050, Train Loss: 1.0746, Train Acc: 0.4700,
+                            Val Loss: 1.4764, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:54:19,101:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 3/1000
+2022-11-29 05:54:40,751:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.65s, LR: 0.00050, Train Loss: 1.2525, Train Acc: 0.4600,
+                            Val Loss: 0.7351, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:54:40,752:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 4/1000
+2022-11-29 05:55:02,304:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.55s, LR: 0.00050, Train Loss: 0.8763, Train Acc: 0.5200,
+                            Val Loss: 0.8270, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:55:02,304:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 5/1000
+2022-11-29 05:55:23,748:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.44s, LR: 0.00050, Train Loss: 0.7898, Train Acc: 0.4900,
+                            Val Loss: 0.7494, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:55:23,748:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 6/1000
+2022-11-29 05:55:44,985:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.24s, LR: 0.00050, Train Loss: 0.7793, Train Acc: 0.4500,
+                            Val Loss: 0.7430, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:55:44,986:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 7/1000
+2022-11-29 05:56:06,147:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.16s, LR: 0.00050, Train Loss: 0.7193, Train Acc: 0.5250,
+                            Val Loss: 0.7011, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:56:06,147:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 8/1000
+2022-11-29 05:56:27,288:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.14s, LR: 0.00050, Train Loss: 0.7153, Train Acc: 0.5000,
+                            Val Loss: 0.6915, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:56:27,288:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 9/1000
+2022-11-29 05:56:48,300:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 21.01s, LR: 0.00050, Train Loss: 0.7357, Train Acc: 0.5000,
+                            Val Loss: 0.6980, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:56:48,301:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 10/1000
+2022-11-29 05:57:09,261:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.96s, LR: 0.00050, Train Loss: 0.6934, Train Acc: 0.5050,
+                            Val Loss: 0.7003, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:57:09,261:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 11/1000
+2022-11-29 05:57:30,247:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.5790 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 05:57:30,248:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.99s, LR: 0.00050, Train Loss: 0.7031, Train Acc: 0.5000,
+                            Val Loss: 0.6900, Val Acc: 0.5930, Test Acc: 0.5790
+2022-11-29 05:57:30,248:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 12/1000
+2022-11-29 05:57:51,156:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.91s, LR: 0.00050, Train Loss: 0.6932, Train Acc: 0.5000,
+                            Val Loss: 0.6945, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:57:51,156:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 13/1000
+2022-11-29 05:58:12,109:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.95s, LR: 0.00050, Train Loss: 0.7040, Train Acc: 0.4900,
+                            Val Loss: 0.6951, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:58:12,110:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 14/1000
+2022-11-29 05:58:33,007:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.90s, LR: 0.00050, Train Loss: 0.6911, Train Acc: 0.4900,
+                            Val Loss: 0.6916, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:58:33,818:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 15/1000
+2022-11-29 05:58:54,732:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.5849 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 05:58:54,732:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.91s, LR: 0.00050, Train Loss: 0.6945, Train Acc: 0.5150,
+                            Val Loss: 0.6895, Val Acc: 0.5810, Test Acc: 0.5849
+2022-11-29 05:58:54,733:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 16/1000
+2022-11-29 05:59:15,541:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.81s, LR: 0.00050, Train Loss: 0.6916, Train Acc: 0.5000,
+                            Val Loss: 0.6902, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 05:59:15,542:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 17/1000
+2022-11-29 05:59:36,257:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.6068 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 05:59:36,258:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6912, Train Acc: 0.5350,
+                            Val Loss: 0.6899, Val Acc: 0.6200, Test Acc: 0.6068
+2022-11-29 05:59:36,258:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 18/1000
+2022-11-29 05:59:57,045:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.79s, LR: 0.00050, Train Loss: 0.6902, Train Acc: 0.5350,
+                            Val Loss: 0.6894, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 05:59:57,045:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 19/1000
+2022-11-29 06:00:17,763:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6952, Train Acc: 0.5000,
+                            Val Loss: 0.6910, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:00:17,763:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 20/1000
+2022-11-29 06:00:38,495:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6992, Train Acc: 0.4250,
+                            Val Loss: 0.6924, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:00:38,495:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 21/1000
+2022-11-29 06:00:59,222:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6897, Train Acc: 0.5550,
+                            Val Loss: 0.6897, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:00:59,223:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 22/1000
+2022-11-29 06:01:19,900:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.68s, LR: 0.00050, Train Loss: 0.6914, Train Acc: 0.5000,
+                            Val Loss: 0.6907, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:01:19,900:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 23/1000
+2022-11-29 06:01:40,659:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.76s, LR: 0.00050, Train Loss: 0.6903, Train Acc: 0.5000,
+                            Val Loss: 0.6894, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:01:40,659:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 24/1000
+2022-11-29 06:02:01,366:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6924, Train Acc: 0.4650,
+                            Val Loss: 0.6904, Val Acc: 0.5120, Test Acc: 0.5074
+2022-11-29 06:02:01,367:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 25/1000
+2022-11-29 06:02:22,096:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6915, Train Acc: 0.5000,
+                            Val Loss: 0.6896, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:02:22,096:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 26/1000
+2022-11-29 06:02:42,818:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6906, Train Acc: 0.5250,
+                            Val Loss: 0.6894, Val Acc: 0.5660, Test Acc: 0.5549
+2022-11-29 06:02:42,818:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 27/1000
+2022-11-29 06:03:03,497:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.68s, LR: 0.00050, Train Loss: 0.6913, Train Acc: 0.5300,
+                            Val Loss: 0.6902, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:03:03,497:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 28/1000
+2022-11-29 06:03:24,224:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6904, Train Acc: 0.5200,
+                            Val Loss: 0.6893, Val Acc: 0.5260, Test Acc: 0.5248
+2022-11-29 06:03:24,224:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 29/1000
+2022-11-29 06:03:44,923:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.70s, LR: 0.00050, Train Loss: 0.6916, Train Acc: 0.5050,
+                            Val Loss: 0.6895, Val Acc: 0.5000, Test Acc: 0.5001
+2022-11-29 06:03:44,923:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 30/1000
+2022-11-29 06:04:05,680:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.6227 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 06:04:05,680:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.76s, LR: 0.00050, Train Loss: 0.6894, Train Acc: 0.5750,
+                            Val Loss: 0.6897, Val Acc: 0.6190, Test Acc: 0.6227
+2022-11-29 06:04:05,681:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 31/1000
+2022-11-29 06:04:26,405:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6908, Train Acc: 0.5400,
+                            Val Loss: 0.6898, Val Acc: 0.5940, Test Acc: 0.5779
+2022-11-29 06:04:26,406:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 32/1000
+2022-11-29 06:04:47,075:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.67s, LR: 0.00050, Train Loss: 0.6897, Train Acc: 0.5500,
+                            Val Loss: 0.6893, Val Acc: 0.5060, Test Acc: 0.5031
+2022-11-29 06:04:47,076:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 33/1000
+2022-11-29 06:05:07,809:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6895, Train Acc: 0.5000,
+                            Val Loss: 0.6893, Val Acc: 0.5010, Test Acc: 0.5003
+2022-11-29 06:05:07,810:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 34/1000
+2022-11-29 06:05:28,486:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.68s, LR: 0.00050, Train Loss: 0.6897, Train Acc: 0.5000,
+                            Val Loss: 0.6897, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:05:28,486:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 35/1000
+2022-11-29 06:05:49,198:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6893, Train Acc: 0.5050,
+                            Val Loss: 0.6892, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:05:49,199:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 36/1000
+2022-11-29 06:06:09,881:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.68s, LR: 0.00050, Train Loss: 0.6898, Train Acc: 0.5550,
+                            Val Loss: 0.6892, Val Acc: 0.5660, Test Acc: 0.5549
+2022-11-29 06:06:09,882:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 37/1000
+2022-11-29 06:06:30,542:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.66s, LR: 0.00050, Train Loss: 0.6922, Train Acc: 0.5350,
+                            Val Loss: 0.6897, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:06:30,542:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 38/1000
+2022-11-29 06:06:51,309:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.6356 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 06:06:51,309:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.77s, LR: 0.00050, Train Loss: 0.6918, Train Acc: 0.5400,
+                            Val Loss: 0.6893, Val Acc: 0.6190, Test Acc: 0.6356
+2022-11-29 06:06:51,310:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 39/1000
+2022-11-29 06:07:12,020:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6895, Train Acc: 0.5500,
+                            Val Loss: 0.6892, Val Acc: 0.5160, Test Acc: 0.5166
+2022-11-29 06:07:12,020:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 40/1000
+2022-11-29 06:07:32,742:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6899, Train Acc: 0.5150,
+                            Val Loss: 0.6894, Val Acc: 0.5000, Test Acc: 0.5001
+2022-11-29 06:07:32,743:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 41/1000
+2022-11-29 06:07:53,455:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6903, Train Acc: 0.5000,
+                            Val Loss: 0.6892, Val Acc: 0.5010, Test Acc: 0.5005
+2022-11-29 06:07:53,456:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 42/1000
+2022-11-29 06:08:14,171:main_CYCLES_graph_classification.py:174 -   train_val_pipeline(): Best test accuracy: 0.6483 to out/CYCLES_graph_classification_b25-bnorm-alt-trials-32-ngape3-15-20-25-initials100-topn-smaxaftercheckpoints/GraphTransformer_CYCLES_GPU0_32_32_05h51m41s_on_Nov_29_2022/MODELS_
+2022-11-29 06:08:14,172:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6898, Train Acc: 0.5300,
+                            Val Loss: 0.6894, Val Acc: 0.6370, Test Acc: 0.6483
+2022-11-29 06:08:14,172:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 43/1000
+2022-11-29 06:08:34,910:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.74s, LR: 0.00050, Train Loss: 0.6896, Train Acc: 0.6100,
+                            Val Loss: 0.6891, Val Acc: 0.5270, Test Acc: 0.5264
+2022-11-29 06:08:36,857:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 44/1000
+2022-11-29 06:08:57,544:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.69s, LR: 0.00050, Train Loss: 0.6893, Train Acc: 0.5100,
+                            Val Loss: 0.6892, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:08:57,544:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 45/1000
+2022-11-29 06:09:18,261:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.72s, LR: 0.00050, Train Loss: 0.6909, Train Acc: 0.5000,
+                            Val Loss: 0.6897, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:09:18,262:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 46/1000
+2022-11-29 06:09:38,963:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.70s, LR: 0.00050, Train Loss: 0.6902, Train Acc: 0.4950,
+                            Val Loss: 0.6900, Val Acc: 0.5310, Test Acc: 0.5225
+2022-11-29 06:09:38,964:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 47/1000
+2022-11-29 06:09:59,623:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.66s, LR: 0.00050, Train Loss: 0.6906, Train Acc: 0.5600,
+                            Val Loss: 0.6894, Val Acc: 0.6370, Test Acc: 0.6436
+2022-11-29 06:09:59,623:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 48/1000
+2022-11-29 06:10:20,384:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.76s, LR: 0.00050, Train Loss: 0.6901, Train Acc: 0.5700,
+                            Val Loss: 0.6891, Val Acc: 0.5420, Test Acc: 0.5328
+2022-11-29 06:10:20,385:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 49/1000
+2022-11-29 06:10:41,076:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.69s, LR: 0.00050, Train Loss: 0.6891, Train Acc: 0.5000,
+                            Val Loss: 0.6898, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:10:41,076:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 50/1000
+2022-11-29 06:11:01,788:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6896, Train Acc: 0.5000,
+                            Val Loss: 0.6894, Val Acc: 0.5000, Test Acc: 0.5001
+2022-11-29 06:11:01,788:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 51/1000
+2022-11-29 06:11:22,486:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.70s, LR: 0.00050, Train Loss: 0.6894, Train Acc: 0.5000,
+                            Val Loss: 0.6890, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:11:22,487:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 52/1000
+2022-11-29 06:11:43,140:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6890, Train Acc: 0.5500,
+                            Val Loss: 0.6891, Val Acc: 0.5810, Test Acc: 0.5850
+2022-11-29 06:11:43,140:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 53/1000
+2022-11-29 06:12:03,876:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.74s, LR: 0.00050, Train Loss: 0.6915, Train Acc: 0.5350,
+                            Val Loss: 0.6900, Val Acc: 0.5180, Test Acc: 0.5140
+2022-11-29 06:12:03,877:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 54/1000
+2022-11-29 06:12:24,529:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6939, Train Acc: 0.5200,
+                            Val Loss: 0.6889, Val Acc: 0.5080, Test Acc: 0.5086
+2022-11-29 06:12:24,530:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 55/1000
+2022-11-29 06:12:45,235:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6920, Train Acc: 0.5050,
+                            Val Loss: 0.6908, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:12:45,235:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 56/1000
+2022-11-29 06:13:05,910:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.67s, LR: 0.00050, Train Loss: 0.6929, Train Acc: 0.5000,
+                            Val Loss: 0.6897, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:13:05,911:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 57/1000
+2022-11-29 06:13:26,561:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6894, Train Acc: 0.5050,
+                            Val Loss: 0.6889, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:13:26,562:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 58/1000
+2022-11-29 06:13:47,273:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.71s, LR: 0.00050, Train Loss: 0.6902, Train Acc: 0.5250,
+                            Val Loss: 0.6945, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:13:47,274:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 59/1000
+2022-11-29 06:14:07,916:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.64s, LR: 0.00050, Train Loss: 0.6877, Train Acc: 0.5000,
+                            Val Loss: 0.6892, Val Acc: 0.6250, Test Acc: 0.6274
+2022-11-29 06:14:07,916:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 60/1000
+2022-11-29 06:14:28,614:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.70s, LR: 0.00050, Train Loss: 0.6959, Train Acc: 0.5150,
+                            Val Loss: 0.6889, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:14:28,615:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 61/1000
+2022-11-29 06:14:49,283:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.67s, LR: 0.00050, Train Loss: 0.6892, Train Acc: 0.5000,
+                            Val Loss: 0.6890, Val Acc: 0.5010, Test Acc: 0.5003
+2022-11-29 06:14:49,284:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 62/1000
+2022-11-29 06:15:09,933:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6937, Train Acc: 0.4550,
+                            Val Loss: 0.6901, Val Acc: 0.5060, Test Acc: 0.5036
+2022-11-29 06:15:09,933:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 63/1000
+2022-11-29 06:15:30,665:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.73s, LR: 0.00050, Train Loss: 0.6908, Train Acc: 0.5150,
+                            Val Loss: 0.6900, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:15:30,666:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 64/1000
+2022-11-29 06:15:51,315:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6897, Train Acc: 0.5000,
+                            Val Loss: 0.6888, Val Acc: 0.5460, Test Acc: 0.5358
+2022-11-29 06:15:51,315:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 65/1000
+2022-11-29 06:16:11,988:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.67s, LR: 0.00050, Train Loss: 0.6920, Train Acc: 0.5300,
+                            Val Loss: 0.6888, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:16:11,988:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 66/1000
+2022-11-29 06:16:32,647:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.66s, LR: 0.00050, Train Loss: 0.6888, Train Acc: 0.5650,
+                            Val Loss: 0.6888, Val Acc: 0.5810, Test Acc: 0.5850
+2022-11-29 06:16:32,648:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 67/1000
+2022-11-29 06:16:53,271:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.62s, LR: 0.00050, Train Loss: 0.6921, Train Acc: 0.5100,
+                            Val Loss: 0.6893, Val Acc: 0.6190, Test Acc: 0.6045
+2022-11-29 06:16:53,271:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 68/1000
+2022-11-29 06:17:13,920:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.65s, LR: 0.00050, Train Loss: 0.6885, Train Acc: 0.5500,
+                            Val Loss: 0.6895, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:17:13,921:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 69/1000
+2022-11-29 06:17:34,556:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.63s, LR: 0.00050, Train Loss: 0.6894, Train Acc: 0.5000,
+                            Val Loss: 0.6892, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:17:34,556:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 70/1000
+2022-11-29 06:17:55,194:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.64s, LR: 0.00050, Train Loss: 0.6901, Train Acc: 0.5300,
+                            Val Loss: 0.6893, Val Acc: 0.5960, Test Acc: 0.5787
+2022-11-29 06:17:55,195:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 71/1000
+2022-11-29 06:18:15,807:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.61s, LR: 0.00050, Train Loss: 0.6891, Train Acc: 0.6150,
+                            Val Loss: 0.6888, Val Acc: 0.5820, Test Acc: 0.5891
+2022-11-29 06:18:15,808:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 72/1000
+2022-11-29 06:18:36,441:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.63s, LR: 0.00050, Train Loss: 0.6918, Train Acc: 0.4900,
+                            Val Loss: 0.6890, Val Acc: 0.6380, Test Acc: 0.6435
+2022-11-29 06:18:36,441:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 73/1000
+2022-11-29 06:18:57,061:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.62s, LR: 0.00050, Train Loss: 0.6912, Train Acc: 0.5000,
+                            Val Loss: 0.6895, Val Acc: 0.5470, Test Acc: 0.5368
+2022-11-29 06:18:57,062:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 74/1000
+2022-11-29 06:19:17,584:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.52s, LR: 0.00050, Train Loss: 0.6916, Train Acc: 0.4900,
+                            Val Loss: 0.6902, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:19:17,585:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 75/1000
+2022-11-29 06:19:38,116:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.53s, LR: 0.00050, Train Loss: 0.6909, Train Acc: 0.5350,
+                            Val Loss: 0.6888, Val Acc: 0.5920, Test Acc: 0.6057
+2022-11-29 06:19:38,117:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 76/1000
+2022-11-29 06:19:58,489:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.37s, LR: 0.00025, Train Loss: 0.6891, Train Acc: 0.6000,
+                            Val Loss: 0.6887, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:19:58,490:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 77/1000
+2022-11-29 06:20:18,797:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.5250,
+                            Val Loss: 0.6887, Val Acc: 0.5080, Test Acc: 0.5087
+2022-11-29 06:20:18,797:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 78/1000
+2022-11-29 06:20:39,100:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.5200,
+                            Val Loss: 0.6886, Val Acc: 0.5160, Test Acc: 0.5171
+2022-11-29 06:20:39,100:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 79/1000
+2022-11-29 06:20:59,379:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6891, Train Acc: 0.5000,
+                            Val Loss: 0.6888, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:20:59,379:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 80/1000
+2022-11-29 06:21:19,667:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00025, Train Loss: 0.6897, Train Acc: 0.5650,
+                            Val Loss: 0.6888, Val Acc: 0.5960, Test Acc: 0.6160
+2022-11-29 06:21:19,667:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 81/1000
+2022-11-29 06:21:39,966:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00025, Train Loss: 0.6885, Train Acc: 0.5950,
+                            Val Loss: 0.6886, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:21:39,967:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 82/1000
+2022-11-29 06:22:00,259:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00025, Train Loss: 0.6893, Train Acc: 0.5050,
+                            Val Loss: 0.6887, Val Acc: 0.5070, Test Acc: 0.5082
+2022-11-29 06:22:00,260:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 83/1000
+2022-11-29 06:22:20,540:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6891, Train Acc: 0.5050,
+                            Val Loss: 0.6886, Val Acc: 0.5070, Test Acc: 0.5083
+2022-11-29 06:22:20,541:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 84/1000
+2022-11-29 06:22:40,820:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.5150,
+                            Val Loss: 0.6886, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:22:40,820:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 85/1000
+2022-11-29 06:23:01,090:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6900, Train Acc: 0.5250,
+                            Val Loss: 0.6886, Val Acc: 0.5070, Test Acc: 0.5079
+2022-11-29 06:23:01,090:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 86/1000
+2022-11-29 06:23:21,362:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6906, Train Acc: 0.5200,
+                            Val Loss: 0.6890, Val Acc: 0.6220, Test Acc: 0.6268
+2022-11-29 06:23:21,363:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 87/1000
+2022-11-29 06:23:41,637:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6896, Train Acc: 0.5900,
+                            Val Loss: 0.6886, Val Acc: 0.5660, Test Acc: 0.5550
+2022-11-29 06:23:41,638:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 88/1000
+2022-11-29 06:24:01,918:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6918, Train Acc: 0.5150,
+                            Val Loss: 0.6891, Val Acc: 0.5000, Test Acc: 0.5001
+2022-11-29 06:24:01,918:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 89/1000
+2022-11-29 06:24:22,194:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6883, Train Acc: 0.5000,
+                            Val Loss: 0.6886, Val Acc: 0.5070, Test Acc: 0.5082
+2022-11-29 06:24:22,195:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 90/1000
+2022-11-29 06:24:42,471:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6890, Train Acc: 0.5650,
+                            Val Loss: 0.6885, Val Acc: 0.5460, Test Acc: 0.5333
+2022-11-29 06:24:42,471:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 91/1000
+2022-11-29 06:25:02,750:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6887, Train Acc: 0.5550,
+                            Val Loss: 0.6885, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:25:02,750:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 92/1000
+2022-11-29 06:25:23,013:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6884, Train Acc: 0.5400,
+                            Val Loss: 0.6885, Val Acc: 0.5660, Test Acc: 0.5549
+2022-11-29 06:25:23,013:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 93/1000
+2022-11-29 06:25:43,286:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6883, Train Acc: 0.5700,
+                            Val Loss: 0.6885, Val Acc: 0.5610, Test Acc: 0.5525
+2022-11-29 06:25:43,287:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 94/1000
+2022-11-29 06:26:03,544:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6887, Train Acc: 0.5550,
+                            Val Loss: 0.6886, Val Acc: 0.5810, Test Acc: 0.5850
+2022-11-29 06:26:03,545:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 95/1000
+2022-11-29 06:26:23,804:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6903, Train Acc: 0.5700,
+                            Val Loss: 0.6887, Val Acc: 0.6370, Test Acc: 0.6483
+2022-11-29 06:26:23,805:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 96/1000
+2022-11-29 06:26:44,057:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6918, Train Acc: 0.5250,
+                            Val Loss: 0.6892, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:26:44,058:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 97/1000
+2022-11-29 06:27:04,325:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6890, Train Acc: 0.5000,
+                            Val Loss: 0.6887, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:27:04,326:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 98/1000
+2022-11-29 06:27:24,592:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6884, Train Acc: 0.5150,
+                            Val Loss: 0.6885, Val Acc: 0.5420, Test Acc: 0.5327
+2022-11-29 06:27:24,592:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 99/1000
+2022-11-29 06:27:44,873:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6898, Train Acc: 0.5900,
+                            Val Loss: 0.6886, Val Acc: 0.6010, Test Acc: 0.6174
+2022-11-29 06:27:44,874:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 100/1000
+2022-11-29 06:28:05,136:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.6150,
+                            Val Loss: 0.6884, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:28:05,136:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 101/1000
+2022-11-29 06:28:25,402:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6894, Train Acc: 0.5050,
+                            Val Loss: 0.6884, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:28:25,403:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 102/1000
+2022-11-29 06:28:45,666:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6888, Train Acc: 0.5300,
+                            Val Loss: 0.6884, Val Acc: 0.5460, Test Acc: 0.5332
+2022-11-29 06:28:45,666:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 103/1000
+2022-11-29 06:29:05,937:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6889, Train Acc: 0.5200,
+                            Val Loss: 0.6887, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:29:05,938:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 104/1000
+2022-11-29 06:29:26,208:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6885, Train Acc: 0.5100,
+                            Val Loss: 0.6884, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:29:26,209:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 105/1000
+2022-11-29 06:29:46,473:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6914, Train Acc: 0.5000,
+                            Val Loss: 0.6887, Val Acc: 0.6380, Test Acc: 0.6435
+2022-11-29 06:29:46,473:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 106/1000
+2022-11-29 06:30:06,729:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6892, Train Acc: 0.6200,
+                            Val Loss: 0.6884, Val Acc: 0.5150, Test Acc: 0.5166
+2022-11-29 06:30:06,729:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 107/1000
+2022-11-29 06:30:27,004:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6884, Train Acc: 0.5300,
+                            Val Loss: 0.6884, Val Acc: 0.5150, Test Acc: 0.5165
+2022-11-29 06:30:27,004:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 108/1000
+2022-11-29 06:30:47,253:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6940, Train Acc: 0.5100,
+                            Val Loss: 0.6904, Val Acc: 0.5000, Test Acc: 0.5000
+2022-11-29 06:30:47,253:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 109/1000
+2022-11-29 06:31:07,507:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6906, Train Acc: 0.5450,
+                            Val Loss: 0.6888, Val Acc: 0.6250, Test Acc: 0.6275
+2022-11-29 06:31:07,508:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 110/1000
+2022-11-29 06:31:27,752:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.24s, LR: 0.00025, Train Loss: 0.6897, Train Acc: 0.5600,
+                            Val Loss: 0.6888, Val Acc: 0.6250, Test Acc: 0.6276
+2022-11-29 06:31:27,753:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 111/1000
+2022-11-29 06:31:48,013:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.5900,
+                            Val Loss: 0.6884, Val Acc: 0.5670, Test Acc: 0.5551
+2022-11-29 06:31:48,013:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 112/1000
+2022-11-29 06:32:08,262:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6883, Train Acc: 0.5300,
+                            Val Loss: 0.6884, Val Acc: 0.5070, Test Acc: 0.5082
+2022-11-29 06:32:08,262:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 113/1000
+2022-11-29 06:32:28,511:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6886, Train Acc: 0.5150,
+                            Val Loss: 0.6885, Val Acc: 0.5050, Test Acc: 0.5028
+2022-11-29 06:32:28,511:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 114/1000
+2022-11-29 06:32:48,791:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6890, Train Acc: 0.5250,
+                            Val Loss: 0.6884, Val Acc: 0.5810, Test Acc: 0.5850
+2022-11-29 06:32:48,792:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 115/1000
+2022-11-29 06:33:09,050:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6885, Train Acc: 0.5200,
+                            Val Loss: 0.6883, Val Acc: 0.5070, Test Acc: 0.5082
+2022-11-29 06:33:09,050:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 116/1000
+2022-11-29 06:33:29,333:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6892, Train Acc: 0.5200,
+                            Val Loss: 0.6884, Val Acc: 0.5060, Test Acc: 0.5031
+2022-11-29 06:33:29,333:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 117/1000
+2022-11-29 06:33:49,611:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00025, Train Loss: 0.6881, Train Acc: 0.5250,
+                            Val Loss: 0.6883, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:33:49,611:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 118/1000
+2022-11-29 06:34:09,865:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6896, Train Acc: 0.5000,
+                            Val Loss: 0.6885, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:34:09,865:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 119/1000
+2022-11-29 06:34:30,121:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6880, Train Acc: 0.5150,
+                            Val Loss: 0.6883, Val Acc: 0.5670, Test Acc: 0.5546
+2022-11-29 06:34:30,122:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 120/1000
+2022-11-29 06:34:50,390:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00025, Train Loss: 0.6883, Train Acc: 0.5450,
+                            Val Loss: 0.6882, Val Acc: 0.5560, Test Acc: 0.5487
+2022-11-29 06:34:50,391:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 121/1000
+2022-11-29 06:35:10,645:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6881, Train Acc: 0.5750,
+                            Val Loss: 0.6884, Val Acc: 0.6210, Test Acc: 0.6390
+2022-11-29 06:35:10,646:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 122/1000
+2022-11-29 06:35:30,898:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6893, Train Acc: 0.5750,
+                            Val Loss: 0.6888, Val Acc: 0.6170, Test Acc: 0.6004
+2022-11-29 06:35:30,899:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 123/1000
+2022-11-29 06:35:51,154:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6882, Train Acc: 0.6200,
+                            Val Loss: 0.6882, Val Acc: 0.5810, Test Acc: 0.5850
+2022-11-29 06:35:51,154:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 124/1000
+2022-11-29 06:36:11,415:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6877, Train Acc: 0.5550,
+                            Val Loss: 0.6885, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:36:11,416:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 125/1000
+2022-11-29 06:36:31,679:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6883, Train Acc: 0.5000,
+                            Val Loss: 0.6884, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:36:31,679:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 126/1000
+2022-11-29 06:36:51,941:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6885, Train Acc: 0.5000,
+                            Val Loss: 0.6883, Val Acc: 0.5060, Test Acc: 0.5029
+2022-11-29 06:36:51,941:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 127/1000
+2022-11-29 06:37:12,202:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00025, Train Loss: 0.6888, Train Acc: 0.5000,
+                            Val Loss: 0.6884, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:37:12,203:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 128/1000
+2022-11-29 06:37:32,450:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.25s, LR: 0.00025, Train Loss: 0.6882, Train Acc: 0.5550,
+                            Val Loss: 0.6885, Val Acc: 0.6370, Test Acc: 0.6429
+2022-11-29 06:37:32,450:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 129/1000
+2022-11-29 06:37:52,721:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00013, Train Loss: 0.6884, Train Acc: 0.6250,
+                            Val Loss: 0.6886, Val Acc: 0.6250, Test Acc: 0.6276
+2022-11-29 06:37:52,722:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 130/1000
+2022-11-29 06:38:12,979:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.26s, LR: 0.00013, Train Loss: 0.6888, Train Acc: 0.6000,
+                            Val Loss: 0.6884, Val Acc: 0.6290, Test Acc: 0.6429
+2022-11-29 06:38:12,979:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 131/1000
+2022-11-29 06:38:33,900:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.92s, LR: 0.00013, Train Loss: 0.6883, Train Acc: 0.6100,
+                            Val Loss: 0.6881, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:38:33,900:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 132/1000
+2022-11-29 06:38:54,231:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6888, Train Acc: 0.5050,
+                            Val Loss: 0.6885, Val Acc: 0.5010, Test Acc: 0.5003
+2022-11-29 06:38:54,232:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 133/1000
+2022-11-29 06:39:14,590:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.36s, LR: 0.00013, Train Loss: 0.6882, Train Acc: 0.5000,
+                            Val Loss: 0.6884, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:39:14,590:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 134/1000
+2022-11-29 06:39:34,917:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6879, Train Acc: 0.5050,
+                            Val Loss: 0.6882, Val Acc: 0.5070, Test Acc: 0.5082
+2022-11-29 06:39:34,917:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 135/1000
+2022-11-29 06:39:55,251:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6890, Train Acc: 0.5500,
+                            Val Loss: 0.6884, Val Acc: 0.6340, Test Acc: 0.6478
+2022-11-29 06:39:55,251:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 136/1000
+2022-11-29 06:40:15,584:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6885, Train Acc: 0.5750,
+                            Val Loss: 0.6881, Val Acc: 0.5660, Test Acc: 0.5545
+2022-11-29 06:40:15,584:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 137/1000
+2022-11-29 06:40:35,916:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6882, Train Acc: 0.5350,
+                            Val Loss: 0.6881, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:40:35,916:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 138/1000
+2022-11-29 06:40:56,237:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00013, Train Loss: 0.6879, Train Acc: 0.5250,
+                            Val Loss: 0.6881, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:40:56,237:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 139/1000
+2022-11-29 06:41:16,575:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.34s, LR: 0.00013, Train Loss: 0.6883, Train Acc: 0.5750,
+                            Val Loss: 0.6881, Val Acc: 0.5810, Test Acc: 0.5846
+2022-11-29 06:41:16,576:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 140/1000
+2022-11-29 06:41:36,904:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00013, Train Loss: 0.6882, Train Acc: 0.5950,
+                            Val Loss: 0.6881, Val Acc: 0.5830, Test Acc: 0.5893
+2022-11-29 06:41:36,905:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 141/1000
+2022-11-29 06:41:57,254:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.35s, LR: 0.00013, Train Loss: 0.6878, Train Acc: 0.5750,
+                            Val Loss: 0.6881, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:41:57,255:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 142/1000
+2022-11-29 06:42:17,563:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00013, Train Loss: 0.6891, Train Acc: 0.5000,
+                            Val Loss: 0.6883, Val Acc: 0.5010, Test Acc: 0.5006
+2022-11-29 06:42:17,564:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 143/1000
+2022-11-29 06:42:37,861:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00006, Train Loss: 0.6879, Train Acc: 0.5000,
+                            Val Loss: 0.6882, Val Acc: 0.5050, Test Acc: 0.5028
+2022-11-29 06:42:37,861:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 144/1000
+2022-11-29 06:42:58,151:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00006, Train Loss: 0.6878, Train Acc: 0.5150,
+                            Val Loss: 0.6881, Val Acc: 0.5160, Test Acc: 0.5168
+2022-11-29 06:42:58,151:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 145/1000
+2022-11-29 06:43:18,453:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00006, Train Loss: 0.6877, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:43:18,454:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 146/1000
+2022-11-29 06:43:38,746:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00006, Train Loss: 0.6877, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:43:38,747:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 147/1000
+2022-11-29 06:43:59,035:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00006, Train Loss: 0.6877, Train Acc: 0.5550,
+                            Val Loss: 0.6880, Val Acc: 0.5450, Test Acc: 0.5344
+2022-11-29 06:43:59,036:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 148/1000
+2022-11-29 06:44:19,365:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00006, Train Loss: 0.6878, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5660, Test Acc: 0.5550
+2022-11-29 06:44:19,366:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 149/1000
+2022-11-29 06:44:39,686:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00006, Train Loss: 0.6878, Train Acc: 0.5700,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:44:39,687:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 150/1000
+2022-11-29 06:45:00,000:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00006, Train Loss: 0.6879, Train Acc: 0.5550,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5329
+2022-11-29 06:45:00,000:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 151/1000
+2022-11-29 06:45:20,305:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00006, Train Loss: 0.6877, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:45:20,306:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 152/1000
+2022-11-29 06:45:40,639:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00006, Train Loss: 0.6878, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:45:40,639:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 153/1000
+2022-11-29 06:46:00,954:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00006, Train Loss: 0.6880, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5430, Test Acc: 0.5329
+2022-11-29 06:46:00,954:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 154/1000
+2022-11-29 06:46:21,260:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00006, Train Loss: 0.6877, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5300, Test Acc: 0.5266
+2022-11-29 06:46:21,260:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 155/1000
+2022-11-29 06:46:41,549:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00006, Train Loss: 0.6879, Train Acc: 0.5500,
+                            Val Loss: 0.6880, Val Acc: 0.5630, Test Acc: 0.5533
+2022-11-29 06:46:41,549:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 156/1000
+2022-11-29 06:47:01,846:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00003, Train Loss: 0.6876, Train Acc: 0.5750,
+                            Val Loss: 0.6880, Val Acc: 0.5430, Test Acc: 0.5335
+2022-11-29 06:47:01,846:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 157/1000
+2022-11-29 06:47:22,127:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00003, Train Loss: 0.6876, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5430, Test Acc: 0.5331
+2022-11-29 06:47:22,128:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 158/1000
+2022-11-29 06:47:42,401:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:47:42,402:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 159/1000
+2022-11-29 06:48:02,707:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:48:02,708:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 160/1000
+2022-11-29 06:48:23,059:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.35s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:48:23,060:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 161/1000
+2022-11-29 06:48:43,395:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5100, Test Acc: 0.5098
+2022-11-29 06:48:43,395:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 162/1000
+2022-11-29 06:49:03,732:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.34s, LR: 0.00003, Train Loss: 0.6876, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:49:03,733:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 163/1000
+2022-11-29 06:49:24,065:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5260, Test Acc: 0.5208
+2022-11-29 06:49:24,065:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 164/1000
+2022-11-29 06:49:44,397:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:49:44,397:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 165/1000
+2022-11-29 06:50:04,731:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5300, Test Acc: 0.5279
+2022-11-29 06:50:04,731:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 166/1000
+2022-11-29 06:50:25,056:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5430, Test Acc: 0.5329
+2022-11-29 06:50:25,056:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 167/1000
+2022-11-29 06:50:45,401:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.35s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5700,
+                            Val Loss: 0.6880, Val Acc: 0.5630, Test Acc: 0.5520
+2022-11-29 06:50:45,402:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 168/1000
+2022-11-29 06:51:05,716:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00003, Train Loss: 0.6877, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:51:05,716:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 169/1000
+2022-11-29 06:51:26,033:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:51:26,033:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 170/1000
+2022-11-29 06:51:46,345:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00003, Train Loss: 0.6876, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5400, Test Acc: 0.5321
+2022-11-29 06:51:46,346:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 171/1000
+2022-11-29 06:52:06,703:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.36s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:52:06,703:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 172/1000
+2022-11-29 06:52:27,046:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.34s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5430, Test Acc: 0.5328
+2022-11-29 06:52:27,047:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 173/1000
+2022-11-29 06:52:47,363:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5236
+2022-11-29 06:52:47,363:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 174/1000
+2022-11-29 06:53:07,699:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.34s, LR: 0.00003, Train Loss: 0.6879, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5130, Test Acc: 0.5151
+2022-11-29 06:53:07,699:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 175/1000
+2022-11-29 06:53:28,087:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.39s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:53:28,087:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 176/1000
+2022-11-29 06:53:48,441:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.35s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5500,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5329
+2022-11-29 06:53:48,442:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 177/1000
+2022-11-29 06:54:08,746:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00003, Train Loss: 0.6878, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:54:08,746:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 178/1000
+2022-11-29 06:54:29,065:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5400, Test Acc: 0.5326
+2022-11-29 06:54:29,066:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 179/1000
+2022-11-29 06:54:49,376:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6877, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:54:49,377:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 180/1000
+2022-11-29 06:55:09,687:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5327
+2022-11-29 06:55:09,688:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 181/1000
+2022-11-29 06:55:30,004:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00002, Train Loss: 0.6879, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5167
+2022-11-29 06:55:30,004:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 182/1000
+2022-11-29 06:55:50,328:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5400, Test Acc: 0.5325
+2022-11-29 06:55:50,328:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 183/1000
+2022-11-29 06:56:10,638:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6877, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:56:10,638:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 184/1000
+2022-11-29 06:56:30,952:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:56:30,952:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 185/1000
+2022-11-29 06:56:51,261:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5329
+2022-11-29 06:56:51,262:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 186/1000
+2022-11-29 06:57:11,545:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5330
+2022-11-29 06:57:11,545:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 187/1000
+2022-11-29 06:57:31,814:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.27s, LR: 0.00002, Train Loss: 0.6877, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5172
+2022-11-29 06:57:31,815:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 188/1000
+2022-11-29 06:57:52,129:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00002, Train Loss: 0.6876, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5380, Test Acc: 0.5307
+2022-11-29 06:57:52,129:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 189/1000
+2022-11-29 06:58:12,418:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00001, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5370, Test Acc: 0.5308
+2022-11-29 06:58:12,419:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 190/1000
+2022-11-29 06:58:32,698:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5360, Test Acc: 0.5305
+2022-11-29 06:58:32,699:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 191/1000
+2022-11-29 06:58:52,991:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5400, Test Acc: 0.5322
+2022-11-29 06:58:52,991:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 192/1000
+2022-11-29 06:59:13,297:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5420, Test Acc: 0.5329
+2022-11-29 06:59:13,297:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 193/1000
+2022-11-29 06:59:33,595:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5400, Test Acc: 0.5323
+2022-11-29 06:59:33,595:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 194/1000
+2022-11-29 06:59:53,894:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5370, Test Acc: 0.5307
+2022-11-29 06:59:53,894:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 195/1000
+2022-11-29 07:00:14,175:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.28s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5220
+2022-11-29 07:00:14,176:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 196/1000
+2022-11-29 07:00:34,529:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.35s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5235
+2022-11-29 07:00:34,529:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 197/1000
+2022-11-29 07:00:54,831:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5160, Test Acc: 0.5180
+2022-11-29 07:00:54,831:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 198/1000
+2022-11-29 07:01:15,128:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5190, Test Acc: 0.5186
+2022-11-29 07:01:15,129:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 199/1000
+2022-11-29 07:01:35,432:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00001, Train Loss: 0.6876, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5310, Test Acc: 0.5278
+2022-11-29 07:01:35,432:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 200/1000
+2022-11-29 07:01:55,760:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5350,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5234
+2022-11-29 07:01:55,760:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 201/1000
+2022-11-29 07:02:16,059:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5360, Test Acc: 0.5290
+2022-11-29 07:02:16,059:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 202/1000
+2022-11-29 07:02:36,370:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5410, Test Acc: 0.5327
+2022-11-29 07:02:36,370:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 203/1000
+2022-11-29 07:02:56,688:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5390, Test Acc: 0.5312
+2022-11-29 07:02:56,688:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 204/1000
+2022-11-29 07:03:17,004:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5300, Test Acc: 0.5269
+2022-11-29 07:03:17,004:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 205/1000
+2022-11-29 07:03:37,326:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5259
+2022-11-29 07:03:37,327:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 206/1000
+2022-11-29 07:03:57,647:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5230, Test Acc: 0.5203
+2022-11-29 07:03:57,648:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 207/1000
+2022-11-29 07:04:17,967:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5300, Test Acc: 0.5263
+2022-11-29 07:04:17,967:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 208/1000
+2022-11-29 07:04:38,273:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5360, Test Acc: 0.5299
+2022-11-29 07:04:38,274:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 209/1000
+2022-11-29 07:04:58,596:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5290, Test Acc: 0.5263
+2022-11-29 07:04:58,597:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 210/1000
+2022-11-29 07:05:18,901:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5300, Test Acc: 0.5274
+2022-11-29 07:05:18,902:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 211/1000
+2022-11-29 07:05:39,209:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5270, Test Acc: 0.5254
+2022-11-29 07:05:39,210:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 212/1000
+2022-11-29 07:05:59,532:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.32s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5350, Test Acc: 0.5285
+2022-11-29 07:05:59,533:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 213/1000
+2022-11-29 07:06:19,832:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5450,
+                            Val Loss: 0.6880, Val Acc: 0.5290, Test Acc: 0.5263
+2022-11-29 07:06:19,833:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 214/1000
+2022-11-29 07:06:40,140:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5250,
+                            Val Loss: 0.6880, Val Acc: 0.5210, Test Acc: 0.5203
+2022-11-29 07:06:40,141:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 215/1000
+2022-11-29 07:07:00,447:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5240, Test Acc: 0.5206
+2022-11-29 07:07:00,447:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 216/1000
+2022-11-29 07:07:20,748:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5300,
+                            Val Loss: 0.6880, Val Acc: 0.5350, Test Acc: 0.5284
+2022-11-29 07:07:20,748:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 217/1000
+2022-11-29 07:07:41,077:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5350, Test Acc: 0.5287
+2022-11-29 07:07:41,078:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 218/1000
+2022-11-29 07:08:01,371:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.29s, LR: 0.00000, Train Loss: 0.6876, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5360, Test Acc: 0.5305
+2022-11-29 07:08:01,372:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 219/1000
+2022-11-29 07:08:21,698:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.33s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5350, Test Acc: 0.5289
+2022-11-29 07:08:21,698:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 220/1000
+2022-11-29 07:08:42,010:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.31s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5360, Test Acc: 0.5302
+2022-11-29 07:08:42,011:main_CYCLES_graph_classification.py:158 -   train_val_pipeline(): Epoch 221/1000
+2022-11-29 07:09:02,311:main_CYCLES_graph_classification.py:196 -   train_val_pipeline(): 	Time: 20.30s, LR: 0.00000, Train Loss: 0.6875, Train Acc: 0.5400,
+                            Val Loss: 0.6880, Val Acc: 0.5340, Test Acc: 0.5281
+2022-11-29 07:09:02,311:main_CYCLES_graph_classification.py:217 -   train_val_pipeline(): 
+!! LR EQUAL TO MIN LR SET.
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:236 -   train_val_pipeline(): Test Accuracy: 0.5281
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:237 -   train_val_pipeline(): Best Test Accuracy: 0.6483
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:238 -   train_val_pipeline(): Train Accuracy: 0.5450
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:239 -   train_val_pipeline(): Best Train Accuracy Corresponding to Best Test Accuracy: 0.5300
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:240 -   train_val_pipeline(): Convergence Time (Epochs): 220.0000
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:241 -   train_val_pipeline(): TOTAL TIME TAKEN: 4657.4971s
+2022-11-29 07:09:20,590:main_CYCLES_graph_classification.py:242 -   train_val_pipeline(): AVG TIME PER EPOCH: 20.4846s
+2022-11-29 07:09:20,592:main_CYCLES_graph_classification.py:246 -   train_val_pipeline(): {'seed': 41, 'epochs': 1000, 'batch_size': 25, 'init_lr': 0.0005, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 10, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [41], 'job_num': 32}
+2022-11-29 07:09:20,592:main_CYCLES_graph_classification.py:247 -   train_val_pipeline(): train history: [0.54]
+2022-11-29 07:09:20,592:main_CYCLES_graph_classification.py:248 -   train_val_pipeline(): test history: [0.5281]
+2022-11-29 07:09:20,592:main_CYCLES_graph_classification.py:249 -   train_val_pipeline(): val history: [0.534]
