@@ -1,5 +1,4 @@
 import os
-from matplotlib import pyplot as plt
 import torch
 import dgl
 import scipy
@@ -8,6 +7,8 @@ import scipy.sparse as sp
 import numpy as np
 import torch.nn.functional as F
 import pyximport
+import seaborn as sb
+import matplotlib.pyplot as plt
 
 pyximport.install(setup_args={"include_dirs": np.get_include()})
 from . import algos
@@ -108,6 +109,8 @@ def random_walk_encoding(g, pos_enc_dim, type='partial', ret_pe=False):
     RW = A * Dinv  
     M = RW
 
+    sb.heatmap(M.todense())
+    plt.show()
     nb_pos_enc = pos_enc_dim
     PE = [torch.from_numpy(M.diagonal()).float()]
     M_power = M
@@ -200,14 +203,11 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
 
     # PE = torch.stack(PE,dim=-1).squeeze(0)
 
-    # import seaborn as sb
-    # import matplotlib.pyplot as plt
+    # PE -= PE.min(1, keepdim=True)[0]
+    # PE /= PE.max(1, keepdim=True)[0]
 
-    # # PE -= PE.min(1, keepdim=True)[0]
-    # # PE /= PE.max(1, keepdim=True)[0]
-
-    # # rw -= rw.min(1, keepdim=True)[0]
-    # # rw /= rw.max(1, keepdim=True)[0]
+    # rw -= rw.min(1, keepdim=True)[0]
+    # rw /= rw.max(1, keepdim=True)[0]
 
     # plt.figure("rw")
     # plt.title("rw")
@@ -377,7 +377,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     else:
         gape_beta = float(model.pe_layer.gape_beta)
 
-    if model.pe_layer.gape_beta < 1:
+    if gape_beta < 1:
         mat = mat * (1-gape_beta) # emulate pagerank
 
 
@@ -398,7 +398,7 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     else:
         initial_vector = model.pe_layer.stack_strategy(g)
 
-    if model.pe_layer.gape_beta:
+    if gape_beta < 1:
         initial_vector = initial_vector * gape_beta # emulate pagerank
 
     # print(torch.linalg.svd(initial_vector)[1])
