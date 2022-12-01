@@ -329,7 +329,7 @@ class PELayer(nn.Module):
         pes = []
 
         for beta in betas:
-            if beta:
+            if beta < 1:
                 mat = mat * (1-beta) # emulate pagerank
 
             vec_init = self.stack_strategy(g.number_of_nodes()).to(self.device)
