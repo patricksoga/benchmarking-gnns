@@ -378,6 +378,9 @@ class PELayer(nn.Module):
             # B = -mat
             # C = A.clone() @ vec_init
 
+            A = torch.nan_to_num(A)
+            B = torch.nan_to_num(B)
+            C = torch.nan_to_num(C)
             pe = self.sylvester(A, B, C)
 
             if self.gape_tau:
