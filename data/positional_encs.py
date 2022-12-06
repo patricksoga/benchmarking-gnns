@@ -236,7 +236,8 @@ def automaton_encoding(g, transition_matrix, initial_vector, diag=False, matrix=
     if matrix == 'A':
         # Adjacency matrix
         mat = g.adjacency_matrix().to_dense().cpu().numpy()
-        mat = np.linalg.matrix_power(mat, idx)
+        if idx > 0:
+            mat = np.linalg.matrix_power(mat, idx)
         # mat = np.linalg.matrix_power(mat, idx+1)
     elif matrix == 'L':
         # Normalized Laplacian

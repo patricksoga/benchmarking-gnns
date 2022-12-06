@@ -85,6 +85,8 @@ class PELayer(nn.Module):
         self.gape_weight_id = net_params.get('gape_weight_id', False)
         self.gape_break_batch = net_params.get('gape_break_batch', False)
         self.ngape_betas = net_params.get('ngape_betas', [])
+        self.gape_cond_lbl = net_params.get('gape_cond_lbl', False)
+        self.ngape_agg = net_params.get('ngape_agg', 'sum')
 
         self.eigen_bartels_stewart = net_params.get('eigen_bartels_stewart', False)
         self.gape_scalar = net_params.get('gape_scalar', False)
@@ -115,7 +117,13 @@ class PELayer(nn.Module):
                 nn.init.normal_(pos_initial)
 
             # init transition weights
-            shape = (self.pos_enc_dim,) if net_params['diag'] else (self.pos_enc_dim, self.pos_enc_dim)
+            if self.diag:
+                shape = (self.pos_enc_dim,)
+            elif self.gape_cond_lbl and self.num_initials > 1:
+                shape = (self.pos_enc_dim, self.pos_enc_dim, self.num_initials)
+            else:
+                shape = (self.pos_enc_dim, self.pos_enc_dim)
+
             transitions = [torch.empty(*shape, requires_grad=not self.rand_pos_enc and not self.rand_sketchy_pos_enc) for _ in range(self.n_gape)]
 
             for transition in transitions:
@@ -541,15 +549,18 @@ class PELayer(nn.Module):
                 #     plt.figure(f"{i}")
                 #     sb.heatmap(pe[:, :, i].detach().numpy())
 
-                # pe = pe @ self.gape_pool_vec
-
-                # pe = pe.squeeze(2)
-
                 # plt.figure("all")
                 # sb.heatmap(pe.detach().numpy())
 
                 # plt.show()
-                pe = sum(pos_encs)
+                if self.ngape_agg == 'sum':
+                    pe = sum(pos_encs)
+                elif self.ngape_agg == 'lincomb':
+                    pe = torch.stack(pos_encs, dim=0) # (n_gape, n_nodes, pos_enc_dim)
+                    pe = pe.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
+                    pe = pe @ self.gape_pool_vec
+                    pe = pe.squeeze(2)
+                    print('yup')
 
                 if self.gape_softmax_after:
                     pe = torch.softmax(pe, dim=1)

@@ -172,8 +172,10 @@ def add_args(parser):
     parser.add_argument('--gape_tau_mat', help="Use stopping probability matrix")
     parser.add_argument('--gape_beta', help="Use damping factor for learned eigen Bartels-Stewart")
     parser.add_argument('--gape_weight_id', help="Use weighted id matrix for init")
-    parser.add_argument('--gape_break_batch', help="Break the batched graph and compute PEs for each separately. Use with eigen-Bartels-Stewart.")
-    parser.add_argument('--ngape_betas', nargs="+", help="List of damping factors to use when using multiple automata.")
+    parser.add_argument('--gape_break_batch', help="Break the batched graph and compute PEs for each separately. Use with eigen-Bartels-Stewart")
+    parser.add_argument('--ngape_betas', nargs="+", help="List of damping factors to use when using multiple automata")
+    parser.add_argument('--gape_cond_lbl', help="Condition mu on labels")
+    parser.add_argument('--ngape_agg', help="Type of aggregation when using multiple automata")
 
     parser.add_argument('--cycles_k', help="Version of CYCLES. Default is 6-cycles. Pick -1 for variable cycle version")
 
@@ -581,5 +583,19 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['ngape_betas'] = []
+
+    if args.gape_cond_lbl is not None:
+        net_params['gape_cond_lbl'] = True if args.gape_cond_lbl == 'True' else False
+    elif 'gape_cond_lbl' in net_params:
+        pass
+    else:
+        net_params['gape_cond_lbl'] = False
+
+    if args.ngape_agg is not None:
+        net_params['ngape_agg'] = args.ngape_agg
+    elif 'ngape_agg' in net_params:
+        pass
+    else:
+        net_params['ngape_agg'] = 'sum'
 
     return net_params
