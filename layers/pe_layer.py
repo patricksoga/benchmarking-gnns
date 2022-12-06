@@ -560,7 +560,6 @@ class PELayer(nn.Module):
                     pe = pe.permute(1, 2, 0) # (n_nodes, pos_enc_dim, n_gape)
                     pe = pe @ self.gape_pool_vec
                     pe = pe.squeeze(2)
-                    print('yup')
 
                 if self.gape_softmax_after:
                     pe = torch.softmax(pe, dim=1)
