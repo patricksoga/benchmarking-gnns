@@ -288,12 +288,16 @@ def chunks(lst, n):
 
 class OGBDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, fold=1):
+    def __init__(self, name, fold=1, logger=None):
         """
             Loading Moleccular datasets
         """
         start = time.time()
-        print(f"[I] Loading dataset {name}...")
+        if logger:
+            logger.info(f"[I] Loading dataset {name}...")
+        else:
+            print(f"[I] Loading dataset {name}...")
+
         dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
         # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
         #     print('loading pickle file...')
@@ -305,7 +309,11 @@ class OGBDataset(torch.utils.data.Dataset):
         self.num_atom_type = 14
         self.num_atom_feat = 9
 
-        print("Splitting dataset...")
+        if logger:
+            logger.info("Splitting dataset...")
+        else:
+            print("Splitting dataset...")
+            
         if name == 'OGB':
             # self.train = OGBDGL(dataset, 'train')
             # self.val = OGBDGL(dataset, 'valid')
@@ -314,7 +322,10 @@ class OGBDataset(torch.utils.data.Dataset):
             self.val = OGBDGL(dataset, 'valid', num_graphs=380670)
             self.test = OGBDGL(dataset, 'test', num_graphs=377423)
 
-        print("Time taken: {:.4f}s".format(time.time()-start))
+        if logger:
+            logger.info("Time taken: {:.4f}s".format(time.time()-start))
+        else:
+            print("Time taken: {:.4f}s".format(time.time()-start))
         # with open(data_dir+name+'.pkl',"rb") as f:
         #     f = pickle.load(f)
 
@@ -324,9 +335,14 @@ class OGBDataset(torch.utils.data.Dataset):
         #     self.num_atom_type = f[3]
         #     self.num_bond_type = f[4]
 
-        print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
-        print("[I] Finished loading.")
-        print("[I] Data load time: {:.4f}s".format(time.time()-start))
+        if logger:
+            logger.info(f'train, test, val sizes: {len(self.train)},{len(self.test)},{len(self.val)}')
+            logger.info("[I] Finished loading.")
+            logger.info("[I] Data load time: {:.4f}s".format(time.time()-start))
+        else:
+            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
