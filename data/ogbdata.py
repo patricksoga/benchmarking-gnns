@@ -320,7 +320,7 @@ class OGBDataset(torch.utils.data.Dataset):
             # self.test = OGBDGL(dataset, 'test')
             self.train = OGBDGL(dataset, 'train')
             self.val = OGBDGL(dataset, 'valid')
-            self.test = OGBDGL(dataset, 'test')
+            self.test = OGBDGL(dataset, 'test-dev')
 
         if logger:
             logger.info("Time taken: {:.4f}s".format(time.time()-start))
