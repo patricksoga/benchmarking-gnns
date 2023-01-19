@@ -6,7 +6,8 @@ import torch
 import numpy as np
 
 from train.metrics import MAE
-from ogb.lsc import PCQM4MEvaluator
+# from ogb.lsc import PCQM4Mv2Evaluator
+from data.pcqm4mv2 import PCQM4Mv2Evaluator
 
 """
     For GCNs
@@ -77,7 +78,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name,
     return epoch_loss, epoch_train_mae, optimizer
 
 def evaluate_network_sparse(model, device, data_loader, epoch, model_name):
-    evaluator = PCQM4MEvaluator()
+    evaluator = PCQM4Mv2Evaluator()
     model.eval()
     epoch_test_loss = 0
     epoch_test_mae = 0
