@@ -78,4 +78,4 @@ def LoadData(DATASET_NAME, **kwargs):
         return WebKBDataset(DATASET_NAME)
     
     if DATASET_NAME == 'OGB':
-        return OGBDataset(DATASET_NAME)
+        return OGBDataset(DATASET_NAME, logger=kwargs['logger'])
