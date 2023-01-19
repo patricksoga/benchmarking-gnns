@@ -34,8 +34,8 @@ class OGBDGL(torch.utils.data.Dataset):
 
         splits = dataset.get_idx_split()
 
-        self.data = dataset[splits[split]] # numpy array storing indices of training molecules
-        assert len(self.data)==num_graphs
+        self.data = dataset[splits[split]]
+        # assert len(self.data)==num_graphs
         # self.data = dataset
         # self.num_graphs = len(self.data)
 
@@ -318,9 +318,9 @@ class OGBDataset(torch.utils.data.Dataset):
             # self.train = OGBDGL(dataset, 'train')
             # self.val = OGBDGL(dataset, 'valid')
             # self.test = OGBDGL(dataset, 'test')
-            self.train = OGBDGL(dataset, 'train', num_graphs=3045360)
-            self.val = OGBDGL(dataset, 'valid', num_graphs=380670)
-            self.test = OGBDGL(dataset, 'test', num_graphs=377423)
+            self.train = OGBDGL(dataset, 'train')
+            self.val = OGBDGL(dataset, 'valid')
+            self.test = OGBDGL(dataset, 'test')
 
         if logger:
             logger.info("Time taken: {:.4f}s".format(time.time()-start))
