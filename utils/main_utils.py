@@ -419,6 +419,13 @@ def get_net_params(config, args, device, params, DATASET_NAME):
         pass
     else:
         net_params['eigen_bartels_stewart'] = False
+
+    if args.partial_rw_pos_enc is not None:
+        net_params['partial_rw_pos_enc'] = True if args.partial_rw_pos_enc == 'True' else False
+    elif 'partial_rw_pos_enc' in net_params:
+        pass
+    else:
+        net_params['partial_rw_pos_enc'] = False
     
     if args.gape_rand is not None:
         net_params['gape_rand'] = True if args.gape_rand == 'True' else False
