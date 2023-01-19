@@ -14,7 +14,8 @@ import dgl
 from scipy import sparse as sp
 import numpy as np
 import torch.nn.functional as F
-from ogb.lsc import DglPCQM4Mv2Dataset
+# from ogb.lsc import DglPCQM4Mv2Dataset
+from .pcqm4mv2 import DglPCQM4Mv2Dataset
 
 # *NOTE
 # The dataset pickle and index files are in ./zinc_molecules/ dir
@@ -35,6 +36,8 @@ class OGBDGL(torch.utils.data.Dataset):
 
         self.data = dataset[splits[split]] # numpy array storing indices of training molecules
         assert len(self.data)==num_graphs
+        # self.data = dataset
+        # self.num_graphs = len(self.data)
 
 
         """
@@ -304,6 +307,9 @@ class OGBDataset(torch.utils.data.Dataset):
 
         print("Splitting dataset...")
         if name == 'OGB':
+            # self.train = OGBDGL(dataset, 'train')
+            # self.val = OGBDGL(dataset, 'valid')
+            # self.test = OGBDGL(dataset, 'test')
             self.train = OGBDGL(dataset, 'train', num_graphs=3045360)
             self.val = OGBDGL(dataset, 'valid', num_graphs=380670)
             self.test = OGBDGL(dataset, 'test', num_graphs=377423)
