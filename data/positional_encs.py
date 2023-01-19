@@ -109,8 +109,8 @@ def random_walk_encoding(g, pos_enc_dim, type='partial', ret_pe=False):
     RW = A * Dinv  
     M = RW
 
-    sb.heatmap(M.todense())
-    plt.show()
+    # sb.heatmap(M.todense())
+    # plt.show()
     nb_pos_enc = pos_enc_dim
     PE = [torch.from_numpy(M.diagonal()).float()]
     M_power = M
@@ -129,9 +129,12 @@ def random_walk_encoding(g, pos_enc_dim, type='partial', ret_pe=False):
     return g
 
 
-def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial'):
+def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial', logger=None):
+    logger.info("Adding PE to train graphs...")
     dataset.train.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.train.graph_lists]
+    logger.info("Adding PE to val graphs...")
     dataset.val.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.val.graph_lists]
+    logger.info("Adding PE to test graphs...")
     dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
     return dataset
 

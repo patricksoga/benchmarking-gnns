@@ -76,7 +76,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 logger.info(f'Time PE:{time.time()-t0}')
             elif net_params.get('partial_rw_pos_enc', False):
                 logger.info(f"[!] Adding partial random walk graph positional encoding ({net_params['pos_enc_dim']}).")
-                dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'])
+                dataset = add_rw_pos_encodings(dataset, net_params['pos_enc_dim'], logger=logger)
                 logger.info(f'Time PE:{time.time()-t0}')
 
         if MODEL_NAME in ['SAGraphTransformer']:
