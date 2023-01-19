@@ -37,7 +37,7 @@ class OGBDGL(torch.utils.data.Dataset):
         self.data = dataset[splits[split]]
         # assert len(self.data)==num_graphs
         # self.data = dataset
-        # self.num_graphs = len(self.data)
+        self.num_graphs = len(self.data)
 
 
         """
