@@ -14,7 +14,7 @@ import dgl
 from scipy import sparse as sp
 import numpy as np
 import torch.nn.functional as F
-from ogb.lsc import DglPCQM4MDataset
+from ogb.lsc import DglPCQM4Mv2Dataset
 
 # *NOTE
 # The dataset pickle and index files are in ./zinc_molecules/ dir
@@ -291,8 +291,9 @@ class OGBDataset(torch.utils.data.Dataset):
         """
         start = time.time()
         print(f"[I] Loading dataset {name}...")
-        dataset = DglPCQM4MDataset(root='data/dataset')
-        # with open('data/ogb_molecules.pkl', 'rb') as f:
+        dataset = DglPCQM4Mv2Dataset(root='data/dataset')
+        # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
+        #     print('loading pickle file...')
         #     dataset = pickle.load(f)
         # self.name = name
         # data_dir = 'data/dataset/pcqm4m_kddcup2021'
