@@ -25,6 +25,8 @@ def dataset_to_graph_task(dataset):
         return "graph_regression"
     elif dataset in ("SBMs", "WikiCS", "cora"):
         return "node_classification" 
+    elif dataset in ("OGB"):
+        return 'graph_regression'
     else:
         raise ValueError(f"Dataset {dataset} not recognized")
 
@@ -42,6 +44,8 @@ def parse_dataset(args):
         dataset_supertype = "superpixels"
     elif dataset in ("ZINC", "AQSOL"):
         dataset_supertype = "molecules"
+    elif dataset in ("OGB"):
+        dataset_supertype = "OGB"
     else:
         return dataset
 

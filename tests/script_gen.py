@@ -37,6 +37,8 @@ def generate(file):
     test_json_path = command[test_json_idx]
     test_json_path = '/'.join(test_json_path.split('/')[1:])
     test_config = json.load(open(test_json_path, 'rb'))
+    if 'seed_array' not in test_config['params']:
+        test_config['params']['seed_array'] = [41, 95, 22, 35]
     seeds = test_config['params']['seed_array']
 
     for idx, value in enumerate(values):
