@@ -3,6 +3,7 @@
 """
 from data.cora import CoraDataset
 from data.k3colorable import K3ColorableDataset
+from data.ogbdata import OGBDataset
 from data.planarity import PlanarityDataset
 from data.superpixels import SuperPixDataset
 from data.molecules import MoleculeDataset
@@ -75,3 +76,6 @@ def LoadData(DATASET_NAME, **kwargs):
     
     if DATASET_NAME in ('cornell', 'wisconsin', 'texas'):
         return WebKBDataset(DATASET_NAME)
+    
+    if DATASET_NAME == 'OGB':
+        return OGBDataset(DATASET_NAME)
