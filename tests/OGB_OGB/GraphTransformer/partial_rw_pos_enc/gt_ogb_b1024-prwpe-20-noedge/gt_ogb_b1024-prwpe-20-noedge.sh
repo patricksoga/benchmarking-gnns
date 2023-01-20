@@ -89,10 +89,10 @@ python3 main_OGB_graph_regression.py --config tests/test-configs/GraphTransforme
 #             'print_epoch_interval': 5,
 #             'save_name': 'b128-prwpe',
 #             'seed': 41,
-#             'seed_array': [41],
+#             'seed_array': [41, 95, 22, 35],
 #             'weight_decay': 0.0}}
 
 
 
 # Generated with command:
-#python3 configure_tests.py --param_values 20 --job_note gt_ogb_b1024-prwpe-20-noedge --batch_size 1024 --learned_pos_enc False --layer_norm False --batch_norm True --partial_rw_pos_enc True --dataset OGB --config ./test-configs/GraphTransformer_molecules_ZINC_b128-prwpe-noedge.json --hidden_dim 80 --out_dim 80
+#python3 configure_tests.py --param_values 20 --job_note gt_ogb_b1024-prwpe-20-noedge --batch_size 1024 --learned_pos_enc False --layer_norm False --batch_norm True --partial_rw_pos_enc True --dataset OGB --config ./test-configs/GraphTransformer_molecules_ZINC_b128-prwpe-noedge.json --hidden_dim 80 --out_dim 80 --seed_array 41 95 22 35
