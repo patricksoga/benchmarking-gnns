@@ -4,7 +4,7 @@ import torch.utils.data
 import time
 import os
 import numpy as np
-
+import gc
 import random
 import csv
 import networkx as nx
@@ -32,11 +32,11 @@ class OGBDGL(torch.utils.data.Dataset):
         # with open(data_dir + "/%s.pickle" % self.split,"rb") as f:
         #     self.data = pickle.load(f)
 
-        splits = dataset.get_idx_split()
+        # splits = dataset.get_idx_split()
 
-        self.data = dataset[splits[split]]
+        # self.data = dataset[splits[split]]
         # assert len(self.data)==num_graphs
-        # self.data = dataset
+        self.data = dataset
         self.num_graphs = len(self.data)
 
 
@@ -298,10 +298,10 @@ class OGBDataset(torch.utils.data.Dataset):
         else:
             print(f"[I] Loading dataset {name}...")
 
-        dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
-        # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
-        #     print('loading pickle file...')
-        #     dataset = pickle.load(f)
+        # dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
+        with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
+            print('loading pickle file...')
+            dataset = pickle.load(f)
         # self.name = name
         # data_dir = 'data/dataset/pcqm4m_kddcup2021'
 
@@ -315,12 +315,16 @@ class OGBDataset(torch.utils.data.Dataset):
             print("Splitting dataset...")
             
         if name == 'OGB':
+            splits = dataset.get_idx_split()
+            train = dataset[splits['train']]
+            val = dataset[splits['valid']]
+            test = dataset[splits['test-dev']]
             # self.train = OGBDGL(dataset, 'train')
             # self.val = OGBDGL(dataset, 'valid')
             # self.test = OGBDGL(dataset, 'test')
-            self.train = OGBDGL(dataset, 'train')
-            self.val = OGBDGL(dataset, 'valid')
-            self.test = OGBDGL(dataset, 'test-dev')
+            self.train = OGBDGL(train, 'train')
+            self.val = OGBDGL(val, 'valid')
+            self.test = OGBDGL(test, 'test-dev')
 
         if logger:
             logger.info("Time taken: {:.4f}s".format(time.time()-start))
