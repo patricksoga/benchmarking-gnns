@@ -298,10 +298,10 @@ class OGBDataset(torch.utils.data.Dataset):
         else:
             print(f"[I] Loading dataset {name}...")
 
-        # dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
-        with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
-            print('loading pickle file...')
-            dataset = pickle.load(f)
+        dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
+        # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
+        #     print('loading pickle file...')
+        #     dataset = pickle.load(f)
         # self.name = name
         # data_dir = 'data/dataset/pcqm4m_kddcup2021'
 
