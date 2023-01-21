@@ -298,10 +298,10 @@ class OGBDataset(torch.utils.data.Dataset):
         else:
             print(f"[I] Loading dataset {name}...")
 
-        dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
-        # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
-        #     print('loading pickle file...')
-        #     dataset = pickle.load(f)
+        # dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
+        with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
+            print('loading pickle file...')
+            dataset = pickle.load(f)
         # self.name = name
         # data_dir = 'data/dataset/pcqm4m_kddcup2021'
 
@@ -315,16 +315,18 @@ class OGBDataset(torch.utils.data.Dataset):
             print("Splitting dataset...")
             
         if name == 'OGB':
-            splits = dataset.get_idx_split()
-            train = dataset[splits['train']]
-            val = dataset[splits['valid']]
-            test = dataset[splits['test-dev']]
+            # splits = dataset.get_idx_split()
+            # train = dataset[splits['train']]
+            # val = dataset[splits['valid']]
+            train = dataset
+            val = dataset
+            # test = dataset[splits['test-dev']]
             # self.train = OGBDGL(dataset, 'train')
             # self.val = OGBDGL(dataset, 'valid')
             # self.test = OGBDGL(dataset, 'test')
             self.train = OGBDGL(train, 'train')
             self.val = OGBDGL(val, 'valid')
-            self.test = OGBDGL(test, 'test-dev')
+            # self.test = OGBDGL(test, 'test-dev')
 
         if logger:
             logger.info("Time taken: {:.4f}s".format(time.time()-start))
@@ -340,11 +342,13 @@ class OGBDataset(torch.utils.data.Dataset):
         #     self.num_bond_type = f[4]
 
         if logger:
-            logger.info(f'train, test, val sizes: {len(self.train)},{len(self.test)},{len(self.val)}')
+            # logger.info(f'train, test, val sizes: {len(self.train)},{len(self.test)},{len(self.val)}')
+            logger.info(f'train, val sizes: {len(self.train)},{len(self.val)}')
             logger.info("[I] Finished loading.")
             logger.info("[I] Data load time: {:.4f}s".format(time.time()-start))
         else:
-            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            # print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            print('train, val sizes :',len(self.train),len(self.val))
             print("[I] Finished loading.")
             print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
