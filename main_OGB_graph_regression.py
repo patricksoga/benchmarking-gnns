@@ -119,7 +119,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
         
         logger.info(f"Training Graphs: {len(dataset.train)}")
         logger.info(f"Validation Graphs: {len(dataset.val)}")
-        logger.info(f"Test Graphs: {len(dataset.test)}")
+        # logger.info(f"Test Graphs: {len(dataset.test)}")
 
         optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
@@ -140,7 +140,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
 
             train_loader = DataLoader(dataset.train, shuffle=True, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
             val_loader = DataLoader(dataset.val, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
-            test_loader = DataLoader(dataset.test, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
+            # test_loader = DataLoader(dataset.test, shuffle=False, collate_fn=partial(dataset.collate_dense_gnn, edge_feat=net_params['edge_feat']))
             
         else:
             # import train functions for all other GNNs
@@ -148,10 +148,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             
             train_loader = DataLoader(dataset.train, batch_size=params['batch_size'], shuffle=True, drop_last=drop_last, collate_fn=dataset.collate)
             val_loader = DataLoader(dataset.val, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
-            test_loader = DataLoader(dataset.test, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
+            # test_loader = DataLoader(dataset.test, batch_size=params['batch_size'], shuffle=False, drop_last=drop_last, collate_fn=dataset.collate)
         
         # At any point you can hit Ctrl + C to break out of training early.
-        best_test_MAE = float('inf')
+        # best_test_MAE = float('inf')
+        best_val_MAE = float('inf')
         best_train_MAE = float('inf')
         try:
             # with tqdm(range(params['epochs'])) as t:
@@ -166,17 +167,16 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                     epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
                     
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch, MODEL_NAME)
-                _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
+                # _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
 
-                if epoch_test_mae < best_test_MAE:
-                    best_test_MAE = epoch_test_mae
-                    best_train_MAE = epoch_train_mae
-                    # model_dir = os.path.join(root_ckpt_dir, "MODELS_")
-                    # if not os.path.exists(model_dir):
-                    #     os.makedirs(model_dir)
-                    # fname = f"/best_model{best_test_MAE:.4f}_{params['job_num']}.pt"
-                    # torch.save(model.state_dict(), model_dir + fname)
-                    logger.info(f'Best model with MAE {best_test_MAE}')
+                # if epoch_test_mae < best_test_MAE:
+                #     best_test_MAE = epoch_test_mae
+                #     best_train_MAE = epoch_train_mae
+                #     logger.info(f'Best model with MAE {best_test_MAE}')
+                
+                if epoch_val_mae < best_val_MAE:
+                    best_val_MAE = epoch_val_mae
+                    logger.info(f'Best model with val MAE {best_val_MAE}')
                 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
@@ -187,7 +187,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 writer.add_scalar('val/_loss', epoch_val_loss, epoch)
                 writer.add_scalar('train/_mae', epoch_train_mae, epoch)
                 writer.add_scalar('val/_mae', epoch_val_mae, epoch)
-                writer.add_scalar('test/_mae', epoch_test_mae, epoch)
+                # writer.add_scalar('test/_mae', epoch_test_mae, epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
                         
@@ -197,11 +197,13 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
                 val_loss = epoch_val_loss
                 train_MAE = epoch_train_mae
                 val_MAE = epoch_val_mae
-                test_MAE = epoch_test_mae
+                # test_MAE = epoch_test_mae
+
+                # logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train MAE: {train_MAE:.4f},
+                #             Val Loss: {val_loss:.4f}, Val Acc: {val_MAE:.4f}, Test MAE: {test_MAE:.4f}""")
 
                 logger.info(f"""\tTime: {t:.2f}s, LR: {lr:.5f}, Train Loss: {train_loss:.4f}, Train MAE: {train_MAE:.4f},
-                            Val Loss: {val_loss:.4f}, Val Acc: {val_MAE:.4f}, Test MAE: {test_MAE:.4f}""")
-
+                            Val Loss: {val_loss:.4f}, Val MAE: {val_MAE:.4f}""")
 
                 per_epoch_time.append(time.time()-start)
 
@@ -234,17 +236,18 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             logger.info('-' * 89)
             logger.info('Exiting from training early because of KeyboardInterrupt')
         
-        _, test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
+        # _, test_mae = evaluate_network(model, device, test_loader, epoch, MODEL_NAME)
         _, train_mae = evaluate_network(model, device, train_loader, epoch, MODEL_NAME)
 
-        test_history.append(test_mae)
+        # test_history.append(test_mae)
         val_history.append(val_MAE)
         train_history.append(train_mae)
 
-        logger.info("Test MAE: {:.4f}".format(test_mae))
-        logger.info("Best Test MAE: {:.4f}".format(best_test_MAE))
+        # logger.info("Test MAE: {:.4f}".format(test_mae))
+        # logger.info("Best Test MAE: {:.4f}".format(best_test_MAE))
+        logger.info("Val MAE: {:.4f}".format(val_MAE))
         logger.info("Train MAE: {:.4f}".format(train_mae))
-        logger.info("Best Train MAE Corresponding to Best Test MAE: {:.4f}".format(best_train_MAE))
+        logger.info("Best Train MAE Corresponding to Best Val MAE: {:.4f}".format(best_train_MAE))
         logger.info("Convergence Time (Epochs): {:.4f}".format(epoch))
         logger.info("TOTAL TIME TAKEN: {:.4f}s".format(time.time()-t0))
         logger.info("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
@@ -253,17 +256,17 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
 
         logger.info(params)
         logger.info(f"train history: {train_history}")
-        logger.info(f"test history: {test_history}")
+        # logger.info(f"test history: {test_history}")
         logger.info(f"val history: {val_history}")
         """
             Write the results in out_dir/results folder
         """
         with open(write_file_name + '.txt', 'w') as f:
             f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n{}\n\nTotal Parameters: {}\n\n
-        FINAL RESULTS\nTEST MAE: {:.4f}\nTRAIN MAE: {:.4f}\n\n
+        FINAL RESULTS\nVAL MAE: {:.4f}\nTRAIN MAE: {:.4f}\n\n
         Convergence Time (Epochs): {:.4f}\nTotal Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n"""\
             .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                    test_mae, train_mae, epoch, (time.time()-t0)/3600, np.mean(per_epoch_time)))
+                    val_MAE, train_mae, epoch, (time.time()-t0)/3600, np.mean(per_epoch_time)))
             
     with open(save_name, 'wb') as f:
         information = {
@@ -273,7 +276,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, save_name=
             "net_params": net_params,
             "train_history": train_history,
             "test_history": test_history,
-            "best_metric": best_test_MAE,
+            # "best_metric": best_test_MAE,
+            "best_metric": best_val_MAE,
             "epochs": epoch,
             "time_taken": (time.time()-t0)/3600
         }
