@@ -95,7 +95,8 @@ def spectral_decomposition(g, pos_enc_dim):
 def add_spectral_decomposition(dataset, pos_enc_dim):
     dataset.train.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.test.graph_lists]
+    if dataset.name != 'OGB':
+        dataset.test.graph_lists = [spectral_decomposition(g, pos_enc_dim) for g in dataset.test.graph_lists]
     return dataset
 
 def random_walk_encoding(g, pos_enc_dim, type='partial', ret_pe=False):
@@ -134,8 +135,9 @@ def add_rw_pos_encodings(dataset, pos_enc_dim, type='partial', logger=None):
     dataset.train.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.train.graph_lists]
     logger.info("Adding PE to val graphs...")
     dataset.val.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.val.graph_lists]
-    logger.info("Adding PE to test graphs...")
-    dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
+    if dataset.name != 'OGB':
+        logger.info("Adding PE to test graphs...")
+        dataset.test.graph_lists = [random_walk_encoding(g, pos_enc_dim, type) for g in dataset.test.graph_lists]
     return dataset
 
 

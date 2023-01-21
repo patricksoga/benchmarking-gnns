@@ -44,7 +44,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name,
             if model_name == 'SAGraphTransformer':
                     eigvals = batch_graphs.ndata['EigVals'].to(device)
                     eigvecs = batch_graphs.ndata['EigVecs'].to(device)
-                    batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+                    batch_scores = model.forward(batch_graphs, batch_x, eigvecs, eigvals)
             elif model_name == 'PseudoGraphormer':
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_spatial_biases)
             elif model.pe_layer.pos_enc:
@@ -105,7 +105,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch, model_name):
                 if model_name == 'SAGraphTransformer':
                     eigvals = batch_graphs.ndata['EigVals'].to(device)
                     eigvecs = batch_graphs.ndata['EigVecs'].to(device)
-                    batch_scores = model.forward(batch_graphs, batch_x, batch_e, eigvecs, eigvals)
+                    batch_scores = model.forward(batch_graphs, batch_x, eigvecs, eigvals)
                 elif model_name == 'PseudoGraphormer':
                     batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_spatial_biases)
                 else:
