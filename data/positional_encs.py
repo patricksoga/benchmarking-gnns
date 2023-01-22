@@ -523,7 +523,8 @@ def add_automaton_encodings(dataset, transition_matrix, initial_vector, diag=Fal
     # dataset.test.graph_lists = train
     dataset.train.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.train.graph_lists]
     dataset.val.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.val.graph_lists]
-    dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.test.graph_lists]
+    if dataset.name != 'OGB':
+        dataset.test.graph_lists = [automaton_encoding(g, transition_matrix, initial_vector, diag, matrix, False, model=model) for g in dataset.test.graph_lists]
     # dump_encodings(dataset, transition_matrix.shape[0])
     return dataset
 
