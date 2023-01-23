@@ -46,7 +46,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch, model_name,
                     eigvecs = batch_graphs.ndata['EigVecs'].to(device)
                     batch_scores = model.forward(batch_graphs, batch_x, eigvecs, eigvals)
             elif model_name == 'PseudoGraphormer':
-                batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_spatial_biases)
+                batch_scores = model.forward(batch_graphs, batch_x, batch_spatial_biases)
             elif model.pe_layer.pos_enc:
                 batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
                 sign_flip = torch.rand(batch_pos_enc.size(1)).to(device)
