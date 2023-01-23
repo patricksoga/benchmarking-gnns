@@ -37,7 +37,8 @@ def spd_encoding(g):
 def add_spd_encodings(dataset):
     dataset.train.spatial_pos_lists = [spd_encoding(g) for g in dataset.train.graph_lists]
     dataset.val.spatial_pos_lists = [spd_encoding(g) for g in dataset.val.graph_lists]
-    dataset.test.spatial_pos_lists = [spd_encoding(g) for g in dataset.test.graph_lists]
+    if dataset.name != 'OGB':
+        dataset.test.spatial_pos_lists = [spd_encoding(g) for g in dataset.test.graph_lists]
     return dataset
 
 def simple_spectral_decomp(g):
