@@ -1,2 +1,155 @@
 2023-01-23 06:46:30,679:main_utils.py:62 -            gpu_setup(): cuda available with GPU: NVIDIA GeForce GTX 1080 Ti
 2023-01-23 06:46:30,679:ogbdata.py:297 -             __init__(): [I] Loading dataset OGB...
+2023-01-23 06:57:15,311:ogbdata.py:313 -             __init__(): Splitting dataset...
+2023-01-23 06:57:43,116:ogbdata.py:332 -             __init__(): Time taken: 672.4367s
+2023-01-23 06:57:43,117:ogbdata.py:346 -             __init__(): train, val sizes: 3378606,73545
+2023-01-23 06:57:43,117:ogbdata.py:347 -             __init__(): [I] Finished loading.
+2023-01-23 06:57:43,117:ogbdata.py:348 -             __init__(): [I] Data load time: 672.4374s
+2023-01-23 06:57:43,117:main_OGB_graph_regression.py:359 -                 main(): {'L': 10, 'n_heads': 8, 'hidden_dim': 80, 'out_dim': 80, 'edge_feat': False, 'residual': True, 'readout': 'mean', 'in_feat_dropout': 0.0, 'dropout': 0.0, 'layer_norm': False, 'batch_norm': True, 'self_loop': False, 'pos_enc_dim': 32, 'wl_pos_enc': False, 'full_graph': False, 'gpu_id': 0, 'batch_size': 1024, 'rand_pos_enc': True, 'rw_pos_enc': False, 'num_initials': 100, 'power_method': False, 'diag': False, 'pow_of_mat': 1, 'adj_enc': False, 'dataset': 'OGB', 'matrix_type': 'A', 'spectral_attn': False, 'cat_gape': False, 'gape_softmax_after': False, 'gape_softmax_before': False, 'gape_individual': False, 'random_orientation': False, 'gape_clamp': False, 'rand_sketchy_pos_enc': False, 'eigen_bartels_stewart': False, 'partial_rw_pos_enc': False, 'gape_rand': False, 'experiment_1': False, 'gape_normalization': False, 'gape_squash': 'none', 'gape_div': False, 'gape_norm': False, 'gape_symmetric': False, 'gape_weight_gen': False, 'cycles_k': 6, 'gape_scale': '0', 'gape_per_layer': False, 'gape_scalar': False, 'gape_stoch': True, 'gape_softmax_init': True, 'gape_uniform_init': False, 'gape_stack_strat': '1', 'gape_normalize_mat': False, 'gape_tau': False, 'gape_tau_mat': False, 'gape_beta': 1.0, 'gape_weight_id': False, 'gape_break_batch': False, 'ngape_betas': [], 'gape_cond_lbl': False, 'ngape_agg': 'sum', 'log_file': '/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/tests/OGB_OGB/GraphTransformer/rand_pos_enc/b1024-bnorm-alt-noedge-500k-32-stoch-softinit-initials100-topn-trials/32_DEBUG_0_35.log', 'device': device(type='cuda'), 'num_atom_type': 14, 'seed_array': [35]}
+2023-01-23 06:57:43,117:main_OGB_graph_regression.py:360 -                 main(): {'seed': 41, 'epochs': 1000, 'batch_size': 1024, 'init_lr': 0.0007, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 15, 'min_lr': 1e-06, 'weight_decay': 0.0, 'print_epoch_interval': 5, 'max_time': 24, 'seed_array': [35], 'save_name': 'b1024-bnorm-alt-noedge-500k-32-stoch-softinit-initials100-topn-trials', 'job_num': 32}
+2023-01-23 06:57:43,123:pe_layer.py:99 -             __init__(): rand_pos_enc
+2023-01-23 06:57:44,369:pe_layer.py:194 -             __init__(): Using 32 dimension positional encoding
+2023-01-23 06:57:44,369:pe_layer.py:196 -             __init__(): Using matrix: A
+2023-01-23 06:57:44,369:pe_layer.py:197 -             __init__(): Matrix power: 1
+2023-01-23 06:57:44,384:main_utils.py:76 -     view_model_param(): MODEL DETAILS:
+
+2023-01-23 06:57:44,387:main_utils.py:81 -     view_model_param(): MODEL/Total parameters: GraphTransformer, 544241
+2023-01-23 06:57:44,388:main_OGB_graph_regression.py:40 -   train_val_pipeline(): [!] Starting seed: 35 in [35]...
+2023-01-23 06:57:44,388:pe_layer.py:99 -             __init__(): rand_pos_enc
+2023-01-23 06:57:44,392:pe_layer.py:194 -             __init__(): Using 32 dimension positional encoding
+2023-01-23 06:57:44,393:pe_layer.py:196 -             __init__(): Using matrix: A
+2023-01-23 06:57:44,393:pe_layer.py:197 -             __init__(): Matrix power: 1
+2023-01-23 06:57:44,413:main_OGB_graph_regression.py:61 -   train_val_pipeline(): [!] Adding random automaton graph positional encoding (32).
+2023-01-23 08:18:20,175:main_OGB_graph_regression.py:67 -   train_val_pipeline(): Time PE:4835.7872631549835
+2023-01-23 08:18:20,263:main_OGB_graph_regression.py:120 -   train_val_pipeline(): Training Graphs: 3378606
+2023-01-23 08:18:20,263:main_OGB_graph_regression.py:121 -   train_val_pipeline(): Validation Graphs: 73545
+2023-01-23 08:18:20,272:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 1/1000
+2023-01-23 08:31:30,586:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.8932682871818542
+2023-01-23 08:31:30,588:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 790.32s, LR: 0.00070, Train Loss: 0.5915, Train MAE: 0.5915,
+                            Val Loss: 0.8934, Val MAE: 0.8933
+2023-01-23 08:31:30,588:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 2/1000
+2023-01-23 08:42:27,016:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.43s, LR: 0.00070, Train Loss: 0.4224, Train MAE: 0.4224,
+                            Val Loss: 1.1943, Val MAE: 1.1940
+2023-01-23 08:42:27,018:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 3/1000
+2023-01-23 08:53:23,040:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.02s, LR: 0.00070, Train Loss: 0.3876, Train MAE: 0.3876,
+                            Val Loss: 0.9417, Val MAE: 0.9414
+2023-01-23 08:53:23,041:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 4/1000
+2023-01-23 09:04:18,766:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 655.72s, LR: 0.00070, Train Loss: 0.3596, Train MAE: 0.3596,
+                            Val Loss: 1.2131, Val MAE: 1.2131
+2023-01-23 09:04:18,768:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 5/1000
+2023-01-23 09:15:15,661:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.8101648092269897
+2023-01-23 09:15:15,663:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.89s, LR: 0.00070, Train Loss: 0.3558, Train MAE: 0.3558,
+                            Val Loss: 0.8104, Val MAE: 0.8102
+2023-01-23 09:15:15,664:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 6/1000
+2023-01-23 09:26:12,923:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.26s, LR: 0.00070, Train Loss: 0.3441, Train MAE: 0.3441,
+                            Val Loss: 1.4162, Val MAE: 1.4157
+2023-01-23 09:26:12,924:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 7/1000
+2023-01-23 09:37:09,165:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.24s, LR: 0.00070, Train Loss: 0.3336, Train MAE: 0.3336,
+                            Val Loss: 1.6357, Val MAE: 1.6355
+2023-01-23 09:37:09,167:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 8/1000
+2023-01-23 09:49:04,309:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 715.14s, LR: 0.00070, Train Loss: 0.3371, Train MAE: 0.3371,
+                            Val Loss: 1.2866, Val MAE: 1.2866
+2023-01-23 09:49:04,310:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 9/1000
+2023-01-23 10:00:02,863:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.55s, LR: 0.00070, Train Loss: 0.3171, Train MAE: 0.3171,
+                            Val Loss: 1.2618, Val MAE: 1.2618
+2023-01-23 10:00:02,865:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 10/1000
+2023-01-23 10:11:00,254:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.39s, LR: 0.00070, Train Loss: 0.3175, Train MAE: 0.3175,
+                            Val Loss: 1.5906, Val MAE: 1.5904
+2023-01-23 10:11:00,255:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 11/1000
+2023-01-23 10:21:58,304:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.05s, LR: 0.00070, Train Loss: 0.3049, Train MAE: 0.3049,
+                            Val Loss: 1.9557, Val MAE: 1.9554
+2023-01-23 10:21:58,306:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 12/1000
+2023-01-23 10:32:57,197:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.89s, LR: 0.00070, Train Loss: 0.3061, Train MAE: 0.3061,
+                            Val Loss: 0.9574, Val MAE: 0.9570
+2023-01-23 10:32:57,199:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 13/1000
+2023-01-23 10:43:54,570:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.6690346598625183
+2023-01-23 10:43:54,572:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.37s, LR: 0.00070, Train Loss: 0.3006, Train MAE: 0.3006,
+                            Val Loss: 0.6692, Val MAE: 0.6690
+2023-01-23 10:43:54,573:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 14/1000
+2023-01-23 10:54:52,996:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.42s, LR: 0.00070, Train Loss: 0.2973, Train MAE: 0.2973,
+                            Val Loss: 1.8771, Val MAE: 1.8764
+2023-01-23 10:54:52,997:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 15/1000
+2023-01-23 11:05:51,309:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.31s, LR: 0.00070, Train Loss: 0.2927, Train MAE: 0.2927,
+                            Val Loss: 1.1693, Val MAE: 1.1694
+2023-01-23 11:05:51,310:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 16/1000
+2023-01-23 11:16:48,686:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.5384883880615234
+2023-01-23 11:16:48,689:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.38s, LR: 0.00070, Train Loss: 0.2824, Train MAE: 0.2824,
+                            Val Loss: 0.5388, Val MAE: 0.5385
+2023-01-23 11:16:48,690:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 17/1000
+2023-01-23 11:27:46,547:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.86s, LR: 0.00070, Train Loss: 0.2718, Train MAE: 0.2718,
+                            Val Loss: 0.8512, Val MAE: 0.8513
+2023-01-23 11:27:46,548:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 18/1000
+2023-01-23 11:38:44,440:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.40483686327934265
+2023-01-23 11:38:44,442:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.89s, LR: 0.00070, Train Loss: 0.2623, Train MAE: 0.2623,
+                            Val Loss: 0.4048, Val MAE: 0.4048
+2023-01-23 11:38:44,443:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 19/1000
+2023-01-23 11:49:41,866:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.42s, LR: 0.00070, Train Loss: 0.2478, Train MAE: 0.2478,
+                            Val Loss: 0.5553, Val MAE: 0.5553
+2023-01-23 11:49:41,868:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 20/1000
+2023-01-23 12:00:39,447:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.58s, LR: 0.00070, Train Loss: 0.2303, Train MAE: 0.2303,
+                            Val Loss: 1.6403, Val MAE: 1.6405
+2023-01-23 12:00:39,449:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 21/1000
+2023-01-23 12:11:36,725:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.28s, LR: 0.00070, Train Loss: 0.2272, Train MAE: 0.2272,
+                            Val Loss: 1.0592, Val MAE: 1.0590
+2023-01-23 12:11:36,726:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 22/1000
+2023-01-23 12:22:34,678:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.95s, LR: 0.00070, Train Loss: 0.2233, Train MAE: 0.2233,
+                            Val Loss: 1.1732, Val MAE: 1.1731
+2023-01-23 12:22:34,680:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 23/1000
+2023-01-23 12:33:32,174:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.49s, LR: 0.00070, Train Loss: 0.2306, Train MAE: 0.2306,
+                            Val Loss: 1.2387, Val MAE: 1.2387
+2023-01-23 12:33:32,175:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 24/1000
+2023-01-23 12:45:27,330:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 715.15s, LR: 0.00070, Train Loss: 0.2857, Train MAE: 0.2857,
+                            Val Loss: 0.6256, Val MAE: 0.6258
+2023-01-23 12:45:27,332:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 25/1000
+2023-01-23 12:56:25,029:main_OGB_graph_regression.py:179 -   train_val_pipeline(): Best model with val MAE 0.3539533019065857
+2023-01-23 12:56:25,031:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.70s, LR: 0.00070, Train Loss: 0.2223, Train MAE: 0.2223,
+                            Val Loss: 0.3541, Val MAE: 0.3540
+2023-01-23 12:56:25,032:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 26/1000
+2023-01-23 13:07:22,817:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.78s, LR: 0.00070, Train Loss: 0.2073, Train MAE: 0.2073,
+                            Val Loss: 1.2220, Val MAE: 1.2213
+2023-01-23 13:07:22,819:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 27/1000
+2023-01-23 13:18:19,479:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.66s, LR: 0.00070, Train Loss: 0.2098, Train MAE: 0.2098,
+                            Val Loss: 0.7345, Val MAE: 0.7344
+2023-01-23 13:18:19,480:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 28/1000
+2023-01-23 13:29:18,166:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 658.68s, LR: 0.00070, Train Loss: 0.2319, Train MAE: 0.2319,
+                            Val Loss: 1.4044, Val MAE: 1.4046
+2023-01-23 13:29:18,166:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 29/1000
+2023-01-23 13:40:15,241:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.07s, LR: 0.00070, Train Loss: 0.2026, Train MAE: 0.2026,
+                            Val Loss: 0.9883, Val MAE: 0.9885
+2023-01-23 13:40:15,242:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 30/1000
+2023-01-23 13:51:11,630:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.39s, LR: 0.00070, Train Loss: 0.1936, Train MAE: 0.1936,
+                            Val Loss: 0.6779, Val MAE: 0.6778
+2023-01-23 13:51:11,631:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 31/1000
+2023-01-23 14:02:11,423:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 659.79s, LR: 0.00070, Train Loss: 0.2008, Train MAE: 0.2008,
+                            Val Loss: 0.5725, Val MAE: 0.5725
+2023-01-23 14:02:11,424:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 32/1000
+2023-01-23 14:13:08,426:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.00s, LR: 0.00070, Train Loss: 0.2307, Train MAE: 0.2307,
+                            Val Loss: 0.6847, Val MAE: 0.6846
+2023-01-23 14:13:08,427:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 33/1000
+2023-01-23 14:24:05,525:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.10s, LR: 0.00070, Train Loss: 0.1957, Train MAE: 0.1957,
+                            Val Loss: 0.5012, Val MAE: 0.5011
+2023-01-23 14:24:05,525:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 34/1000
+2023-01-23 14:35:02,977:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.45s, LR: 0.00070, Train Loss: 0.2105, Train MAE: 0.2105,
+                            Val Loss: 0.9916, Val MAE: 0.9913
+2023-01-23 14:35:02,978:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 35/1000
+2023-01-23 14:46:00,216:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.24s, LR: 0.00070, Train Loss: 0.1843, Train MAE: 0.1843,
+                            Val Loss: 0.6791, Val MAE: 0.6792
+2023-01-23 14:46:00,217:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 36/1000
+2023-01-23 14:56:57,663:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.44s, LR: 0.00070, Train Loss: 0.1954, Train MAE: 0.1954,
+                            Val Loss: 0.5110, Val MAE: 0.5109
+2023-01-23 14:56:57,664:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 37/1000
+2023-01-23 15:07:54,621:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.96s, LR: 0.00070, Train Loss: 0.1830, Train MAE: 0.1830,
+                            Val Loss: 0.8183, Val MAE: 0.8183
+2023-01-23 15:07:54,622:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 38/1000
+2023-01-23 15:18:52,253:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.63s, LR: 0.00070, Train Loss: 0.1805, Train MAE: 0.1805,
+                            Val Loss: 0.6944, Val MAE: 0.6944
+2023-01-23 15:18:52,254:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 39/1000
+2023-01-23 15:29:49,831:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 657.58s, LR: 0.00070, Train Loss: 0.1792, Train MAE: 0.1792,
+                            Val Loss: 0.8677, Val MAE: 0.8681
+2023-01-23 15:29:49,832:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 40/1000
+2023-01-23 15:40:46,276:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 656.44s, LR: 0.00070, Train Loss: 0.1764, Train MAE: 0.1764,
+                            Val Loss: 0.8937, Val MAE: 0.8938
+2023-01-23 15:40:46,277:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 41/1000
+2023-01-23 15:52:41,199:main_OGB_graph_regression.py:205 -   train_val_pipeline(): 	Time: 714.92s, LR: 0.00070, Train Loss: 0.2075, Train MAE: 0.2075,
+                            Val Loss: 4.4398, Val MAE: 4.4384
+2023-01-23 15:52:41,200:main_OGB_graph_regression.py:161 -   train_val_pipeline(): Epoch 42/1000
