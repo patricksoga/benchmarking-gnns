@@ -13,8 +13,6 @@ from layers.mlp_readout_layer import MLPReadout
 class PseudoGraphormerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
-        num_atom_type = net_params['num_atom_type']
-        num_bond_type = net_params['num_bond_type']
 
         hidden_dim = net_params['hidden_dim']
         num_heads = net_params['n_heads']
@@ -46,7 +44,7 @@ class PseudoGraphormerNet(nn.Module):
         self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)
 
-    def forward(self, g, h, e, spatial_pos_bias):
+    def forward(self, g, h, spatial_pos_bias):
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         h = h + self.in_degree_encoder(g.in_degrees()) + self.out_degree_encoder(g.out_degrees())
