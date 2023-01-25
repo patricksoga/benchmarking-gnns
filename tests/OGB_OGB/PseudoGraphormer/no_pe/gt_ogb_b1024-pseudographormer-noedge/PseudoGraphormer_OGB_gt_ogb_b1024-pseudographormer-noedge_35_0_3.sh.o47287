@@ -1,0 +1,16 @@
+preparing 3378606 graphs for the TRAIN set...
+preparing 73545 graphs for the VALID set...
+Traceback (most recent call last):
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_OGB_graph_regression.py", line 378, in <module>
+    main()    
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_OGB_graph_regression.py", line 376, in main
+    train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, params['save_name'])
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/main_OGB_graph_regression.py", line 167, in train_val_pipeline
+    epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch, MODEL_NAME, net_params)
+  File "/afs/crc.nd.edu/user/p/psoga/benchmarking-gnns/train/train_ogb_graph_regression.py", line 70, in train_epoch_sparse
+    loss.backward()
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/afs/crc.nd.edu/user/p/psoga/.conda/envs/gnn/lib/python3.10/site-packages/torch/autograd/__init__.py", line 173, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+RuntimeError: CUDA out of memory. Tried to allocate 6.20 GiB (GPU 0; 11.92 GiB total capacity; 8.36 GiB already allocated; 2.86 GiB free; 8.50 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
