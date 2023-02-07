@@ -298,10 +298,10 @@ class OGBDataset(torch.utils.data.Dataset):
         else:
             print(f"[I] Loading dataset {name}...")
 
-        # dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
-        with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
-            print('loading pickle file...')
-            dataset = pickle.load(f)
+        dataset = DglPCQM4Mv2Dataset(root='data/datasetv2')
+        # with open('./data/ogb_molecules_1024.pkl', 'rb') as f:
+        #     print('loading pickle file...')
+        #     dataset = pickle.load(f)
         # self.name = name
         # data_dir = 'data/dataset/pcqm4m_kddcup2021'
 
@@ -315,11 +315,11 @@ class OGBDataset(torch.utils.data.Dataset):
             print("Splitting dataset...")
             
         if name == 'OGB':
-            # splits = dataset.get_idx_split()
-            # train = dataset[splits['train']]
-            # val = dataset[splits['valid']]
-            train = dataset
-            val = dataset
+            splits = dataset.get_idx_split()
+            train = dataset[splits['train']]
+            val = dataset[splits['valid']]
+            # train = dataset
+            # val = dataset
             # test = dataset[splits['test-dev']]
             # self.train = OGBDGL(dataset, 'train')
             # self.val = OGBDGL(dataset, 'valid')
@@ -449,4 +449,3 @@ class OGBDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [make_full_graph(g) for g in self.train.graph_lists]
         self.val.graph_lists = [make_full_graph(g) for g in self.val.graph_lists]
         self.test.graph_lists = [make_full_graph(g) for g in self.test.graph_lists]
-
